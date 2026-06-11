@@ -3,6 +3,8 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel/serverless";
 
+import cloudflare from "@astrojs/cloudflare";
+
 export default defineConfig({
   site: "https://we-archive.org",
   integrations: [
@@ -12,5 +14,5 @@ export default defineConfig({
     sitemap()
   ],
   output: "server",
-  adapter: vercel()
+  adapter: cloudflare()
 });
