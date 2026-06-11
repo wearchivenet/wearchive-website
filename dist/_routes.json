@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/_astro/*",
+    "/.assetsignore",
+    "/images/*",
+    "/en/who-we-are",
+    "/en/our-work",
+    "/en/news",
+    "/en/resources",
+    "/en/donate",
+    "/en/about",
+    "/fr/who-we-are",
+    "/fr/our-work",
+    "/fr/news",
+    "/fr/resources",
+    "/fr/donate",
+    "/fr/about",
+    "/zh/who-we-are",
+    "/zh/our-work",
+    "/zh/news",
+    "/zh/resources",
+    "/zh/donate",
+    "/zh/about"
+  ]
+}

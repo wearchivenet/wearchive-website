@@ -6,9 +6,8 @@ import { deskStructure } from "./studio/deskStructure";
 export default defineConfig({
   name: "we-archive-studio",
   title: "We Archive CMS",
-  projectId: process.env.PUBLIC_SANITY_PROJECT_ID || "replace-with-project-id",
+  projectId: process.env.PUBLIC_SANITY_PROJECT_ID || "82czi5fi",
   dataset: process.env.PUBLIC_SANITY_DATASET || "production",
-  basePath: "/studio",
   plugins: [
     structureTool({
       structure: deskStructure
