@@ -1,0 +1,81 @@
+---
+import CallToAction from "@/components/CallToAction.astro";
+import Hero from "@/components/Hero.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import StoryCard from "@/components/StoryCard.astro";
+import { editorialItems, homeContent } from "@/data/content";
+import { localizedPath, type Language } from "@/lib/i18n";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+type Props = {
+  language: Language;
+};
+
+const { language } = Astro.props;
+const content = homeContent[language];
+const items = editorialItems[language];
+const publication = items.find((item) => item.type === "publication") ?? items[0]!;
+---
+
+<BaseLayout title={`We Archive | ${content.title}`} description={content.intro} language={language}>
+  <Hero
+    eyebrow={content.eyebrow}
+    title={content.title}
+    intro={content.intro}
+    primaryAction={content.primaryAction}
+    primaryHref={localizedPath(language, "our-work")}
+    secondaryAction={content.secondaryAction}
+    secondaryHref={localizedPath(language, "donate")}
+  />
+
+  <section class="bg-white">
+    <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+      <SectionHeading title={content.missionTitle} text={content.mission} />
+      <div class="grid gap-5 border-l-4 border-archive-gold pl-7 text-lg leading-8 text-slate-700">
+        <p>{content.missionNoteOne}</p>
+        <p>{content.missionNoteTwo}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-archive-mist">
+    <div class="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+      <SectionHeading title={content.featuredTitle} text={content.featuredText} />
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        {items.map((item) => <StoryCard item={item} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white">
+    <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-2 lg:px-8">
+      <div>
+        <SectionHeading title={content.newsTitle} text={content.newsText} />
+        <div class="mt-8 space-y-5">
+          {items.filter((item) => item.type !== "publication").map((item) => (
+            <article class="border-t border-slate-200 pt-5">
+              <p class="text-sm uppercase tracking-[0.18em] text-archive-blue">{item.date}</p>
+              <h3 class="mt-2 text-2xl text-archive-navy">{item.title}</h3>
+              <p class="mt-2 leading-7 text-slate-700">{item.excerpt}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+      <div>
+        <SectionHeading title={content.resourcesTitle} text={content.resourcesText} />
+        <div class="mt-8 border border-slate-200 p-7 shadow-institutional">
+          <p class="text-sm uppercase tracking-[0.18em] text-archive-blue">{content.publicationLabel}</p>
+          <h3 class="mt-3 text-3xl leading-tight text-archive-navy">{publication.title}</h3>
+          <p class="mt-4 leading-8 text-slate-700">
+            {publication.excerpt}
+          </p>
+          <a href={localizedPath(language, "resources")} class="mt-6 inline-flex border-b-2 border-archive-gold text-archive-blue">
+            {content.viewResources}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CallToAction title={content.donateTitle} text={content.donateText} button={content.donateButton} href={localizedPath(language, "donate")} />
+</BaseLayout>

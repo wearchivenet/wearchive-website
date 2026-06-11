@@ -1,0 +1,52 @@
+---
+import CallToAction from "@/components/CallToAction.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import StoryCard from "@/components/StoryCard.astro";
+import { editorialItems, homeContent, pages } from "@/data/content";
+import { localizedPath, type Language, type SectionSlug } from "@/lib/i18n";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+type Props = {
+  language: Language;
+  section: SectionSlug;
+};
+
+const { language, section } = Astro.props;
+const page = pages[language][section];
+const home = homeContent[language];
+const items = editorialItems[language];
+---
+
+<BaseLayout title={`We Archive | ${page.title}`} description={page.excerpt} language={language} section={section}>
+  <section class="border-b border-slate-200 bg-archive-pale">
+    <div class="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+      <p class="text-sm uppercase tracking-[0.2em] text-archive-blue">{page.eyebrow}</p>
+      <h1 class="mt-5 max-w-4xl text-5xl leading-tight text-archive-navy md:text-7xl">{page.title}</h1>
+      <p class="mt-7 max-w-3xl text-xl leading-9 text-slate-700">{page.excerpt}</p>
+    </div>
+  </section>
+
+  <section class="bg-white">
+    <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[0.75fr_1.25fr] lg:px-8">
+      <SectionHeading title={page.title} text={page.excerpt} />
+      <div class="space-y-6 text-lg leading-9 text-slate-700">
+        {page.body.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+  </section>
+
+  {(section === "our-work" || section === "news" || section === "resources") && (
+    <section class="bg-archive-mist">
+      <div class="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <SectionHeading title={section === "resources" ? home.resourcesTitle : section === "news" ? home.newsTitle : home.featuredTitle} />
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
+          {items.map((item) => <StoryCard item={item} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {section !== "donate" && (
+    <CallToAction title={home.donateTitle} text={home.donateText} button={home.donateButton} href={localizedPath(language, "donate")} />
+  )}
+</BaseLayout>

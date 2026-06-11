@@ -1,0 +1,27 @@
+---
+import { languages, localizedPath, type Language } from "@/lib/i18n";
+
+type Props = {
+  language: Language;
+  section?: string;
+};
+
+const { language, section = "" } = Astro.props;
+---
+
+<nav aria-label="Language selector" class="flex items-center gap-2 text-sm">
+  {Object.values(languages).map((item) => (
+    <a
+      href={localizedPath(item.code as Language, section)}
+      class:list={[
+        "border px-3 py-2 transition",
+        item.code === language
+          ? "border-archive-blue bg-archive-blue text-white"
+          : "border-slate-300 text-archive-blue hover:border-archive-gold hover:bg-archive-pale"
+      ]}
+      aria-current={item.code === language ? "page" : undefined}
+    >
+      {item.label}
+    </a>
+  ))}
+</nav>

@@ -1,0 +1,51 @@
+---
+type Props = {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  primaryAction?: string;
+  primaryHref?: string;
+  secondaryAction?: string;
+  secondaryHref?: string;
+};
+
+const { eyebrow, title, intro, primaryAction, primaryHref, secondaryAction, secondaryHref } = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-archive-blue text-white">
+  <div class="absolute inset-0 opacity-25">
+    <img
+      src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=2200&q=80"
+      alt=""
+      class="h-full w-full object-cover"
+      loading="eager"
+    />
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-r from-archive-navy via-archive-blue/95 to-archive-blue/70"></div>
+  <div class="relative mx-auto grid min-h-[76vh] max-w-7xl content-center gap-10 px-5 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+    <div>
+      <p class="text-sm uppercase tracking-[0.25em] text-archive-gold">{eyebrow}</p>
+      <h1 class="mt-6 max-w-4xl text-5xl leading-[1.06] md:text-7xl">{title}</h1>
+      <p class="mt-7 max-w-2xl text-xl leading-9 text-slate-100">{intro}</p>
+      {(primaryAction || secondaryAction) && (
+        <div class="mt-10 flex flex-wrap gap-4">
+          {primaryAction && primaryHref && (
+            <a href={primaryHref} class="border border-archive-gold bg-archive-gold px-6 py-4 text-archive-navy transition hover:bg-white">
+              {primaryAction}
+            </a>
+          )}
+          {secondaryAction && secondaryHref && (
+            <a href={secondaryHref} class="border border-white px-6 py-4 text-white transition hover:border-archive-gold hover:text-archive-gold">
+              {secondaryAction}
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+    <div class="hidden self-end border-l border-white/25 pl-8 lg:block">
+      <p class="max-w-sm text-2xl leading-10 text-slate-100">
+        An international archive for cultural continuity, scholarly access, and public memory.
+      </p>
+    </div>
+  </div>
+</section>

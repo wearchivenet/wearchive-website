@@ -1,0 +1,75 @@
+---
+import LanguageSwitcher from "@/components/LanguageSwitcher.astro";
+import { sections, localizedPath, type Language } from "@/lib/i18n";
+
+type Props = {
+  language: Language;
+  section?: string;
+};
+
+const { language, section = "" } = Astro.props;
+---
+
+<header class="border-b border-slate-200 bg-white">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:p-3">
+    Skip to content
+  </a>
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-5 lg:px-8">
+    <a href={localizedPath(language)} class="flex items-center gap-4" aria-label="We Archive home">
+      <img src="/images/logo.png" alt="We Archive" class="h-10 w-auto object-contain sm:h-12" />
+    </a>
+
+    <nav aria-label="Primary navigation" class="hidden items-center gap-7 lg:flex">
+      {sections.map((item) => (
+        <a
+          href={localizedPath(language, item.slug)}
+          class:list={[
+            "font-kai text-base text-archive-blue transition hover:text-archive-gold",
+            section === item.slug && "border-b-2 border-archive-gold"
+          ]}
+          aria-current={section === item.slug ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="hidden lg:block">
+      <LanguageSwitcher language={language} section={section} />
+    </div>
+
+    <button
+      type="button"
+      class="inline-flex min-h-11 min-w-11 items-center justify-center border border-archive-blue text-archive-blue lg:hidden"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+      data-menu-toggle
+    >
+      <span class="sr-only">Open menu</span>
+      <span aria-hidden="true" class="block h-4 w-5 border-y-2 border-current"></span>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white px-5 py-5 lg:hidden" data-mobile-menu>
+    <nav aria-label="Mobile primary navigation" class="grid gap-3">
+      {sections.map((item) => (
+        <a href={localizedPath(language, item.slug)} class="font-kai text-lg text-archive-blue">
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <div class="mt-5">
+      <LanguageSwitcher language={language} section={section} />
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector("[data-menu-toggle]");
+  const menu = document.querySelector("[data-mobile-menu]");
+  toggle?.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!isOpen));
+    menu?.classList.toggle("hidden", isOpen);
+  });
+</script>

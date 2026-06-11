@@ -1,0 +1,14 @@
+---
+import SectionPage from "@/components/SectionPage.astro";
+import { sectionSlugs, type SectionSlug } from "@/lib/i18n";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return sectionSlugs.map((section) => ({ params: { section } }));
+}
+
+const section = Astro.params.section as SectionSlug;
+---
+
+<SectionPage language="fr" section={section} />
