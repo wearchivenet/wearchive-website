@@ -24,17 +24,39 @@ export type Language = keyof typeof languages;
 export const defaultLanguage: Language = "zh";
 
 export const sections = [
-  { label: "我們是誰", slug: "who-we-are" },
-  { label: "我們的工作", slug: "our-work" },
-  { label: "新聞資訊", slug: "news" },
-  { label: "資源", slug: "resources" },
-  { label: "捐贈", slug: "donate" },
-  { label: "關於我們", slug: "about" }
+  {
+    slug: "astrology",
+    labels: { zh: "占星諮詢", en: "Astrology", fr: "Astrologie" }
+  },
+  {
+    slug: "tarot",
+    labels: { zh: "塔羅解讀", en: "Tarot", fr: "Tarot" }
+  },
+  {
+    slug: "journal",
+    labels: { zh: "星象札記", en: "Journal", fr: "Journal" }
+  },
+  {
+    slug: "library",
+    labels: { zh: "靈感資料庫", en: "Library", fr: "Bibliothèque" }
+  },
+  {
+    slug: "book",
+    labels: { zh: "預約", en: "Book", fr: "Réserver" }
+  },
+  {
+    slug: "about",
+    labels: { zh: "關於", en: "About", fr: "À propos" }
+  }
 ] as const;
 
 export type SectionSlug = (typeof sections)[number]["slug"];
 
 export const sectionSlugs = sections.map((section) => section.slug);
+
+export function sectionLabel(language: Language, slug: SectionSlug) {
+  return sections.find((section) => section.slug === slug)?.labels[language] ?? slug;
+}
 
 export function isLanguage(value: string | undefined): value is Language {
   return Boolean(value && value in languages);

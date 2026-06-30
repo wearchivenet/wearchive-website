@@ -14,68 +14,176 @@ type Props = {
 const { language } = Astro.props;
 const content = homeContent[language];
 const items = editorialItems[language];
-const publication = items.find((item) => item.type === "publication") ?? items[0]!;
+const processSteps = {
+  zh: [
+    ["01", "提出問題", "說出你此刻真正卡住、好奇或反覆想到的事。"],
+    ["02", "閱讀象徵", "讓星圖與牌面把感受、時間和關係放進同一張地圖。"],
+    ["03", "帶回生活", "把洞見收束成下一個可以感受、觀察或實踐的行動。"]
+  ],
+  en: [
+    ["01", "Bring the question", "Name what feels stuck, alive, or impossible to stop thinking about."],
+    ["02", "Read the symbols", "Let chart and cards place feeling, timing, and relationship on one map."],
+    ["03", "Return to life", "Translate insight into one action you can feel, observe, or practice."]
+  ],
+  fr: [
+    ["01", "Apporter la question", "Nommer ce qui bloque, appelle ou revient sans cesse aujourd'hui."],
+    ["02", "Lire les symboles", "Réunir sentiment, temporalité et relation sur une même carte."],
+    ["03", "Revenir à la vie", "Transformer l'intuition en une action à ressentir, observer ou pratiquer."]
+  ]
+}[language];
 ---
 
-<BaseLayout title={`We Archive | ${content.title}`} description={content.intro} language={language}>
+<BaseLayout title={`Astra Arcana | ${content.title}`} description={content.intro} language={language}>
   <Hero
     eyebrow={content.eyebrow}
     title={content.title}
     intro={content.intro}
     primaryAction={content.primaryAction}
-    primaryHref={localizedPath(language, "our-work")}
+    primaryHref={localizedPath(language, "book")}
     secondaryAction={content.secondaryAction}
-    secondaryHref={localizedPath(language, "donate")}
+    secondaryHref={localizedPath(language, "astrology")}
   />
 
-  <section class="bg-white">
-    <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-      <SectionHeading title={content.missionTitle} text={content.mission} />
-      <div class="grid gap-5 border-l-4 border-archive-gold pl-7 text-lg leading-8 text-slate-700">
-        <p>{content.missionNoteOne}</p>
-        <p>{content.missionNoteTwo}</p>
-      </div>
+  <section class="relative overflow-hidden bg-archive-pale">
+    <div class="spectrum-track absolute left-0 top-0 flex h-2 w-[180%] will-change-transform" aria-hidden="true">
+      <div class="pride-ribbon h-full w-1/2"></div>
+      <div class="pride-ribbon h-full w-1/2"></div>
     </div>
-  </section>
-
-  <section class="bg-archive-mist">
-    <div class="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-      <SectionHeading title={content.featuredTitle} text={content.featuredText} />
-      <div class="mt-10 grid gap-6 md:grid-cols-3">
-        {items.map((item) => <StoryCard item={item} />)}
-      </div>
-    </div>
-  </section>
-
-  <section class="bg-white">
-    <div class="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-2 lg:px-8">
+    <div class="mx-auto grid max-w-[90rem] gap-14 px-5 py-24 sm:px-8 lg:grid-cols-[0.62fr_1.38fr] lg:px-10 lg:py-36">
+      <p class="text-xs uppercase tracking-[0.22em] text-archive-blue/55" data-reveal>{content.manifestoLabel}</p>
       <div>
-        <SectionHeading title={content.newsTitle} text={content.newsText} />
-        <div class="mt-8 space-y-5">
-          {items.filter((item) => item.type !== "publication").map((item) => (
-            <article class="border-t border-slate-200 pt-5">
-              <p class="text-sm uppercase tracking-[0.18em] text-archive-blue">{item.date}</p>
-              <h3 class="mt-2 text-2xl text-archive-navy">{item.title}</h3>
-              <p class="mt-2 leading-7 text-slate-700">{item.excerpt}</p>
-            </article>
-          ))}
+        <h2 class="max-w-5xl font-display text-4xl leading-[1.08] text-archive-navy md:text-6xl lg:text-7xl" data-reveal>
+          {content.manifestoTitle}
+        </h2>
+        <p class="mt-10 max-w-2xl border-l-2 border-pride-pink pl-6 text-base leading-8 text-archive-ink/65 md:ml-auto md:text-lg" data-reveal>
+          {content.manifestoText}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="relative overflow-hidden bg-archive-navy text-white">
+    <div class="absolute -left-40 top-20 h-96 w-96 rounded-full bg-pride-violet/30 blur-3xl"></div>
+    <div class="absolute -right-40 bottom-10 h-96 w-96 rounded-full bg-pride-transblue/20 blur-3xl"></div>
+    <div class="relative mx-auto max-w-[90rem] px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
+      <SectionHeading eyebrow="Consultations" title={content.servicesTitle} text={content.servicesText} light />
+      <div class="mt-16">
+        {items.map((item, index) => <StoryCard item={item} index={index} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="process-section bg-[#f9f7f2]">
+    <div class="mx-auto grid max-w-[90rem] gap-16 px-5 py-24 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-36">
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <SectionHeading eyebrow="The reading" title={content.processTitle} text={content.processText} />
+        <div class="mt-10 h-1 w-full overflow-hidden bg-archive-navy/10">
+          <div class="process-progress h-full origin-left scale-x-0 bg-[linear-gradient(90deg,#E40303,#FF8C00,#FFD800,#008026,#5BCEFA,#F5A9B8,#732982)] will-change-transform"></div>
         </div>
       </div>
       <div>
-        <SectionHeading title={content.resourcesTitle} text={content.resourcesText} />
-        <div class="mt-8 border border-slate-200 p-7 shadow-institutional">
-          <p class="text-sm uppercase tracking-[0.18em] text-archive-blue">{content.publicationLabel}</p>
-          <h3 class="mt-3 text-3xl leading-tight text-archive-navy">{publication.title}</h3>
-          <p class="mt-4 leading-8 text-slate-700">
-            {publication.excerpt}
-          </p>
-          <a href={localizedPath(language, "resources")} class="mt-6 inline-flex border-b-2 border-archive-gold text-archive-blue">
-            {content.viewResources}
-          </a>
-        </div>
+        {processSteps.map(([number, title, text]) => (
+          <article class="process-step grid min-h-[16rem] content-center border-t border-archive-navy/20 py-10" data-reveal>
+            <p class="text-xs tracking-[0.2em] text-pride-violet">{number}</p>
+            <h3 class="mt-4 font-display text-4xl text-archive-navy md:text-5xl">{title}</h3>
+            <p class="mt-5 max-w-xl leading-8 text-archive-ink/60">{text}</p>
+          </article>
+        ))}
       </div>
     </div>
   </section>
 
-  <CallToAction title={content.donateTitle} text={content.donateText} button={content.donateButton} href={localizedPath(language, "donate")} />
+  <section class="relative overflow-hidden bg-white">
+    <div class="mx-auto max-w-[90rem] px-5 py-24 sm:px-8 lg:px-10 lg:py-32">
+      <div class="grid gap-12 lg:grid-cols-[1fr_auto] lg:items-end">
+        <SectionHeading eyebrow="Journal" title={content.journalTitle} text={content.journalText} />
+        <a href={localizedPath(language, "journal")} class="text-sm font-semibold text-archive-navy underline decoration-pride-pink decoration-2 underline-offset-8" data-reveal>
+          {content.viewJournal} ↗
+        </a>
+      </div>
+      <div class="mt-16 grid gap-px overflow-hidden border border-archive-navy/15 bg-archive-navy/15 md:grid-cols-3" data-reveal>
+        {["☿", "♀", "♄"].map((symbol, index) => (
+          <article class="group min-h-72 bg-white p-8 transition hover:bg-archive-pale">
+            <div class="font-display text-5xl text-archive-navy/25 transition group-hover:rotate-12 group-hover:text-pride-violet">{symbol}</div>
+            <p class="mt-20 text-xs uppercase tracking-[0.18em] text-archive-blue/45">Field note · 0{index + 1}</p>
+            <h3 class="mt-3 font-display text-2xl text-archive-navy">
+              {language === "zh"
+                ? ["水星逆行真正要求我們重看的事", "金星：渴望、價值與關係中的交換", "土星不是懲罰，而是時間的邊界"][index]
+                : language === "fr"
+                  ? ["Ce que Mercure rétrograde nous demande de revoir", "Vénus : désir, valeur et échange", "Saturne : la frontière du temps"][index]
+                  : ["What Mercury retrograde asks us to revisit", "Venus: desire, value, and exchange", "Saturn is not punishment, but the edge of time"][index]}
+            </h3>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CallToAction title={content.ctaTitle} text={content.ctaText} button={content.ctaButton} href={localizedPath(language, "book")} />
 </BaseLayout>
+
+<script>
+  import gsap from "gsap";
+  import ScrollTrigger from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const mm = gsap.matchMedia();
+  mm.add(
+    {
+      allowMotion: "(prefers-reduced-motion: no-preference)",
+      desktop: "(min-width: 900px)"
+    },
+    (context) => {
+      const { allowMotion, desktop } = context.conditions as { allowMotion: boolean; desktop: boolean };
+      if (!allowMotion) {
+        gsap.set("[data-reveal]", { autoAlpha: 1, y: 0 });
+        return;
+      }
+
+      gsap.set("[data-reveal]", { autoAlpha: 0, y: 32 });
+      const batches = ScrollTrigger.batch("[data-reveal]", {
+        start: "top 88%",
+        once: true,
+        onEnter: (elements) => {
+          gsap.to(elements, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.08,
+            ease: "power3.out",
+            overwrite: true
+          });
+        }
+      });
+
+      gsap.to(".spectrum-track", {
+        xPercent: -35,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".spectrum-track",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.7
+        }
+      });
+
+      if (desktop) {
+        gsap.to(".process-progress", {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".process-section",
+            start: "top 65%",
+            end: "bottom 75%",
+            scrub: 0.6
+          }
+        });
+      }
+
+      return () => batches.forEach((trigger) => trigger.kill());
+    }
+  );
+
+  document.fonts.ready.then(() => ScrollTrigger.refresh());
+</script>

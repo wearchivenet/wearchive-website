@@ -12,40 +12,145 @@ type Props = {
 const { eyebrow, title, intro, primaryAction, primaryHref, secondaryAction, secondaryHref } = Astro.props;
 ---
 
-<section class="relative overflow-hidden bg-archive-blue text-white">
-  <div class="absolute inset-0 opacity-25">
+<section class="hero relative isolate min-h-[calc(100svh-80px)] overflow-hidden bg-archive-navy text-white" data-hero>
+  <div class="hero-media absolute inset-0 will-change-transform" data-hero-media>
     <img
-      src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=2200&q=80"
+      src="/images/astro-hero.png"
       alt=""
-      class="h-full w-full object-cover"
+      class="h-full w-full object-cover object-[64%_center] opacity-75"
       loading="eager"
+      fetchpriority="high"
     />
   </div>
-  <div class="absolute inset-0 bg-gradient-to-r from-archive-navy via-archive-blue/95 to-archive-blue/70"></div>
-  <div class="relative mx-auto grid min-h-[76vh] max-w-7xl content-center gap-10 px-5 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
-    <div>
-      <p class="text-sm uppercase tracking-[0.25em] text-archive-gold">{eyebrow}</p>
-      <h1 class="mt-6 max-w-4xl text-5xl leading-[1.06] md:text-7xl">{title}</h1>
-      <p class="mt-7 max-w-2xl text-xl leading-9 text-slate-100">{intro}</p>
-      {(primaryAction || secondaryAction) && (
-        <div class="mt-10 flex flex-wrap gap-4">
-          {primaryAction && primaryHref && (
-            <a href={primaryHref} class="border border-archive-gold bg-archive-gold px-6 py-4 text-archive-navy transition hover:bg-white">
-              {primaryAction}
-            </a>
-          )}
-          {secondaryAction && secondaryHref && (
-            <a href={secondaryHref} class="border border-white px-6 py-4 text-white transition hover:border-archive-gold hover:text-archive-gold">
-              {secondaryAction}
-            </a>
-          )}
-        </div>
-      )}
+  <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,14,23,.98)_0%,rgba(9,14,23,.88)_36%,rgba(9,14,23,.22)_78%,rgba(9,14,23,.55)_100%)]"></div>
+  <div class="paper-grain absolute inset-0 opacity-20 mix-blend-soft-light"></div>
+
+  <div class="pride-aurora absolute -right-[12%] top-[8%] h-[70%] w-[72%] rotate-[-10deg] rounded-[50%] opacity-60 blur-3xl will-change-transform"></div>
+  <div class="pride-ribbon absolute inset-x-0 top-0 h-1"></div>
+
+  <svg
+    class="hero-orbit absolute -right-24 top-1/2 hidden h-[42rem] w-[42rem] -translate-y-1/2 text-white/20 lg:block"
+    viewBox="0 0 700 700"
+    fill="none"
+    aria-hidden="true"
+    data-orbit
+  >
+    <circle cx="350" cy="350" r="220" stroke="currentColor" stroke-width="1" />
+    <circle cx="350" cy="350" r="300" stroke="currentColor" stroke-width="1" stroke-dasharray="3 9" />
+    <ellipse cx="350" cy="350" rx="310" ry="118" stroke="currentColor" stroke-width="1" transform="rotate(-22 350 350)" />
+    <circle cx="76" cy="465" r="7" fill="#5BCEFA" />
+    <circle cx="555" cy="144" r="9" fill="#F5A9B8" />
+    <circle cx="641" cy="350" r="6" fill="#FFD800" />
+  </svg>
+
+  <div class="relative mx-auto grid min-h-[calc(100svh-80px)] max-w-[90rem] items-end px-5 pb-12 pt-24 sm:px-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-10 lg:pb-16">
+    <div class="max-w-5xl">
+      <p class="hero-item text-xs uppercase tracking-[0.28em] text-white/60" data-hero-item>{eyebrow}</p>
+      <h1 class="hero-item mt-7 max-w-5xl text-[clamp(3.2rem,7.4vw,7.5rem)] leading-[0.94]" data-hero-item>
+        {title}
+      </h1>
+      <div class="mt-10 grid max-w-4xl gap-8 border-t border-white/20 pt-7 md:grid-cols-[1fr_auto] md:items-end">
+        <p class="hero-item max-w-2xl text-base leading-8 text-white/70 sm:text-lg" data-hero-item>{intro}</p>
+        {(primaryAction || secondaryAction) && (
+          <div class="hero-item flex flex-wrap gap-3" data-hero-item>
+            {primaryAction && primaryHref && (
+              <a href={primaryHref} class="group inline-flex min-h-12 items-center gap-3 bg-white px-5 py-3 text-sm font-semibold text-archive-navy transition hover:bg-pride-yellow">
+                {primaryAction}
+                <span aria-hidden="true" class="transition group-hover:translate-x-1">↗</span>
+              </a>
+            )}
+            {secondaryAction && secondaryHref && (
+              <a href={secondaryHref} class="inline-flex min-h-12 items-center border border-white/35 px-5 py-3 text-sm text-white transition hover:border-white hover:bg-white/10">
+                {secondaryAction}
+              </a>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-    <div class="hidden self-end border-l border-white/25 pl-8 lg:block">
-      <p class="max-w-sm text-2xl leading-10 text-slate-100">
-        An international archive for cultural continuity, scholarly access, and public memory.
-      </p>
+
+    <div class="hero-item mt-12 hidden justify-self-end border-l border-white/20 pl-6 lg:block" data-hero-item>
+      <p class="font-display text-2xl leading-8 text-white/75">Your chart is not a cage.<br />The cards are not a verdict.</p>
+      <p class="mt-4 text-xs uppercase tracking-[0.2em] text-pride-pink">Read · Reflect · Choose</p>
     </div>
   </div>
 </section>
+
+<script>
+  import gsap from "gsap";
+  import ScrollTrigger from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const hero = document.querySelector<HTMLElement>("[data-hero]");
+  const heroItems = hero?.querySelectorAll("[data-hero-item]");
+  const orbit = hero?.querySelector<SVGElement>("[data-orbit]");
+  const media = hero?.querySelector<HTMLElement>("[data-hero-media]");
+  const aurora = hero?.querySelector<HTMLElement>(".pride-aurora");
+  const mm = gsap.matchMedia();
+
+  if (hero && heroItems && media) {
+    mm.add(
+      {
+        desktop: "(min-width: 900px)",
+        reduceMotion: "(prefers-reduced-motion: reduce)"
+      },
+      (context) => {
+        const { desktop, reduceMotion } = context.conditions as { desktop: boolean; reduceMotion: boolean };
+
+        if (reduceMotion) {
+          gsap.set(heroItems, { autoAlpha: 1, y: 0 });
+          return;
+        }
+
+        const intro = gsap.timeline({ defaults: { duration: 0.9, ease: "power3.out" } });
+        intro
+          .from(heroItems, { autoAlpha: 0, y: 28, stagger: 0.1 })
+          .from(orbit, { autoAlpha: 0, scale: 0.88, rotation: -14, transformOrigin: "50% 50%" }, "<0.12")
+          .from(aurora, { autoAlpha: 0, scale: 0.7 }, "<");
+
+        gsap.to(media, {
+          yPercent: 10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.8
+          }
+        });
+
+        let removePointerListener: (() => void) | undefined;
+
+        if (desktop && orbit && aurora) {
+          gsap.to(orbit, { rotation: 24, transformOrigin: "50% 50%", duration: 28, ease: "none", repeat: -1 });
+
+          const orbitX = gsap.quickTo(orbit, "x", { duration: 1.2, ease: "power3.out" });
+          const orbitY = gsap.quickTo(orbit, "y", { duration: 1.2, ease: "power3.out" });
+          const auroraX = gsap.quickTo(aurora, "x", { duration: 1.4, ease: "power3.out" });
+          const auroraY = gsap.quickTo(aurora, "y", { duration: 1.4, ease: "power3.out" });
+
+          const onPointerMove = (event: PointerEvent) => {
+            const x = event.clientX / window.innerWidth - 0.5;
+            const y = event.clientY / window.innerHeight - 0.5;
+            orbitX(x * 24);
+            orbitY(y * 18);
+            auroraX(x * -30);
+            auroraY(y * -22);
+          };
+
+          hero.addEventListener("pointermove", onPointerMove);
+          removePointerListener = () => hero.removeEventListener("pointermove", onPointerMove);
+        }
+
+        return () => {
+          removePointerListener?.();
+          intro.kill();
+        };
+      },
+      hero
+    );
+
+    document.fonts.ready.then(() => ScrollTrigger.refresh());
+  }
+</script>

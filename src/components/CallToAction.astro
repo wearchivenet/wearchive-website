@@ -9,14 +9,19 @@ type Props = {
 const { title, text, button, href } = Astro.props;
 ---
 
-<section class="bg-archive-pale">
-  <div class="mx-auto grid max-w-7xl gap-8 px-5 py-16 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8">
-    <div class="editorial-rule">
-      <h2 class="text-4xl leading-tight text-archive-navy">{title}</h2>
-      <p class="mt-5 max-w-2xl text-lg leading-8 text-slate-700">{text}</p>
+<section class="relative isolate overflow-hidden bg-[#f2ece8]">
+  <div class="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_70%_50%,rgba(245,169,184,.6),transparent_48%),radial-gradient(circle_at_90%_15%,rgba(91,206,250,.55),transparent_42%)]"></div>
+  <div class="paper-grain absolute inset-0 opacity-15"></div>
+  <div class="relative mx-auto grid max-w-[90rem] gap-10 px-5 py-24 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-10 lg:py-32">
+    <div data-reveal>
+      <p class="text-xs uppercase tracking-[0.22em] text-archive-blue/60">Begin where you are</p>
+      <h2 class="mt-5 max-w-4xl font-display text-5xl leading-[1] text-archive-navy md:text-7xl">{title}</h2>
+      <p class="mt-7 max-w-2xl text-base leading-8 text-archive-ink/65">{text}</p>
     </div>
-    <a href={href} class="inline-flex min-h-12 items-center justify-center border border-archive-blue bg-archive-blue px-7 py-4 text-white transition hover:bg-archive-navy">
+    <a href={href} class="group inline-flex min-h-14 items-center justify-center gap-4 bg-archive-navy px-7 py-4 text-sm text-white transition hover:bg-pride-violet" data-reveal>
       {button}
+      <span class="text-pride-yellow transition group-hover:translate-x-1" aria-hidden="true">↗</span>
     </a>
   </div>
+  <div class="pride-ribbon h-2"></div>
 </section>

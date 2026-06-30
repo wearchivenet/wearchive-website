@@ -96,12 +96,7 @@ function createEditorialType(name: string, title: string) {
   });
 }
 
-export const newsArticle = createEditorialType("newsArticle", "News article");
-export const event = createEditorialType("event", "Event");
-export const project = createEditorialType("project", "Project");
-export const publication = createEditorialType("publication", "Publication");
-export const video = createEditorialType("video", "Video");
-export const galleryImage = createEditorialType("galleryImage", "Gallery image");
-export const partner = createEditorialType("partner", "Partner");
-export const teamMember = createEditorialType("teamMember", "Team member");
+export const journalArticle = createEditorialType("journalArticle", "Journal article");
+export const resource = createEditorialType("resource", "Library resource");
+export const service = createEditorialType("service", "Reading service");
 export const staticPage = createEditorialType("staticPage", "Static page");

@@ -1,25 +1,10 @@
 import { blockContent } from "./blockContent";
-import {
-  event,
-  galleryImage,
-  newsArticle,
-  partner,
-  project,
-  publication,
-  staticPage,
-  teamMember,
-  video
-} from "./documentTypes";
+import { journalArticle, resource, service, staticPage } from "./documentTypes";
 
 export const schemaTypes = [
   blockContent,
-  newsArticle,
-  event,
-  project,
-  publication,
-  video,
-  galleryImage,
-  partner,
-  teamMember,
+  journalArticle,
+  resource,
+  service,
   staticPage
 ];

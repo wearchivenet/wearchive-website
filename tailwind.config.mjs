@@ -4,21 +4,33 @@ export default {
   theme: {
     extend: {
       colors: {
+        pride: {
+          red: "#E40303",
+          orange: "#FF8C00",
+          yellow: "#FFD800",
+          green: "#008026",
+          blue: "#24408E",
+          violet: "#732982",
+          transblue: "#5BCEFA",
+          pink: "#F5A9B8",
+          brown: "#613915"
+        },
         archive: {
-          blue: "#063B74",
-          navy: "#052A50",
-          ink: "#172033",
-          gold: "#C9A646",
-          pale: "#F7F4EC",
-          mist: "#EDF3F8"
+          blue: "#263B59",
+          navy: "#090E17",
+          ink: "#191C22",
+          gold: "#C8A76A",
+          pale: "#F1ECE2",
+          mist: "#E4E8EA"
         }
       },
       fontFamily: {
-        latin: ["Baskerville", "Libre Baskerville", "Georgia", "serif"],
-        kai: ["DFKai-SB", "KaiTi", "BiauKai", "Noto Serif TC", "serif"]
+        latin: ["Cormorant Garamond", "Baskerville", "Georgia", "serif"],
+        kai: ["Noto Serif TC", "Songti TC", "serif"],
+        sans: ["Manrope", "Noto Sans TC", "sans-serif"]
       },
       boxShadow: {
-        institutional: "0 20px 60px rgb(5 42 80 / 0.12)"
+        institutional: "0 30px 80px rgb(9 14 23 / 0.16)"
       }
     }
   },

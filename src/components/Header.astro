@@ -1,6 +1,6 @@
 ---
 import LanguageSwitcher from "@/components/LanguageSwitcher.astro";
-import { sections, localizedPath, type Language } from "@/lib/i18n";
+import { sections, sectionLabel, localizedPath, type Language } from "@/lib/i18n";
 
 type Props = {
   language: Language;
@@ -10,37 +10,41 @@ type Props = {
 const { language, section = "" } = Astro.props;
 ---
 
-<header class="border-b border-slate-200 bg-white">
+<header class="relative z-40 border-b border-white/10 bg-archive-navy text-white">
   <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:p-3">
     Skip to content
   </a>
-  <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-5 lg:px-8">
-    <a href={localizedPath(language)} class="flex items-center gap-4" aria-label="We Archive home">
-      <img src="/images/logo.png" alt="We Archive" class="h-10 w-auto object-contain sm:h-12" />
+  <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-6 px-5 py-5 lg:px-10">
+    <a href={localizedPath(language)} class="group flex items-center gap-3" aria-label="Astra Arcana home">
+      <span class="grid h-9 w-9 place-items-center rounded-full border border-archive-gold/70 text-xl text-archive-gold transition group-hover:rotate-12">☾</span>
+      <span>
+        <span class="font-display block text-xl tracking-[0.18em]">ASTRA ARCANA</span>
+        <span class="block text-[0.58rem] uppercase tracking-[0.32em] text-white/50">Astrology · Tarot · Counsel</span>
+      </span>
     </a>
 
-    <nav aria-label="Primary navigation" class="hidden items-center gap-7 lg:flex">
+    <nav aria-label="Primary navigation" class="hidden items-center gap-7 xl:flex">
       {sections.map((item) => (
         <a
           href={localizedPath(language, item.slug)}
           class:list={[
-            "font-kai text-base text-archive-blue transition hover:text-archive-gold",
-            section === item.slug && "border-b-2 border-archive-gold"
+            "text-sm text-white/75 transition hover:text-archive-gold",
+            section === item.slug && "text-archive-gold"
           ]}
           aria-current={section === item.slug ? "page" : undefined}
         >
-          {item.label}
+          {sectionLabel(language, item.slug)}
         </a>
       ))}
     </nav>
 
-    <div class="hidden lg:block">
+    <div class="hidden xl:block">
       <LanguageSwitcher language={language} section={section} />
     </div>
 
     <button
       type="button"
-      class="inline-flex min-h-11 min-w-11 items-center justify-center border border-archive-blue text-archive-blue lg:hidden"
+      class="inline-flex min-h-11 min-w-11 items-center justify-center border border-white/30 text-white xl:hidden"
       aria-controls="mobile-menu"
       aria-expanded="false"
       data-menu-toggle
@@ -50,11 +54,11 @@ const { language, section = "" } = Astro.props;
     </button>
   </div>
 
-  <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white px-5 py-5 lg:hidden" data-mobile-menu>
-    <nav aria-label="Mobile primary navigation" class="grid gap-3">
+  <div id="mobile-menu" class="hidden border-t border-white/10 bg-archive-navy px-5 py-6 xl:hidden" data-mobile-menu>
+    <nav aria-label="Mobile primary navigation" class="grid gap-4">
       {sections.map((item) => (
-        <a href={localizedPath(language, item.slug)} class="font-kai text-lg text-archive-blue">
-          {item.label}
+        <a href={localizedPath(language, item.slug)} class="font-display text-2xl text-white/85">
+          {sectionLabel(language, item.slug)}
         </a>
       ))}
     </nav>

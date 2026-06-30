@@ -1,20 +1,15 @@
 import type { StructureResolver } from "sanity/structure";
 
 const documentGroups = [
-  ["newsArticle", "News articles"],
-  ["event", "Events"],
-  ["project", "Projects"],
-  ["publication", "Publications"],
-  ["video", "Videos"],
-  ["galleryImage", "Gallery images"],
-  ["partner", "Partners"],
-  ["teamMember", "Team members"],
+  ["journalArticle", "Journal articles"],
+  ["resource", "Library resources"],
+  ["service", "Reading services"],
   ["staticPage", "Static pages"]
 ];
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
-    .title("We Archive Content")
+    .title("Astra Arcana Content")
     .items(
       documentGroups.map(([type, title]) =>
         S.listItem()

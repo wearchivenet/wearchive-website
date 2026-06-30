@@ -1,64 +1,48 @@
-# We Archive Website
+# Astra Arcana
 
-Complete multilingual institutional website for We Archive, built with Astro, Tailwind CSS, Sanity CMS, and Vercel deployment support.
+A multilingual astrology and tarot consultation website with an editorial, queer-forward visual system inspired by the Progress Pride Flag.
 
 ## Stack
 
-- Astro
+- Astro 5
 - Tailwind CSS
+- GSAP + ScrollTrigger
 - Sanity CMS
-- Vercel adapter
+- Cloudflare Workers
 
 ## Routes
 
-Default Traditional Chinese routes:
+Traditional Chinese is the default language under `/zh/`. English and French mirror the same structure under `/en/` and `/fr/`.
 
-- `/zh/`
-- `/zh/who-we-are`
-- `/zh/our-work`
-- `/zh/news`
-- `/zh/resources`
-- `/zh/donate`
-- `/zh/about`
+- `/[language]/astrology`
+- `/[language]/tarot`
+- `/[language]/journal`
+- `/[language]/library`
+- `/[language]/book`
+- `/[language]/about`
 
-English and French routes:
-
-- `/en/`
-- `/fr/`
-- Same section slugs under each language.
-
-Top-level routes such as `/who-we-are`, `/news`, and `/donate` redirect to the Traditional Chinese versions.
-
-## Local Development
-
-Install dependencies:
+## Development
 
 ```bash
 npm install
-```
-
-Start the website:
-
-```bash
 npm run dev
 ```
 
-Preview the production build:
+Build the Cloudflare output:
 
 ```bash
 npm run build
+```
+
+Preview the production Worker locally:
+
+```bash
 npm run preview
 ```
 
-## Sanity Setup
+## Sanity
 
-Create a Sanity project at [sanity.io](https://www.sanity.io/) and copy `.env.example` to `.env`:
-
-```bash
-cp .env.example .env
-```
-
-Set:
+Set the following environment variables:
 
 ```bash
 PUBLIC_SANITY_PROJECT_ID=your-project-id
@@ -66,44 +50,16 @@ PUBLIC_SANITY_DATASET=production
 PUBLIC_SANITY_API_VERSION=2025-01-01
 ```
 
-Run Sanity Studio:
+Run the Studio:
 
 ```bash
 npm run studio
 ```
 
-The CMS includes schemas for:
+The CMS currently supports journal articles, library resources, reading services, and static pages.
 
-- News articles
-- Events
-- Projects
-- Publications
-- Videos
-- Gallery images
-- Partners
-- Team members
-- Static pages
+## Design system
 
-Each type includes title, slug, language, excerpt, main image, body content, publish date, SEO title, and SEO description.
+The dark editorial foundation uses the Progress Pride palette as light, motion, navigation, and interaction energy rather than as decorative stripes everywhere. Motion respects `prefers-reduced-motion`; GSAP animations use transforms and opacity for smooth rendering.
 
-## Vercel Deployment
-
-1. Push the repository to GitHub.
-2. Import the project in Vercel.
-3. Add the Sanity environment variables in Vercel project settings.
-4. Use the default build command:
-
-```bash
-npm run build
-```
-
-Astro is configured with `@astrojs/vercel/serverless`, so the site is ready for Vercel deployment.
-
-## Design Notes
-
-The visual direction is inspired by international cultural institutions: deep blue, soft gold accents, editorial spacing, strong typography, accessible contrast, and restrained page structure.
-
-No paid font files are included. Typography uses system font stacks:
-
-- Chinese: `"DFKai-SB", "KaiTi", "BiauKai", "Noto Serif TC", serif`
-- English/French: `"Baskerville", "Libre Baskerville", "Georgia", serif`
+The current brand name, contact address, and booking link are working placeholders and should be replaced before launch.

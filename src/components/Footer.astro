@@ -1,5 +1,5 @@
 ---
-import { sections, localizedPath, type Language } from "@/lib/i18n";
+import { sections, sectionLabel, localizedPath, type Language } from "@/lib/i18n";
 
 type Props = {
   language: Language;
@@ -10,38 +10,38 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="bg-archive-navy text-white">
-  <div class="mx-auto grid max-w-7xl gap-10 px-5 py-14 lg:grid-cols-[1.2fr_1fr_1fr] lg:px-8">
+  <div class="mx-auto grid max-w-[90rem] gap-12 px-5 py-16 lg:grid-cols-[1.35fr_0.8fr_0.8fr] lg:px-10">
     <div>
-      <img src="/images/logo.png" alt="We Archive" class="h-12 w-auto bg-white p-2" />
-      <p class="mt-6 max-w-md text-lg leading-8 text-slate-200">
-        Preserve. Connect. Inspire.
+      <div class="font-display text-3xl tracking-[0.14em] text-archive-gold">ASTRA ARCANA</div>
+      <p class="mt-6 max-w-md font-display text-2xl leading-8 text-white">
+        讓星圖成為語言，讓塔羅照見此刻。
       </p>
-      <p class="mt-4 max-w-md text-sm leading-7 text-slate-300">
-        International cultural preservation, public archives, and educational resources.
+      <p class="mt-4 max-w-md text-sm leading-7 text-white/55">
+        Astrology and tarot consultations for self-understanding, relationship insight, and the seasons of change.
       </p>
     </div>
     <nav aria-label="Footer navigation" class="grid gap-3">
-      <h2 class="text-sm uppercase tracking-[0.18em] text-archive-gold">Navigation</h2>
+      <h2 class="text-xs uppercase tracking-[0.2em] text-archive-gold">Explore</h2>
       {sections.map((item) => (
-        <a href={localizedPath(language, item.slug)} class="font-kai text-slate-100 hover:text-archive-gold">
-          {item.label}
+        <a href={localizedPath(language, item.slug)} class="text-sm text-white/65 hover:text-archive-gold">
+          {sectionLabel(language, item.slug)}
         </a>
       ))}
     </nav>
     <div>
-      <h2 class="text-sm uppercase tracking-[0.18em] text-archive-gold">Contact</h2>
-      <address class="mt-4 not-italic leading-7 text-slate-200">
-        We Archive Foundation<br />
-        contact@we-archive.org<br />
-        Paris · Taipei · Online
+      <h2 class="text-xs uppercase tracking-[0.2em] text-archive-gold">Contact</h2>
+      <address class="mt-4 not-italic text-sm leading-7 text-white/65">
+        Online consultations<br />
+        hello@astra-arcana.com<br />
+        Paris · Taipei · Worldwide
       </address>
       <div class="mt-6 flex gap-4 text-sm uppercase tracking-[0.16em]">
         <a href="https://www.instagram.com/" class="hover:text-archive-gold">Instagram</a>
-        <a href="https://www.linkedin.com/" class="hover:text-archive-gold">LinkedIn</a>
+        <a href={localizedPath(language, "book")} class="hover:text-archive-gold">Booking</a>
       </div>
     </div>
   </div>
   <div class="border-t border-white/15 px-5 py-5 text-center text-sm text-slate-300">
-    © {year} We Archive. All rights reserved.
+    © {year} Astra Arcana. All rights reserved.
   </div>
 </footer>
