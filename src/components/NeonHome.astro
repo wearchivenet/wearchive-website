@@ -19,8 +19,6 @@ const navLinks = [
   { slug: "about", label: sectionLabel(language, "about") }
 ] as const;
 
-const zodiac = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
-
 const processSteps = {
   zh: [
     ["01", "提出問題", "說出你此刻真正卡住、好奇或反覆想到的事。"],
@@ -57,7 +55,6 @@ const tarotCards = {
   ]
 }[language];
 
-const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROLOGY ✶ TAROT ✶ ASTRA ARCANA ✶ ", fr: "ASTROLOGIE ✶ TAROT ✶ ASTRA ARCANA ✶ " }[language];
 ---
 
 <!doctype html>
@@ -77,6 +74,8 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
     <title>{`Astra Arcana | ${content.title}`}</title>
   </head>
   <body class="neon-body">
+    <div class="sky-bg" aria-hidden="true"></div>
+    <canvas class="sky-canvas" data-starfield aria-hidden="true"></canvas>
     <div class="noise" aria-hidden="true"></div>
     <div class="cursor-dot" aria-hidden="true"></div>
     <div class="cursor-glow" aria-hidden="true"></div>
@@ -101,7 +100,6 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
     <main id="main-content">
       <!-- HERO -->
       <section class="hero" data-hero>
-        <canvas class="hero-canvas" data-starfield aria-hidden="true"></canvas>
         <div class="blob blob-a" aria-hidden="true"></div>
         <div class="blob blob-b" aria-hidden="true"></div>
         <div class="blob blob-c" aria-hidden="true"></div>
@@ -123,13 +121,6 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
           </div>
         </div>
 
-        <div class="hero-marquee" aria-hidden="true">
-          <div class="marquee-track">
-            {[0, 1].map(() => (
-              <span>{zodiac.join("  ")}  {zodiac.join("  ")}  </span>
-            ))}
-          </div>
-        </div>
       </section>
 
       <!-- MANIFESTO -->
@@ -210,13 +201,6 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
     </main>
 
     <footer class="footer">
-      <div class="footer-marquee" aria-hidden="true">
-        <div class="marquee-track slow">
-          {[0, 1].map(() => (
-            <span>{marqueeWord.repeat(4)}</span>
-          ))}
-        </div>
-      </div>
       <div class="footer-meta">
         <p class="mono-tag">ASTRA ✶ ARCANA</p>
         <p class="mono-tag dim">© 2026 · your chart is not a cage · the cards are not a verdict</p>
@@ -241,7 +225,7 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
       }
 
       .neon-body {
-        background: var(--void);
+        background: transparent;
         color: var(--soft);
         font-family: "Space Grotesk", "Noto Sans TC", sans-serif;
         overflow-x: hidden;
@@ -436,8 +420,25 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         padding: 7.5rem 1.4rem 0;
       }
 
-      .hero-canvas {
-        position: absolute;
+      .sky-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        background: linear-gradient(
+          rgb(2 6 23) 0%,
+          rgb(5 11 26) 18%,
+          rgb(9 19 48) 42%,
+          rgb(6 20 38) 64%,
+          rgb(3 8 20) 86%,
+          rgb(2 5 15) 100%
+        );
+        background-size: 100% 500vh;
+        background-position: 0 0;
+        will-change: background-position;
+      }
+
+      .sky-canvas {
+        position: fixed;
         inset: 0;
         z-index: -2;
         width: 100%;
@@ -582,30 +583,6 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         box-shadow: 0 0 32px rgb(91 140 255 / 0.3);
       }
 
-      .hero-marquee {
-        margin: 3.5rem -1.4rem 0;
-        padding: 0.9rem 0;
-        border-top: 1px solid var(--line);
-        border-bottom: 1px solid var(--line);
-        overflow: hidden;
-        font-size: 1.15rem;
-        color: rgb(244 239 255 / 0.5);
-      }
-
-      .marquee-track {
-        display: flex;
-        gap: 2rem;
-        width: max-content;
-        white-space: nowrap;
-        animation: marquee 26s linear infinite;
-      }
-
-      .marquee-track.slow { animation-duration: 60s; }
-
-      @keyframes marquee {
-        to { transform: translateX(-50%); }
-      }
-
       /* sections shared */
       section { position: relative; }
 
@@ -697,7 +674,8 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         border-radius: 16px;
         background:
           radial-gradient(120% 90% at 80% 0%, rgb(91 140 255 / 0.16), transparent 55%),
-          var(--panel);
+          rgb(8 16 36 / 0.72);
+        backdrop-filter: blur(6px);
       }
 
       .tarot-glyph {
@@ -756,7 +734,8 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         flex-direction: column;
         min-height: 22rem;
         padding: 1.8rem;
-        background: var(--void);
+        background: rgb(6 13 30 / 0.55);
+        backdrop-filter: blur(6px);
         text-decoration: none;
         overflow: hidden;
         transition: background 0.3s;
@@ -850,7 +829,8 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         background:
           radial-gradient(80% 120% at 15% 0%, rgb(91 140 255 / 0.14), transparent 55%),
           radial-gradient(70% 110% at 90% 100%, rgb(56 189 248 / 0.12), transparent 55%),
-          var(--panel);
+          rgb(8 16 36 / 0.6);
+        backdrop-filter: blur(6px);
         text-align: center;
         overflow: hidden;
       }
@@ -873,7 +853,7 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         display: inline-block;
         padding: 1rem 2.2rem;
         border-radius: 999px;
-        background: var(--void);
+        background: rgb(5 11 26 / 0.9);
         font-weight: 700;
         transition: background 0.3s, color 0.3s;
       }
@@ -887,19 +867,6 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
       .footer {
         border-top: 1px solid var(--line);
         margin-top: 4rem;
-      }
-
-      .footer-marquee {
-        overflow: hidden;
-        padding: 2.2rem 0;
-      }
-
-      .footer-marquee span {
-        font-family: "Unbounded", "Noto Sans TC", sans-serif;
-        font-weight: 900;
-        font-size: clamp(2.6rem, 7vw, 6rem);
-        -webkit-text-stroke: 1.5px rgb(244 239 255 / 0.28);
-        color: transparent;
       }
 
       .footer-meta {
@@ -932,8 +899,9 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const finePointer = window.matchMedia("(pointer: fine)").matches;
 
-      /* ---------- starfield canvas ---------- */
+      /* ---------- 3D observatory sky ---------- */
       const canvas = document.querySelector<HTMLCanvasElement>("[data-starfield]");
+      const skyBg = document.querySelector<HTMLElement>(".sky-bg");
       if (canvas && !reduceMotion) {
         const ctx = canvas.getContext("2d")!;
         let w = 0;
@@ -941,13 +909,69 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         let raf = 0;
         let running = false;
         const DPR = Math.min(window.devicePixelRatio || 1, 2);
-        const mouse = { x: -9999, y: -9999 };
 
-        type Star = { x: number; y: number; z: number; r: number; tw: number; hue: number };
+        // normalized mouse (-0.5 .. 0.5), smoothed for naked-eye 3D parallax
+        const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
+        let scroll = 0;
+        let docH = 1;
+
+        type Star = { x: number; y: number; z: number; r: number; tw: number; hue: number; sparkle: boolean };
         let stars: Star[] = [];
+        const FIELD = 2.2; // star field is 2.2 viewport heights tall, wraps around
 
         type Meteor = { x: number; y: number; vx: number; vy: number; life: number };
         let meteors: Meteor[] = [];
+
+        // constellations: normalized points, line segments, screen anchor, scroll window
+        type Constellation = {
+          name: string;
+          label: string;
+          pts: [number, number][];
+          segs: [number, number][];
+          fx: number; // anchor x (fraction of width)
+          fy: number;
+          size: number; // fraction of min(w,h)
+          from: number; // scroll progress window
+          to: number;
+        };
+
+        const constellations: Constellation[] = [
+          {
+            name: "ORION",
+            label: "獵戶座",
+            pts: [[0.25, 0.08], [0.75, 0.12], [0.42, 0.48], [0.52, 0.52], [0.62, 0.56], [0.3, 0.95], [0.72, 0.9]],
+            segs: [[0, 2], [1, 4], [2, 3], [3, 4], [2, 5], [4, 6]],
+            fx: 0.72, fy: 0.3, size: 0.34, from: -0.05, to: 0.3
+          },
+          {
+            name: "URSA MAJOR",
+            label: "北斗七星",
+            pts: [[0, 0.18], [0.18, 0.06], [0.35, 0.14], [0.5, 0.3], [0.72, 0.26], [0.78, 0.5], [0.55, 0.52]],
+            segs: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]],
+            fx: 0.22, fy: 0.42, size: 0.36, from: 0.16, to: 0.5
+          },
+          {
+            name: "CASSIOPEIA",
+            label: "仙后座",
+            pts: [[0, 0.6], [0.25, 0.2], [0.5, 0.55], [0.75, 0.15], [1, 0.45]],
+            segs: [[0, 1], [1, 2], [2, 3], [3, 4]],
+            fx: 0.74, fy: 0.62, size: 0.3, from: 0.4, to: 0.72
+          },
+          {
+            name: "SCORPIUS",
+            label: "天蠍座",
+            pts: [[0.06, 0.1], [0.16, 0.22], [0.1, 0.34], [0.28, 0.3], [0.4, 0.44], [0.47, 0.6], [0.52, 0.76], [0.62, 0.9], [0.78, 0.94], [0.9, 0.84], [0.84, 0.7]],
+            segs: [[0, 3], [1, 3], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10]],
+            fx: 0.3, fy: 0.75, size: 0.36, from: 0.62, to: 1.05
+          }
+        ];
+
+        // planets: soft glowing spheres at different depths
+        const planets = [
+          { fx: 0.84, fy: 0.18, z: 0.45, r: 30, ring: true, c: "150,190,255", phase: 0 },
+          { fx: 0.12, fy: 0.68, z: 0.3, r: 16, ring: false, c: "255,214,165", phase: 2.1 },
+          { fx: 0.55, fy: 1.4, z: 0.6, r: 22, ring: false, c: "170,225,255", phase: 4.2 }
+        ];
 
         const resize = () => {
           w = canvas.clientWidth;
@@ -955,39 +979,130 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
           canvas.width = w * DPR;
           canvas.height = h * DPR;
           ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-          const count = Math.min(320, Math.floor((w * h) / 6500));
+          docH = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+          const count = Math.min(420, Math.floor((w * h) / 5200));
           stars = Array.from({ length: count }, () => ({
             x: Math.random() * w,
-            y: Math.random() * h,
-            z: 0.3 + Math.random() * 0.7,
-            r: 0.4 + Math.random() * 1.6,
+            y: Math.random() * h * FIELD,
+            z: 0.18 + Math.random() * 0.82,
+            r: 0.4 + Math.random() * 1.5,
             tw: Math.random() * Math.PI * 2,
-            hue: [200, 210, 220, 45][Math.floor(Math.random() * 4)]
+            hue: [205, 212, 220, 48][Math.floor(Math.random() * 4)],
+            sparkle: Math.random() < 0.06
           }));
+        };
+
+        const smoothstep = (a: number, b: number, x: number) => {
+          const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+          return t * t * (3 - 2 * t);
+        };
+
+        const drawStar = (x: number, y: number, r: number, alpha: number, hue: number, sparkle: boolean) => {
+          ctx.beginPath();
+          ctx.fillStyle = `hsla(${hue}, 90%, 84%, ${alpha})`;
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+          if (sparkle && alpha > 0.55) {
+            ctx.strokeStyle = `hsla(${hue}, 90%, 88%, ${alpha * 0.4})`;
+            ctx.lineWidth = 0.7;
+            const s = r * 5;
+            ctx.beginPath();
+            ctx.moveTo(x - s, y); ctx.lineTo(x + s, y);
+            ctx.moveTo(x, y - s); ctx.lineTo(x, y + s);
+            ctx.stroke();
+          }
         };
 
         const tick = (t: number) => {
           ctx.clearRect(0, 0, w, h);
+
+          // ease mouse for smooth head-motion parallax
+          mouse.sx += (mouse.x - mouse.sx) * 0.05;
+          mouse.sy += (mouse.y - mouse.sy) * 0.05;
+          const progress = scroll / docH;
+
+          // stars — deeper stars move less (naked-eye 3D)
+          const fieldH = h * FIELD;
           for (const s of stars) {
-            s.tw += 0.02 + s.z * 0.015;
-            let ox = 0;
-            let oy = 0;
-            const dx = s.x - mouse.x;
-            const dy = s.y - mouse.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < 140 && dist > 0.01) {
-              const force = ((140 - dist) / 140) * 26 * s.z;
-              ox = (dx / dist) * force;
-              oy = (dy / dist) * force;
-            }
-            const alpha = 0.25 + Math.abs(Math.sin(s.tw)) * 0.75;
-            ctx.beginPath();
-            ctx.fillStyle = `hsla(${s.hue}, 100%, ${70 + s.z * 20}%, ${alpha})`;
-            ctx.arc(s.x + ox, s.y + oy, s.r * s.z, 0, Math.PI * 2);
-            ctx.fill();
+            s.tw += 0.015 + s.z * 0.012;
+            const px = mouse.sx * 46 * s.z;
+            const py = mouse.sy * 30 * s.z - scroll * 0.32 * s.z;
+            let y = (s.y + py) % fieldH;
+            if (y < 0) y += fieldH;
+            const x = (s.x + px + w) % w;
+            const alpha = (0.3 + Math.abs(Math.sin(s.tw)) * 0.7) * (0.45 + s.z * 0.55);
+            drawStar(x, y, s.r * (0.5 + s.z * 0.8), alpha, s.hue, s.sparkle);
           }
 
-          if (Math.random() < 0.006 && meteors.length < 3) {
+          // planets — deep parallax + slow drift
+          for (const p of planets) {
+            const driftX = Math.sin(t * 0.00006 + p.phase) * 18;
+            const driftY = Math.cos(t * 0.00004 + p.phase) * 12;
+            const x = p.fx * w + mouse.sx * 60 * p.z + driftX;
+            const y = p.fy * h + driftY + mouse.sy * 36 * p.z - scroll * 0.22 * p.z;
+            if (y < -80 || y > h + 80) continue;
+            const glow = ctx.createRadialGradient(x, y, 0, x, y, p.r * 3.2);
+            glow.addColorStop(0, `rgba(${p.c},0.32)`);
+            glow.addColorStop(1, `rgba(${p.c},0)`);
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(x, y, p.r * 3.2, 0, Math.PI * 2);
+            ctx.fill();
+            const body = ctx.createRadialGradient(x - p.r * 0.35, y - p.r * 0.35, p.r * 0.1, x, y, p.r);
+            body.addColorStop(0, `rgba(${p.c},0.95)`);
+            body.addColorStop(1, `rgba(${p.c},0.25)`);
+            ctx.fillStyle = body;
+            ctx.beginPath();
+            ctx.arc(x, y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+            if (p.ring) {
+              ctx.strokeStyle = `rgba(${p.c},0.4)`;
+              ctx.lineWidth = 1.4;
+              ctx.beginPath();
+              ctx.ellipse(x, y, p.r * 1.9, p.r * 0.55, -0.42, 0, Math.PI * 2);
+              ctx.stroke();
+            }
+          }
+
+          // constellations — fade in/out with scroll, gentle parallax
+          for (const c of constellations) {
+            const fadeIn = smoothstep(c.from, c.from + 0.08, progress);
+            const fadeOut = 1 - smoothstep(c.to - 0.08, c.to, progress);
+            const alpha = Math.min(fadeIn, fadeOut);
+            if (alpha <= 0.01) continue;
+            const size = Math.min(w, h) * c.size;
+            const cx = c.fx * w + mouse.sx * 34 - size / 2;
+            const cy = c.fy * h + mouse.sy * 22 - scroll * 0.1 - size / 2 + (1 - alpha) * 14;
+            const px = c.pts.map(([nx, ny]) => [cx + nx * size, cy + ny * size]);
+
+            ctx.strokeStyle = `rgba(150,190,255,${alpha * 0.32})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            for (const [a, b] of c.segs) {
+              ctx.moveTo(px[a][0], px[a][1]);
+              ctx.lineTo(px[b][0], px[b][1]);
+            }
+            ctx.stroke();
+
+            px.forEach(([x, y], i) => {
+              const r = i % 3 === 0 ? 2.2 : 1.6;
+              const halo = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
+              halo.addColorStop(0, `rgba(190,220,255,${alpha * 0.5})`);
+              halo.addColorStop(1, "rgba(190,220,255,0)");
+              ctx.fillStyle = halo;
+              ctx.beginPath();
+              ctx.arc(x, y, r * 4, 0, Math.PI * 2);
+              ctx.fill();
+              drawStar(x, y, r, alpha * 0.95, 210, false);
+            });
+
+            ctx.font = "10px 'Space Mono', monospace";
+            ctx.fillStyle = `rgba(190,215,255,${alpha * 0.55})`;
+            ctx.fillText(`${c.name} · ${c.label}`, px[0][0] + 10, px[0][1] - 8);
+          }
+
+          // occasional meteor
+          if (Math.random() < 0.005 && meteors.length < 2) {
             meteors.push({
               x: Math.random() * w * 0.8,
               y: Math.random() * h * 0.3,
@@ -996,16 +1111,15 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
               life: 1
             });
           }
-
           for (const m of meteors) {
             m.x += m.vx;
             m.y += m.vy;
             m.life -= 0.016;
             const grad = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * 12, m.y - m.vy * 12);
-            grad.addColorStop(0, `rgba(125,226,255,${0.9 * m.life})`);
-            grad.addColorStop(1, "rgba(125,226,255,0)");
+            grad.addColorStop(0, `rgba(170,225,255,${0.85 * m.life})`);
+            grad.addColorStop(1, "rgba(170,225,255,0)");
             ctx.strokeStyle = grad;
-            ctx.lineWidth = 1.6;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(m.x, m.y);
             ctx.lineTo(m.x - m.vx * 12, m.y - m.vy * 12);
@@ -1030,15 +1144,19 @@ const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROL
         resize();
         window.addEventListener("resize", resize);
         window.addEventListener("pointermove", (e) => {
-          const rect = canvas.getBoundingClientRect();
-          mouse.x = e.clientX - rect.left;
-          mouse.y = e.clientY - rect.top;
+          mouse.x = e.clientX / window.innerWidth - 0.5;
+          mouse.y = e.clientY / window.innerHeight - 0.5;
         });
+        window.addEventListener(
+          "scroll",
+          () => {
+            scroll = window.scrollY;
+            if (skyBg) skyBg.style.backgroundPosition = `0 ${-scroll * 0.35}px`;
+          },
+          { passive: true }
+        );
 
-        new IntersectionObserver((entries) => {
-          entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
-        }).observe(canvas);
-
+        start();
         document.addEventListener("visibilitychange", () => {
           document.hidden ? stop() : start();
         });
