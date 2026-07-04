@@ -1,0 +1,1194 @@
+---
+import "@/styles/global.css";
+import { editorialItems, homeContent } from "@/data/content";
+import { languages, localizedPath, sectionLabel, type Language } from "@/lib/i18n";
+
+type Props = {
+  language: Language;
+};
+
+const { language } = Astro.props;
+const content = homeContent[language];
+const items = editorialItems[language];
+const htmlLang = languages[language].htmlLang;
+
+const navLinks = [
+  { slug: "astrology", label: sectionLabel(language, "astrology") },
+  { slug: "tarot", label: sectionLabel(language, "tarot") },
+  { slug: "journal", label: sectionLabel(language, "journal") },
+  { slug: "about", label: sectionLabel(language, "about") }
+] as const;
+
+const zodiac = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+
+const processSteps = {
+  zh: [
+    ["01", "提出問題", "說出你此刻真正卡住、好奇或反覆想到的事。"],
+    ["02", "閱讀象徵", "讓星圖與牌面把感受、時間和關係放進同一張地圖。"],
+    ["03", "帶回生活", "把洞見收束成下一個可以感受、觀察或實踐的行動。"]
+  ],
+  en: [
+    ["01", "Bring the question", "Name what feels stuck, alive, or impossible to stop thinking about."],
+    ["02", "Read the symbols", "Let chart and cards place feeling, timing, and relationship on one map."],
+    ["03", "Return to life", "Translate insight into one action you can feel, observe, or practice."]
+  ],
+  fr: [
+    ["01", "Apporter la question", "Nommer ce qui bloque, appelle ou revient sans cesse aujourd'hui."],
+    ["02", "Lire les symboles", "Réunir sentiment, temporalité et relation sur une même carte."],
+    ["03", "Revenir à la vie", "Transformer l'intuition en une action à ressentir, observer ou pratiquer."]
+  ]
+}[language];
+
+const tarotCards = {
+  zh: [
+    { numeral: "XVIII", glyph: "☾", name: "月亮", note: "直覺 · 夢境 · 未知的路徑" },
+    { numeral: "XVII", glyph: "✶", name: "星星", note: "希望 · 修復 · 慢慢變亮" },
+    { numeral: "XIX", glyph: "☉", name: "太陽", note: "清晰 · 生命力 · 被看見" }
+  ],
+  en: [
+    { numeral: "XVIII", glyph: "☾", name: "The Moon", note: "intuition · dreams · the unlit path" },
+    { numeral: "XVII", glyph: "✶", name: "The Star", note: "hope · repair · slow light" },
+    { numeral: "XIX", glyph: "☉", name: "The Sun", note: "clarity · vitality · being seen" }
+  ],
+  fr: [
+    { numeral: "XVIII", glyph: "☾", name: "La Lune", note: "intuition · rêves · chemin obscur" },
+    { numeral: "XVII", glyph: "✶", name: "L'Étoile", note: "espoir · réparation · lente lumière" },
+    { numeral: "XIX", glyph: "☉", name: "Le Soleil", note: "clarté · vitalité · être vu·e" }
+  ]
+}[language];
+
+const marqueeWord = { zh: "占星 ✶ 塔羅 ✶ ASTRA ARCANA ✶ ", en: "ASTROLOGY ✶ TAROT ✶ ASTRA ARCANA ✶ ", fr: "ASTROLOGIE ✶ TAROT ✶ ASTRA ARCANA ✶ " }[language];
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={content.intro} />
+    <meta name="theme-color" content="#07020d" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;900&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <title>{`Astra Arcana | ${content.title}`}</title>
+  </head>
+  <body class="neon-body">
+    <div class="noise" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-glow" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="nav-logo" href={localizedPath(language)}>ASTRA<span>✶</span>ARCANA</a>
+      <nav class="nav-links" aria-label="main">
+        {navLinks.map((link) => (
+          <a href={localizedPath(language, link.slug)}>{link.label}</a>
+        ))}
+      </nav>
+      <div class="nav-right">
+        <div class="nav-langs">
+          {(Object.keys(languages) as Language[]).map((lang) => (
+            <a href={languages[lang].home} class={lang === language ? "is-active" : ""}>{lang.toUpperCase()}</a>
+          ))}
+        </div>
+        <a class="nav-cta" href={localizedPath(language, "book")} data-magnetic>{content.primaryAction}</a>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <!-- HERO -->
+      <section class="hero" data-hero>
+        <canvas class="hero-canvas" data-starfield aria-hidden="true"></canvas>
+        <div class="blob blob-a" aria-hidden="true"></div>
+        <div class="blob blob-b" aria-hidden="true"></div>
+        <div class="blob blob-c" aria-hidden="true"></div>
+
+        <div class="hero-inner">
+          <p class="hero-eyebrow" data-hero-item>
+            <span class="mono-tag">{content.eyebrow}</span>
+            <span class="mono-tag dim">☾ EST. 2026 · ONLINE & IRL</span>
+          </p>
+          <h1 class="hero-title" data-split-title>{content.title}</h1>
+          <div class="hero-foot">
+            <p class="hero-intro" data-hero-item>{content.intro}</p>
+            <div class="hero-actions" data-hero-item>
+              <a class="btn-acid" href={localizedPath(language, "book")} data-magnetic>
+                {content.primaryAction} <span aria-hidden="true">↗</span>
+              </a>
+              <a class="btn-ghost" href={localizedPath(language, "astrology")} data-magnetic>{content.secondaryAction}</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-marquee" aria-hidden="true">
+          <div class="marquee-track">
+            {[0, 1].map(() => (
+              <span>{zodiac.join("  ")}  {zodiac.join("  ")}  </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- MANIFESTO -->
+      <section class="manifesto">
+        <p class="mono-tag" data-reveal>{content.manifestoLabel}</p>
+        <h2 class="manifesto-title" data-scramble>{content.manifestoTitle}</h2>
+        <p class="manifesto-text" data-reveal>{content.manifestoText}</p>
+      </section>
+
+      <!-- TAROT CARDS -->
+      <section class="arcana">
+        <div class="arcana-head">
+          <h2 data-reveal><span class="grad-text">{sectionLabel(language, "tarot")}</span></h2>
+          <p class="mono-tag dim" data-reveal>MAJOR ARCANA · DRAW III</p>
+        </div>
+        <div class="card-fan">
+          {tarotCards.map((card, i) => (
+            <article class={`tarot-card card-${i}`} data-tilt data-reveal>
+              <div class="tarot-border" aria-hidden="true"></div>
+              <div class="tarot-face">
+                <p class="mono-tag">{card.numeral}</p>
+                <div class="tarot-glyph" aria-hidden="true">{card.glyph}</div>
+                <h3>{card.name}</h3>
+                <p class="tarot-note">{card.note}</p>
+              </div>
+              <div class="tarot-shine" aria-hidden="true"></div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section class="services">
+        <div class="services-head">
+          <h2 data-reveal>{content.servicesTitle}</h2>
+          <p data-reveal>{content.servicesText}</p>
+        </div>
+        <div class="service-grid">
+          {items.map((item, index) => (
+            <a class="service-card" href={localizedPath(language, item.type)} data-spotlight data-reveal>
+              <p class="mono-tag">№ 00{index + 1} · {item.meta}</p>
+              <div class="service-symbol" aria-hidden="true">{item.symbol}</div>
+              <h3>{item.title}</h3>
+              <p class="service-excerpt">{item.excerpt}</p>
+              <span class="service-arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- PROCESS -->
+      <section class="process">
+        <div class="process-head">
+          <h2 data-reveal>{content.processTitle}</h2>
+          <p data-reveal>{content.processText}</p>
+        </div>
+        <div class="process-steps">
+          {processSteps.map(([number, title, text]) => (
+            <article class="process-step" data-reveal>
+              <p class="step-number" aria-hidden="true">{number}</p>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta">
+        <div class="cta-box" data-reveal>
+          <h2 data-scramble>{content.ctaTitle}</h2>
+          <p>{content.ctaText}</p>
+          <a class="btn-orbit" href={localizedPath(language, "book")} data-magnetic>
+            <span>{content.ctaButton}</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-marquee" aria-hidden="true">
+        <div class="marquee-track slow">
+          {[0, 1].map(() => (
+            <span>{marqueeWord.repeat(4)}</span>
+          ))}
+        </div>
+      </div>
+      <div class="footer-meta">
+        <p class="mono-tag">ASTRA ✶ ARCANA</p>
+        <p class="mono-tag dim">© 2026 · your chart is not a cage · the cards are not a verdict</p>
+        <div class="nav-langs">
+          {(Object.keys(languages) as Language[]).map((lang) => (
+            <a href={languages[lang].home} class={lang === language ? "is-active" : ""}>{lang.toUpperCase()}</a>
+          ))}
+        </div>
+      </div>
+    </footer>
+
+    <style is:global>
+      :root {
+        --void: #07020d;
+        --panel: #10031c;
+        --acid: #cfff04;
+        --magenta: #ff2ec4;
+        --cyan: #00e5ff;
+        --violet: #8b5cf6;
+        --soft: #f4efff;
+        --line: rgb(244 239 255 / 0.14);
+      }
+
+      .neon-body {
+        background: var(--void);
+        color: var(--soft);
+        font-family: "Space Grotesk", "Noto Sans TC", sans-serif;
+        overflow-x: hidden;
+      }
+
+      .neon-body ::selection {
+        background: var(--acid);
+        color: var(--void);
+      }
+
+      .neon-body h1,
+      .neon-body h2,
+      .neon-body h3 {
+        font-family: "Unbounded", "Noto Sans TC", sans-serif;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      :lang(zh-Hant) .neon-body h1,
+      :lang(zh-Hant) .neon-body h2,
+      :lang(zh-Hant) .neon-body h3 {
+        font-family: "Noto Sans TC", sans-serif;
+        font-weight: 900;
+      }
+
+      .mono-tag {
+        font-family: "Space Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--acid);
+      }
+
+      .mono-tag.dim {
+        color: rgb(244 239 255 / 0.45);
+      }
+
+      .grad-text {
+        background: linear-gradient(95deg, var(--magenta), var(--acid) 50%, var(--cyan));
+        background-size: 200% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        animation: gradShift 6s ease-in-out infinite alternate;
+      }
+
+      @keyframes gradShift {
+        to { background-position: 100% 0; }
+      }
+
+      /* noise + cursor */
+      .noise {
+        position: fixed;
+        inset: -50%;
+        z-index: 60;
+        pointer-events: none;
+        opacity: 0.055;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 240px 240px;
+        animation: noiseShift 0.6s steps(3) infinite;
+      }
+
+      @keyframes noiseShift {
+        0% { transform: translate(0, 0); }
+        50% { transform: translate(-1.5%, 1%); }
+        100% { transform: translate(1%, -1.5%); }
+      }
+
+      .cursor-dot,
+      .cursor-glow {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 70;
+        pointer-events: none;
+        border-radius: 50%;
+        opacity: 0;
+      }
+
+      .cursor-dot {
+        width: 10px;
+        height: 10px;
+        margin: -5px 0 0 -5px;
+        background: var(--acid);
+        mix-blend-mode: difference;
+      }
+
+      .cursor-glow {
+        width: 320px;
+        height: 320px;
+        margin: -160px 0 0 -160px;
+        background: radial-gradient(circle, rgb(139 92 246 / 0.16), transparent 60%);
+      }
+
+      @media (pointer: coarse) {
+        .cursor-dot, .cursor-glow { display: none; }
+      }
+
+      /* nav */
+      .nav {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: 1.1rem 1.4rem;
+        backdrop-filter: blur(14px);
+        background: linear-gradient(rgb(7 2 13 / 0.75), rgb(7 2 13 / 0.35) 80%, transparent);
+      }
+
+      .nav-logo {
+        font-family: "Unbounded", sans-serif;
+        font-weight: 900;
+        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+      }
+
+      .nav-logo span {
+        color: var(--magenta);
+        padding: 0 0.3em;
+      }
+
+      .nav-links {
+        display: none;
+        gap: 1.6rem;
+      }
+
+      @media (min-width: 900px) {
+        .nav-links { display: flex; }
+      }
+
+      .nav-links a {
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        color: rgb(244 239 255 / 0.75);
+        transition: color 0.25s;
+      }
+
+      .nav-links a:hover { color: var(--acid); }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .nav-langs {
+        display: flex;
+        gap: 0.6rem;
+        font-family: "Space Mono", monospace;
+        font-size: 0.7rem;
+      }
+
+      .nav-langs a {
+        color: rgb(244 239 255 / 0.4);
+        text-decoration: none;
+      }
+
+      .nav-langs a.is-active { color: var(--acid); }
+
+      .nav-cta {
+        display: inline-block;
+        padding: 0.55rem 1.1rem;
+        border: 1px solid var(--acid);
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--acid);
+        text-decoration: none;
+        transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+      }
+
+      .nav-cta:hover {
+        background: var(--acid);
+        color: var(--void);
+        box-shadow: 0 0 28px rgb(207 255 4 / 0.45);
+      }
+
+      /* hero */
+      .hero {
+        position: relative;
+        isolation: isolate;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+        padding: 7.5rem 1.4rem 0;
+      }
+
+      .hero-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+      }
+
+      .blob {
+        position: absolute;
+        z-index: -1;
+        width: 55vmax;
+        height: 55vmax;
+        border-radius: 50%;
+        filter: blur(90px) saturate(1.3);
+        opacity: 0.5;
+        mix-blend-mode: screen;
+        will-change: transform;
+      }
+
+      .blob-a {
+        top: -18%;
+        left: -12%;
+        background: radial-gradient(circle at 30% 30%, var(--magenta), transparent 62%);
+        animation: drift 22s ease-in-out infinite alternate;
+      }
+
+      .blob-b {
+        right: -20%;
+        top: 6%;
+        background: radial-gradient(circle at 70% 40%, var(--violet), transparent 60%);
+        animation: drift 26s ease-in-out -8s infinite alternate-reverse;
+      }
+
+      .blob-c {
+        left: 22%;
+        bottom: -30%;
+        background: radial-gradient(circle at 50% 60%, var(--cyan), transparent 58%);
+        opacity: 0.32;
+        animation: drift 30s ease-in-out -14s infinite alternate;
+      }
+
+      @keyframes drift {
+        from { transform: translate(0, 0) rotate(0deg) scale(1); }
+        to { transform: translate(6%, -8%) rotate(28deg) scale(1.12); }
+      }
+
+      .hero-inner {
+        max-width: 90rem;
+        margin: 0 auto;
+        width: 100%;
+        padding-bottom: 3rem;
+      }
+
+      .hero-eyebrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.2rem;
+        margin: 0 0 2rem;
+      }
+
+      .hero-title {
+        margin: 0;
+        font-size: clamp(2.4rem, 7.2vw, 7rem);
+        line-height: 1.04;
+        max-width: 18em;
+      }
+
+      .hero-title .char {
+        display: inline-block;
+        background: linear-gradient(120deg, var(--soft) 30%, var(--soft));
+        background-clip: text;
+        -webkit-background-clip: text;
+      }
+
+      .hero-title .char.lit {
+        background: linear-gradient(120deg, var(--magenta), var(--acid) 55%, var(--cyan));
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-foot {
+        display: grid;
+        gap: 2rem;
+        margin-top: 3rem;
+        padding-top: 1.8rem;
+        border-top: 1px solid var(--line);
+      }
+
+      @media (min-width: 900px) {
+        .hero-foot {
+          grid-template-columns: minmax(0, 1fr) auto;
+          align-items: end;
+        }
+      }
+
+      .hero-intro {
+        max-width: 34em;
+        margin: 0;
+        font-size: 1.02rem;
+        line-height: 1.9;
+        color: rgb(244 239 255 / 0.72);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+      }
+
+      .btn-acid,
+      .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-height: 3rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.25s, box-shadow 0.25s, background 0.25s, color 0.25s;
+      }
+
+      .btn-acid {
+        background: var(--acid);
+        color: var(--void);
+      }
+
+      .btn-acid:hover {
+        box-shadow: 0 0 42px rgb(207 255 4 / 0.5);
+        transform: translateY(-2px);
+      }
+
+      .btn-ghost {
+        border: 1px solid rgb(244 239 255 / 0.3);
+        color: var(--soft);
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--magenta);
+        color: var(--magenta);
+        box-shadow: 0 0 32px rgb(255 46 196 / 0.25);
+      }
+
+      .hero-marquee {
+        margin: 3.5rem -1.4rem 0;
+        padding: 0.9rem 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        overflow: hidden;
+        font-size: 1.15rem;
+        color: rgb(244 239 255 / 0.5);
+      }
+
+      .marquee-track {
+        display: flex;
+        gap: 2rem;
+        width: max-content;
+        white-space: nowrap;
+        animation: marquee 26s linear infinite;
+      }
+
+      .marquee-track.slow { animation-duration: 60s; }
+
+      @keyframes marquee {
+        to { transform: translateX(-50%); }
+      }
+
+      /* sections shared */
+      section { position: relative; }
+
+      .manifesto,
+      .arcana,
+      .services,
+      .process,
+      .cta {
+        max-width: 90rem;
+        margin: 0 auto;
+        padding: 7rem 1.4rem;
+      }
+
+      /* manifesto */
+      .manifesto { text-align: left; }
+
+      .manifesto-title {
+        margin: 1.4rem 0 0;
+        font-size: clamp(1.7rem, 4.4vw, 3.6rem);
+        line-height: 1.25;
+        max-width: 22em;
+      }
+
+      .manifesto-text {
+        margin: 2.2rem 0 0;
+        max-width: 36em;
+        line-height: 2;
+        color: rgb(244 239 255 / 0.65);
+        border-left: 2px solid var(--magenta);
+        padding-left: 1.4rem;
+      }
+
+      /* arcana / tarot */
+      .arcana-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .arcana-head h2 { font-size: clamp(2rem, 5vw, 4rem); margin: 0; }
+
+      .card-fan {
+        display: grid;
+        gap: 1.6rem;
+        margin-top: 3.4rem;
+        perspective: 1200px;
+      }
+
+      @media (min-width: 760px) {
+        .card-fan { grid-template-columns: repeat(3, 1fr); }
+      }
+
+      .tarot-card {
+        position: relative;
+        border-radius: 18px;
+        padding: 2px;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+
+      .tarot-border {
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        background: conic-gradient(from var(--spin, 0deg), var(--magenta), var(--acid), var(--cyan), var(--violet), var(--magenta));
+        animation: spinBorder 6s linear infinite;
+        opacity: 0.85;
+      }
+
+      @property --spin {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: false;
+      }
+
+      @keyframes spinBorder {
+        to { --spin: 360deg; }
+      }
+
+      .tarot-face {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 24rem;
+        padding: 1.6rem;
+        border-radius: 16px;
+        background:
+          radial-gradient(120% 90% at 80% 0%, rgb(139 92 246 / 0.18), transparent 55%),
+          var(--panel);
+      }
+
+      .tarot-glyph {
+        margin: auto 0;
+        font-size: 6rem;
+        text-align: center;
+        color: var(--acid);
+        text-shadow: 0 0 34px rgb(207 255 4 / 0.5);
+      }
+
+      .tarot-face h3 { margin: 0; font-size: 1.5rem; }
+
+      .tarot-note {
+        margin: 0.6rem 0 0;
+        font-family: "Space Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        color: rgb(244 239 255 / 0.5);
+      }
+
+      .tarot-shine {
+        position: absolute;
+        inset: 2px;
+        z-index: 2;
+        border-radius: 16px;
+        background: linear-gradient(115deg, transparent 30%, rgb(244 239 255 / 0.14) 48%, transparent 60%);
+        background-size: 260% 100%;
+        background-position: 120% 0;
+        pointer-events: none;
+        transition: background-position 0.9s ease;
+      }
+
+      .tarot-card:hover .tarot-shine { background-position: -60% 0; }
+
+      /* services */
+      .services-head h2 { font-size: clamp(1.9rem, 4.6vw, 3.6rem); margin: 0; max-width: 20em; }
+      .services-head p { margin: 1.2rem 0 0; color: rgb(244 239 255 / 0.6); max-width: 32em; line-height: 1.9; }
+
+      .service-grid {
+        display: grid;
+        gap: 1px;
+        margin-top: 3.2rem;
+        background: var(--line);
+        border: 1px solid var(--line);
+      }
+
+      @media (min-width: 900px) {
+        .service-grid { grid-template-columns: repeat(3, 1fr); }
+      }
+
+      .service-card {
+        --mx: 50%;
+        --my: 50%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 22rem;
+        padding: 1.8rem;
+        background: var(--void);
+        text-decoration: none;
+        overflow: hidden;
+        transition: background 0.3s;
+      }
+
+      .service-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(340px circle at var(--mx) var(--my), rgb(255 46 196 / 0.14), transparent 65%);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .service-card:hover::before { opacity: 1; }
+
+      .service-symbol {
+        margin: 2.6rem 0 auto;
+        font-size: 3.4rem;
+        color: var(--violet);
+        transition: color 0.3s, transform 0.4s;
+      }
+
+      .service-card:hover .service-symbol {
+        color: var(--acid);
+        transform: rotate(-10deg) scale(1.08);
+      }
+
+      .service-card h3 { margin: 0; font-size: 1.35rem; position: relative; }
+
+      .service-excerpt {
+        position: relative;
+        margin: 0.9rem 0 0;
+        font-size: 0.92rem;
+        line-height: 1.85;
+        color: rgb(244 239 255 / 0.58);
+      }
+
+      .service-arrow {
+        position: absolute;
+        top: 1.4rem;
+        right: 1.4rem;
+        font-size: 1.2rem;
+        color: rgb(244 239 255 / 0.35);
+        transition: color 0.3s, transform 0.3s;
+      }
+
+      .service-card:hover .service-arrow {
+        color: var(--acid);
+        transform: translate(3px, -3px);
+      }
+
+      /* process */
+      .process {
+        display: grid;
+        gap: 3rem;
+      }
+
+      @media (min-width: 900px) {
+        .process { grid-template-columns: 0.8fr 1.2fr; }
+        .process-head { position: sticky; top: 7rem; align-self: start; }
+      }
+
+      .process-head h2 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); margin: 0; }
+      .process-head p { margin: 1.4rem 0 0; line-height: 1.9; color: rgb(244 239 255 / 0.6); max-width: 28em; }
+
+      .process-step {
+        padding: 2.6rem 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .step-number {
+        margin: 0;
+        font-family: "Unbounded", sans-serif;
+        font-weight: 900;
+        font-size: clamp(2.6rem, 6vw, 4.6rem);
+        line-height: 1;
+        -webkit-text-stroke: 1.5px var(--magenta);
+        color: transparent;
+      }
+
+      .process-step h3 { margin: 1.2rem 0 0; font-size: 1.6rem; }
+      .process-step p { margin: 0.9rem 0 0; max-width: 30em; line-height: 1.9; color: rgb(244 239 255 / 0.6); }
+
+      /* cta */
+      .cta-box {
+        position: relative;
+        padding: clamp(2.5rem, 7vw, 6rem);
+        border-radius: 26px;
+        border: 1px solid var(--line);
+        background:
+          radial-gradient(80% 120% at 15% 0%, rgb(255 46 196 / 0.14), transparent 55%),
+          radial-gradient(70% 110% at 90% 100%, rgb(0 229 255 / 0.12), transparent 55%),
+          var(--panel);
+        text-align: center;
+        overflow: hidden;
+      }
+
+      .cta-box h2 { margin: 0; font-size: clamp(1.9rem, 5vw, 3.8rem); }
+      .cta-box p { margin: 1.6rem auto 0; max-width: 32em; line-height: 2; color: rgb(244 239 255 / 0.68); }
+
+      .btn-orbit {
+        position: relative;
+        display: inline-flex;
+        margin-top: 2.6rem;
+        padding: 2px;
+        border-radius: 999px;
+        text-decoration: none;
+        background: conic-gradient(from var(--spin, 0deg), transparent 0 65%, var(--acid) 75%, var(--cyan) 85%, transparent 95%);
+        animation: spinBorder 3.5s linear infinite;
+      }
+
+      .btn-orbit span {
+        display: inline-block;
+        padding: 1rem 2.2rem;
+        border-radius: 999px;
+        background: var(--void);
+        font-weight: 700;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      .btn-orbit:hover span {
+        background: var(--acid);
+        color: var(--void);
+      }
+
+      /* footer */
+      .footer {
+        border-top: 1px solid var(--line);
+        margin-top: 4rem;
+      }
+
+      .footer-marquee {
+        overflow: hidden;
+        padding: 2.2rem 0;
+      }
+
+      .footer-marquee span {
+        font-family: "Unbounded", "Noto Sans TC", sans-serif;
+        font-weight: 900;
+        font-size: clamp(2.6rem, 7vw, 6rem);
+        -webkit-text-stroke: 1.5px rgb(244 239 255 / 0.28);
+        color: transparent;
+      }
+
+      .footer-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.6rem 1.4rem 2.2rem;
+      }
+
+      /* reveal defaults (JS enhances) */
+      [data-reveal] { opacity: 1; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .noise,
+        .blob,
+        .marquee-track,
+        .tarot-border,
+        .btn-orbit { animation: none !important; }
+      }
+    </style>
+
+    <script>
+      import gsap from "gsap";
+      import ScrollTrigger from "gsap/ScrollTrigger";
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const finePointer = window.matchMedia("(pointer: fine)").matches;
+
+      /* ---------- starfield canvas ---------- */
+      const canvas = document.querySelector<HTMLCanvasElement>("[data-starfield]");
+      if (canvas && !reduceMotion) {
+        const ctx = canvas.getContext("2d")!;
+        let w = 0;
+        let h = 0;
+        let raf = 0;
+        let running = false;
+        const DPR = Math.min(window.devicePixelRatio || 1, 2);
+        const mouse = { x: -9999, y: -9999 };
+
+        type Star = { x: number; y: number; z: number; r: number; tw: number; hue: number };
+        let stars: Star[] = [];
+
+        type Meteor = { x: number; y: number; vx: number; vy: number; life: number };
+        let meteors: Meteor[] = [];
+
+        const resize = () => {
+          w = canvas.clientWidth;
+          h = canvas.clientHeight;
+          canvas.width = w * DPR;
+          canvas.height = h * DPR;
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          const count = Math.min(320, Math.floor((w * h) / 6500));
+          stars = Array.from({ length: count }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            z: 0.3 + Math.random() * 0.7,
+            r: 0.4 + Math.random() * 1.6,
+            tw: Math.random() * Math.PI * 2,
+            hue: [316, 74, 187, 262][Math.floor(Math.random() * 4)]
+          }));
+        };
+
+        const tick = (t: number) => {
+          ctx.clearRect(0, 0, w, h);
+          for (const s of stars) {
+            s.tw += 0.02 + s.z * 0.015;
+            let ox = 0;
+            let oy = 0;
+            const dx = s.x - mouse.x;
+            const dy = s.y - mouse.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 140 && dist > 0.01) {
+              const force = ((140 - dist) / 140) * 26 * s.z;
+              ox = (dx / dist) * force;
+              oy = (dy / dist) * force;
+            }
+            const alpha = 0.25 + Math.abs(Math.sin(s.tw)) * 0.75;
+            ctx.beginPath();
+            ctx.fillStyle = `hsla(${s.hue}, 100%, ${70 + s.z * 20}%, ${alpha})`;
+            ctx.arc(s.x + ox, s.y + oy, s.r * s.z, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          if (Math.random() < 0.006 && meteors.length < 3) {
+            meteors.push({
+              x: Math.random() * w * 0.8,
+              y: Math.random() * h * 0.3,
+              vx: 6 + Math.random() * 5,
+              vy: 3 + Math.random() * 2.5,
+              life: 1
+            });
+          }
+
+          for (const m of meteors) {
+            m.x += m.vx;
+            m.y += m.vy;
+            m.life -= 0.016;
+            const grad = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * 12, m.y - m.vy * 12);
+            grad.addColorStop(0, `rgba(207,255,4,${0.9 * m.life})`);
+            grad.addColorStop(1, "rgba(207,255,4,0)");
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(m.x, m.y);
+            ctx.lineTo(m.x - m.vx * 12, m.y - m.vy * 12);
+            ctx.stroke();
+          }
+          meteors = meteors.filter((m) => m.life > 0 && m.x < w + 100 && m.y < h + 100);
+
+          raf = requestAnimationFrame(tick);
+        };
+
+        const start = () => {
+          if (!running) {
+            running = true;
+            raf = requestAnimationFrame(tick);
+          }
+        };
+        const stop = () => {
+          running = false;
+          cancelAnimationFrame(raf);
+        };
+
+        resize();
+        window.addEventListener("resize", resize);
+        window.addEventListener("pointermove", (e) => {
+          const rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left;
+          mouse.y = e.clientY - rect.top;
+        });
+
+        new IntersectionObserver((entries) => {
+          entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
+        }).observe(canvas);
+
+        document.addEventListener("visibilitychange", () => {
+          document.hidden ? stop() : start();
+        });
+      }
+
+      /* ---------- custom cursor ---------- */
+      const dot = document.querySelector<HTMLElement>(".cursor-dot");
+      const glow = document.querySelector<HTMLElement>(".cursor-glow");
+      if (dot && glow && finePointer && !reduceMotion) {
+        const dotX = gsap.quickTo(dot, "x", { duration: 0.12, ease: "power2.out" });
+        const dotY = gsap.quickTo(dot, "y", { duration: 0.12, ease: "power2.out" });
+        const glowX = gsap.quickTo(glow, "x", { duration: 0.5, ease: "power2.out" });
+        const glowY = gsap.quickTo(glow, "y", { duration: 0.5, ease: "power2.out" });
+        window.addEventListener("pointermove", (e) => {
+          gsap.set([dot, glow], { opacity: 1 });
+          dotX(e.clientX);
+          dotY(e.clientY);
+          glowX(e.clientX);
+          glowY(e.clientY);
+        });
+        document.querySelectorAll("a, button").forEach((el) => {
+          el.addEventListener("pointerenter", () => gsap.to(dot, { scale: 3, duration: 0.25 }));
+          el.addEventListener("pointerleave", () => gsap.to(dot, { scale: 1, duration: 0.25 }));
+        });
+      }
+
+      /* ---------- hero title split + intro ---------- */
+      const title = document.querySelector<HTMLElement>("[data-split-title]");
+      if (title) {
+        const text = title.textContent ?? "";
+        title.textContent = "";
+        const frag = document.createDocumentFragment();
+        [...text].forEach((ch, i) => {
+          const span = document.createElement("span");
+          span.className = "char" + (i % 7 === 3 ? " lit" : "");
+          span.textContent = ch === " " ? " " : ch;
+          frag.appendChild(span);
+        });
+        title.appendChild(frag);
+
+        if (!reduceMotion) {
+          gsap.from(title.querySelectorAll(".char"), {
+            yPercent: 110,
+            autoAlpha: 0,
+            rotateX: -50,
+            stagger: 0.022,
+            duration: 0.9,
+            ease: "power4.out",
+            delay: 0.15
+          });
+          gsap.from("[data-hero-item]", {
+            autoAlpha: 0,
+            y: 26,
+            stagger: 0.12,
+            duration: 0.8,
+            ease: "power3.out",
+            delay: 0.5
+          });
+        }
+      }
+
+      /* ---------- scroll reveals ---------- */
+      if (!reduceMotion) {
+        gsap.set("[data-reveal]", { autoAlpha: 0, y: 34 });
+        ScrollTrigger.batch("[data-reveal]", {
+          start: "top 88%",
+          once: true,
+          onEnter: (els) =>
+            gsap.to(els, { autoAlpha: 1, y: 0, duration: 0.85, stagger: 0.09, ease: "power3.out", overwrite: true })
+        });
+      }
+
+      /* ---------- scramble text ---------- */
+      const GLYPHS = "✶☾☉♄♆♇星辰月光牌陣XVI#@%&";
+      document.querySelectorAll<HTMLElement>("[data-scramble]").forEach((el) => {
+        const original = el.textContent ?? "";
+        if (reduceMotion) return;
+        let played = false;
+        new IntersectionObserver((entries, obs) => {
+          if (!entries.some((e) => e.isIntersecting) || played) return;
+          played = true;
+          obs.disconnect();
+          const chars = [...original];
+          const state = { progress: 0 };
+          gsap.to(state, {
+            progress: 1,
+            duration: 1.1,
+            ease: "power2.inOut",
+            onUpdate: () => {
+              const settled = Math.floor(state.progress * chars.length);
+              el.textContent = chars
+                .map((ch, i) => {
+                  if (i < settled || ch === " " || ch === "\n") return ch;
+                  return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+                })
+                .join("");
+            },
+            onComplete: () => {
+              el.textContent = original;
+            }
+          });
+        }, { threshold: 0.4 }).observe(el);
+      });
+
+      /* ---------- tilt cards ---------- */
+      if (finePointer && !reduceMotion) {
+        document.querySelectorAll<HTMLElement>("[data-tilt]").forEach((card) => {
+          const rx = gsap.quickTo(card, "rotationX", { duration: 0.5, ease: "power2.out" });
+          const ry = gsap.quickTo(card, "rotationY", { duration: 0.5, ease: "power2.out" });
+          card.addEventListener("pointermove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const px = (e.clientX - rect.left) / rect.width - 0.5;
+            const py = (e.clientY - rect.top) / rect.height - 0.5;
+            rx(py * -14);
+            ry(px * 16);
+          });
+          card.addEventListener("pointerleave", () => {
+            rx(0);
+            ry(0);
+          });
+        });
+      }
+
+      /* ---------- spotlight cards ---------- */
+      document.querySelectorAll<HTMLElement>("[data-spotlight]").forEach((card) => {
+        card.addEventListener("pointermove", (e) => {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+          card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+        });
+      });
+
+      /* ---------- magnetic buttons ---------- */
+      if (finePointer && !reduceMotion) {
+        document.querySelectorAll<HTMLElement>("[data-magnetic]").forEach((el) => {
+          const mx = gsap.quickTo(el, "x", { duration: 0.4, ease: "power3.out" });
+          const my = gsap.quickTo(el, "y", { duration: 0.4, ease: "power3.out" });
+          el.addEventListener("pointermove", (e) => {
+            const rect = el.getBoundingClientRect();
+            mx((e.clientX - rect.left - rect.width / 2) * 0.25);
+            my((e.clientY - rect.top - rect.height / 2) * 0.35);
+          });
+          el.addEventListener("pointerleave", () => {
+            mx(0);
+            my(0);
+          });
+        });
+      }
+
+      document.fonts.ready.then(() => ScrollTrigger.refresh());
+    </script>
+  </body>
+</html>
