@@ -19,6 +19,97 @@ const navLinks = [
   { slug: "about", label: sectionLabel(language, "about") }
 ] as const;
 
+// Real celestial bodies — NASA mission photography (public domain) via Wikimedia Commons
+const bodyLabels = {
+  zh: { sun: "太陽", moon: "月亮", mercury: "水星", venus: "金星", mars: "火星", jupiter: "木星" },
+  en: { sun: "Sun", moon: "Moon", mercury: "Mercury", venus: "Venus", mars: "Mars", jupiter: "Jupiter" },
+  fr: { sun: "Soleil", moon: "Lune", mercury: "Mercure", venus: "Vénus", mars: "Mars", jupiter: "Jupiter" }
+}[language];
+
+const celestialBodies = [
+  {
+    id: "sun",
+    latin: "SOL",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/960px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg",
+    size: 130, top: 3.5, side: "right: 7%", speed: 0.22, glow: "255 170 90"
+  },
+  {
+    id: "moon",
+    latin: "LUNA",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Moon_nearside_LRO.jpg/960px-Moon_nearside_LRO.jpg",
+    size: 100, top: 13, side: "left: 5%", speed: 0.14, glow: "200 215 255"
+  },
+  {
+    id: "mercury",
+    latin: "MERCURIUS",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg/960px-Mercury_in_color_-_Prockter07-edit1.jpg",
+    size: 46, top: 30, side: "right: 14%", speed: 0.3, glow: "190 190 200"
+  },
+  {
+    id: "venus",
+    latin: "VENUS",
+    src: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg",
+    size: 66, top: 44, side: "left: 9%", speed: 0.18, glow: "255 220 170"
+  },
+  {
+    id: "mars",
+    latin: "MARS",
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Mars_Valles_Marineris_EDIT.jpg/960px-Mars_Valles_Marineris_EDIT.jpg",
+    size: 58, top: 60, side: "right: 8%", speed: 0.26, glow: "255 160 120"
+  },
+  {
+    id: "jupiter",
+    latin: "IUPPITER",
+    src: "https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg",
+    size: 96, top: 76, side: "left: 7%", speed: 0.12, glow: "235 205 170"
+  }
+] as const;
+
+// ---- Prologue: 4-chapter cinematic scroll narrative ----
+const chapters = {
+  zh: [
+    ["01", "The Chart", "命盤"],
+    ["02", "The Awakening", "覺醒"],
+    ["03", "The Cosmos", "宇宙"],
+    ["04", "The Universe Within", "內在宇宙"]
+  ],
+  en: [
+    ["01", "The Chart", ""],
+    ["02", "The Awakening", ""],
+    ["03", "The Cosmos", ""],
+    ["04", "The Universe Within", ""]
+  ],
+  fr: [
+    ["01", "La Carte", ""],
+    ["02", "L'Éveil", ""],
+    ["03", "Le Cosmos", ""],
+    ["04", "L'Univers Intérieur", ""]
+  ]
+}[language];
+
+const tagline = {
+  zh: "你的內在，自成宇宙。",
+  en: "The universe within you.",
+  fr: "L'univers en vous."
+}[language];
+
+// natal chart geometry (computed, perfectly symmetric)
+const rad = (a: number) => (a * Math.PI) / 180;
+const pt = (r: number, a: number) => [+(r * Math.cos(rad(a))).toFixed(1), +(r * Math.sin(rad(a))).toFixed(1)] as const;
+
+const spokes = Array.from({ length: 12 }, (_, i) => ({ p1: pt(150, i * 30), p2: pt(480, i * 30) }));
+const numerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"].map((n, i) => ({
+  n,
+  p: pt(432, i * 30 + 15)
+}));
+const hexagon = Array.from({ length: 6 }, (_, i) => pt(330, i * 60)).map((p) => p.join(",")).join(" ");
+const triangleA = [15, 135, 255].map((a) => pt(330, a).join(",")).join(" ");
+const triangleB = [75, 195, 315].map((a) => pt(330, a).join(",")).join(" ");
+const aspects = [
+  [22, 170], [80, 250], [130, 300], [170, 340], [22, 130], [80, 340], [250, 130]
+].map(([a, b]) => ({ p1: pt(240, a), p2: pt(240, b) }));
+const planetDots = [22, 80, 130, 170, 250, 300, 340].map((a) => pt(240, a));
+
 const processSteps = {
   zh: [
     ["01", "提出問題", "說出你此刻真正卡住、好奇或反覆想到的事。"],
@@ -75,6 +166,7 @@ const tarotCards = {
   </head>
   <body class="neon-body">
     <div class="sky-bg" aria-hidden="true"></div>
+    <div class="sky-photo" data-sky-photo aria-hidden="true"></div>
     <canvas class="sky-canvas" data-starfield aria-hidden="true"></canvas>
     <div class="noise" aria-hidden="true"></div>
     <div class="cursor-dot" aria-hidden="true"></div>
@@ -98,29 +190,86 @@ const tarotCards = {
     </header>
 
     <main id="main-content">
-      <!-- HERO -->
-      <section class="hero" data-hero>
-        <div class="blob blob-a" aria-hidden="true"></div>
-        <div class="blob blob-b" aria-hidden="true"></div>
-        <div class="blob blob-c" aria-hidden="true"></div>
+      <!-- PROLOGUE: four-chapter cinematic scroll -->
+      <section class="prologue" data-prologue>
+        <div class="prologue-stage">
+          <!-- Chapter I–II: the natal chart -->
+          <div class="chart-wrap" data-chart>
+            <svg class="chart" viewBox="-500 -500 1000 1000" fill="none" data-chart-rotor aria-hidden="true">
+              <defs>
+                <filter id="goldGlow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="4" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <g class="chart-lines">
+                <circle r="480" class="gold" />
+                <circle r="400" class="gold" />
+                <circle r="330" class="gold dim" />
+                <circle r="150" class="gold" />
+                <circle r="60" class="gold dim" />
+                {spokes.map((s) => (
+                  <line x1={s.p1[0]} y1={s.p1[1]} x2={s.p2[0]} y2={s.p2[1]} class="gold dim awaken" />
+                ))}
+                <polygon points={hexagon} class="gold dim awaken" />
+                <polygon points={triangleA} class="gold dim awaken" />
+                <polygon points={triangleB} class="gold dim awaken" />
+                {aspects.map((a) => (
+                  <line x1={a.p1[0]} y1={a.p1[1]} x2={a.p2[0]} y2={a.p2[1]} class="gold aspect" />
+                ))}
+                {planetDots.map(([x, y]) => (
+                  <circle cx={x} cy={y} r="4" class="planet-dot" data-planet-dot />
+                ))}
+                {numerals.map((n) => (
+                  <text x={n.p[0]} y={n.p[1]} class="numeral" text-anchor="middle" dominant-baseline="central">{n.n}</text>
+                ))}
+              </g>
+            </svg>
+          </div>
 
-        <div class="hero-inner">
-          <p class="hero-eyebrow" data-hero-item>
-            <span class="mono-tag">{content.eyebrow}</span>
-            <span class="mono-tag dim">☾ EST. 2026 · ONLINE & IRL</span>
-          </p>
-          <h1 class="hero-title" data-split-title>{content.title}</h1>
-          <div class="hero-foot">
-            <p class="hero-intro" data-hero-item>{content.intro}</p>
-            <div class="hero-actions" data-hero-item>
+          <!-- Chapter IV: planets orbit the viewer -->
+          <div class="orbit" data-orbit aria-hidden="true">
+            <div class="orbit-ring">
+              {celestialBodies.map((b, i) => (
+                <div class="orbit-pos" style={`--angle: ${i * 60}deg;`}>
+                  <figure class="orbit-body" style={`--size: ${Math.round(b.size * 0.72)}px; --glow: ${b.glow};`}>
+                    <img src={b.src} alt="" loading="lazy" decoding="async" />
+                    <figcaption>{b.latin} · {bodyLabels[b.id]}</figcaption>
+                  </figure>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Chapter IV: brand reveal -->
+          <div class="brand" data-brand>
+            <p class="brand-logo">ASTRA <span>✶</span> ARCANA</p>
+            <p class="brand-tagline">{tagline}</p>
+            <p class="brand-intro">{content.intro}</p>
+            <div class="brand-actions">
               <a class="btn-acid" href={localizedPath(language, "book")} data-magnetic>
                 {content.primaryAction} <span aria-hidden="true">↗</span>
               </a>
               <a class="btn-ghost" href={localizedPath(language, "astrology")} data-magnetic>{content.secondaryAction}</a>
             </div>
           </div>
-        </div>
 
+          <!-- chapter captions -->
+          <div class="captions" aria-hidden="true">
+            {chapters.map(([num, en, local], i) => (
+              <p class="caption" data-caption data-index={i}>
+                <span class="caption-num">{num}</span>
+                <span class="caption-line"></span>
+                <span>{en}{local && ` · ${local}`}</span>
+              </p>
+            ))}
+          </div>
+
+          <p class="scroll-hint" data-scroll-hint>SCROLL</p>
+        </div>
       </section>
 
       <!-- MANIFESTO -->
@@ -204,6 +353,7 @@ const tarotCards = {
       <div class="footer-meta">
         <p class="mono-tag">ASTRA ✶ ARCANA</p>
         <p class="mono-tag dim">© 2026 · your chart is not a cage · the cards are not a verdict</p>
+        <p class="mono-tag dim">imagery: NASA SDO · LRO · MESSENGER · Viking · Hubble · ESO/S. Brunier</p>
         <div class="nav-langs">
           {(Object.keys(languages) as Language[]).map((lang) => (
             <a href={languages[lang].home} class={lang === language ? "is-active" : ""}>{lang.toUpperCase()}</a>
@@ -438,12 +588,241 @@ const tarotCards = {
         will-change: background-position;
       }
 
+      .sky-photo {
+        position: fixed;
+        inset: -12% 0;
+        z-index: -3;
+        background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/ESO_-_Milky_Way.jpg/1280px-ESO_-_Milky_Way.jpg");
+        background-size: cover;
+        background-position: center;
+        opacity: 0.22;
+        mix-blend-mode: screen;
+        will-change: transform;
+      }
+
       .sky-canvas {
         position: fixed;
         inset: 0;
         z-index: -2;
         width: 100%;
         height: 100%;
+      }
+
+      /* ---------- prologue: four chapters ---------- */
+      .prologue {
+        position: relative;
+        height: 520vh;
+      }
+
+      .prologue-stage {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100svh;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+      }
+
+      .chart-wrap {
+        width: min(88vmin, 760px);
+        aspect-ratio: 1;
+        will-change: transform, opacity;
+      }
+
+      .chart {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .chart .gold {
+        stroke: #c9a24b;
+        stroke-width: 1.1;
+        opacity: 0.85;
+      }
+
+      .chart .gold.dim {
+        opacity: 0.3;
+        stroke-width: 0.8;
+      }
+
+      .chart .aspect {
+        stroke: #e8c97a;
+        stroke-width: 0.7;
+        opacity: 0;
+        stroke-dasharray: 600;
+        stroke-dashoffset: 600;
+      }
+
+      .chart .planet-dot {
+        fill: #8a6f35;
+        opacity: 0.6;
+      }
+
+      .chart .numeral {
+        fill: rgb(232 201 122 / 0.6);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 26px;
+        letter-spacing: 0.1em;
+      }
+
+      /* orbit — chapter IV */
+      .orbit {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .orbit-ring {
+        position: relative;
+        width: min(78vmin, 700px);
+        aspect-ratio: 1;
+        animation: orbitSpin 140s linear infinite;
+      }
+
+      .orbit-pos {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: rotate(var(--angle)) translateX(min(39vmin, 350px)) rotate(calc(-1 * var(--angle)));
+      }
+
+      .orbit-body {
+        margin: 0;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        animation: orbitCounter 140s linear infinite;
+      }
+
+      .orbit-body img {
+        width: var(--size);
+        height: var(--size);
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: 0 auto;
+        box-shadow:
+          0 0 calc(var(--size) * 0.5) rgb(var(--glow) / 0.35),
+          0 0 calc(var(--size) * 1.2) rgb(var(--glow) / 0.14);
+      }
+
+      .orbit-body figcaption {
+        margin-top: 0.6rem;
+        font-family: "Space Mono", monospace;
+        font-size: 0.58rem;
+        letter-spacing: 0.24em;
+        color: rgb(244 239 255 / 0.5);
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      @keyframes orbitSpin {
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes orbitCounter {
+        to { transform: translate(-50%, -50%) rotate(-360deg); }
+      }
+
+      /* brand reveal — chapter IV */
+      .brand {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        text-align: center;
+        opacity: 0;
+        visibility: hidden;
+        padding: 0 1.4rem;
+      }
+
+      .brand-logo {
+        margin: 0;
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-weight: 600;
+        font-size: clamp(2rem, 5.4vw, 4.4rem);
+        letter-spacing: 0.22em;
+      }
+
+      .brand-logo span { color: var(--acid); }
+
+      .brand-tagline {
+        margin: 1.4rem 0 0;
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+        letter-spacing: 0.12em;
+        color: rgb(244 239 255 / 0.85);
+      }
+
+      .brand-intro {
+        margin: 1.6rem auto 0;
+        max-width: 30em;
+        font-size: 0.95rem;
+        line-height: 1.95;
+        color: rgb(244 239 255 / 0.6);
+      }
+
+      .brand-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        justify-content: center;
+        margin-top: 2.4rem;
+      }
+
+      /* chapter captions */
+      .captions {
+        position: absolute;
+        left: 1.6rem;
+        bottom: 2rem;
+      }
+
+      .caption {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        margin: 0;
+        font-family: "Space Mono", monospace;
+        font-size: 0.68rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgb(244 239 255 / 0.65);
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .caption-num { color: var(--acid); }
+
+      .caption-line {
+        display: inline-block;
+        width: 3rem;
+        height: 1px;
+        background: rgb(244 239 255 / 0.3);
+      }
+
+      .scroll-hint {
+        position: absolute;
+        right: 1.6rem;
+        bottom: 2rem;
+        margin: 0;
+        font-family: "Space Mono", monospace;
+        font-size: 0.62rem;
+        letter-spacing: 0.4em;
+        color: rgb(244 239 255 / 0.4);
+        animation: hintPulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes hintPulse {
+        50% { opacity: 0.3; transform: translateY(4px); }
       }
 
       .blob {
@@ -886,6 +1265,7 @@ const tarotCards = {
       @media (prefers-reduced-motion: reduce) {
         .noise,
         .blob,
+        .celestial,
         .tarot-border,
         .btn-orbit { animation: none !important; }
       }
@@ -1107,11 +1487,21 @@ const tarotCards = {
           mouse.x = e.clientX / window.innerWidth - 0.5;
           mouse.y = e.clientY / window.innerHeight - 0.5;
         });
+        const skyPhoto = document.querySelector<HTMLElement>("[data-sky-photo]");
+        const parallaxEls = [...document.querySelectorAll<HTMLElement>("[data-parallax]")].map((el) => ({
+          el,
+          speed: parseFloat(el.dataset.parallax || "0.2")
+        }));
+
         window.addEventListener(
           "scroll",
           () => {
             scroll = window.scrollY;
             if (skyBg) skyBg.style.backgroundPosition = `0 ${-scroll * 0.35}px`;
+            if (skyPhoto) skyPhoto.style.transform = `translateY(${-scroll * 0.05}px)`;
+            for (const p of parallaxEls) {
+              p.el.style.transform = `translateY(${-scroll * p.speed}px)`;
+            }
           },
           { passive: true }
         );
@@ -1143,39 +1533,69 @@ const tarotCards = {
         });
       }
 
-      /* ---------- hero title split + intro ---------- */
-      const title = document.querySelector<HTMLElement>("[data-split-title]");
-      if (title) {
-        const text = title.textContent ?? "";
-        title.textContent = "";
-        const frag = document.createDocumentFragment();
-        [...text].forEach((ch, i) => {
-          const span = document.createElement("span");
-          span.className = "char" + (i % 7 === 3 ? " lit" : "");
-          span.textContent = ch === " " ? " " : ch;
-          frag.appendChild(span);
-        });
-        title.appendChild(frag);
+      /* ---------- prologue: four-chapter scroll narrative ---------- */
+      const prologue = document.querySelector<HTMLElement>("[data-prologue]");
+      if (prologue) {
+        if (reduceMotion) {
+          // static ending frame for reduced motion
+          gsap.set("[data-chart]", { autoAlpha: 0.25, scale: 1 });
+          gsap.set("[data-orbit], [data-brand]", { autoAlpha: 1 });
+          prologue.style.height = "100vh";
+        } else {
+          // gentle perpetual rotation of the wheel
+          gsap.to("[data-chart-rotor]", { rotation: 360, duration: 240, repeat: -1, ease: "none" });
 
-        if (!reduceMotion) {
-          gsap.from(title.querySelectorAll(".char"), {
-            autoAlpha: 0,
-            y: 14,
-            stagger: 0.014,
-            duration: 0.8,
-            ease: "power2.out",
-            delay: 0.1
+          const tl = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              trigger: prologue,
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.5
+            }
           });
-          gsap.from("[data-hero-item]", {
-            autoAlpha: 0,
-            y: 18,
-            stagger: 0.1,
-            duration: 0.7,
-            ease: "power2.out",
-            delay: 0.4
+
+          // chapter windows: I 0–0.24 | II 0.27–0.5 | III 0.53–0.74 | IV 0.77–1
+          const caps = gsap.utils.toArray<HTMLElement>("[data-caption]");
+          const windows = [
+            [0.0, 0.24],
+            [0.27, 0.5],
+            [0.53, 0.74],
+            [0.77, 0.96]
+          ];
+          caps.forEach((cap, i) => {
+            const [a, b] = windows[i];
+            if (i === 0) gsap.set(cap, { autoAlpha: 1 });
+            else tl.fromTo(cap, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.03 }, a);
+            tl.to(cap, { autoAlpha: 0, y: -8, duration: 0.03 }, b);
           });
+
+          tl.to("[data-scroll-hint]", { autoAlpha: 0, duration: 0.04 }, 0.05);
+
+          // Chapter II — the awakening: geometry lights up line by line
+          tl.to(".awaken", { opacity: 0.95, stroke: "#e8c97a", stagger: 0.004, duration: 0.05 }, 0.26);
+          tl.to(".aspect", { opacity: 0.8, strokeDashoffset: 0, stagger: 0.01, duration: 0.1 }, 0.3);
+          tl.to("[data-planet-dot]", {
+            attr: { r: 7 },
+            fill: "#ffe3a1",
+            opacity: 1,
+            stagger: 0.012,
+            duration: 0.04
+          }, 0.34);
+          tl.to(".chart .numeral", { fill: "rgb(255 227 161 / 0.95)", stagger: 0.005, duration: 0.05 }, 0.36);
+
+          // Chapter III — into the cosmos: the camera passes through the chart
+          tl.to("[data-chart]", { scale: 7.5, autoAlpha: 0, ease: "power2.in", duration: 0.2 }, 0.52);
+          tl.to(".sky-photo", { opacity: 0.42, duration: 0.18 }, 0.54);
+
+          // Chapter IV — the universe within: planets orbit, brand reveals
+          tl.fromTo("[data-orbit]", { autoAlpha: 0, scale: 0.72 }, { autoAlpha: 1, scale: 1, ease: "power2.out", duration: 0.14 }, 0.74);
+          tl.fromTo("[data-brand]", { autoAlpha: 0, y: 26, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, ease: "power2.out", duration: 0.12 }, 0.8);
+          // settle the sky back as the page content begins
+          tl.to(".sky-photo", { opacity: 0.22, duration: 0.06 }, 0.94);
         }
       }
+
 
       /* ---------- scroll reveals ---------- */
       if (!reduceMotion) {
