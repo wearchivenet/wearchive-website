@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>行星 · ASTRAEA</title>
+<meta name="description" content="ASTRAEA — 行星">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;background:#050810;}
+  #sky{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .pnav{position:fixed;inset:0 0 auto;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 6vw;background:linear-gradient(rgba(5,8,16,.85),transparent);}
+  .pnav .logo{font-family:'Cormorant Garamond',serif;letter-spacing:.35em;color:#F2EFE7;text-decoration:none;font-size:1rem;}
+  .pnav .links{display:flex;gap:1.6rem;}
+  .pnav .links a{color:rgba(242,239,231,.6);text-decoration:none;font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;transition:color .4s;}
+  .pnav .links a:hover{color:#E8C87A;}
+  @media(max-width:700px){.pnav .links a:not(:last-child){display:none;}}
+  .ax{position:relative;z-index:1;}
+  .ax section{padding-top:22vh;}
+  .pager{position:relative;z-index:1;display:flex;justify-content:space-between;max-width:1120px;margin:0 auto;padding:1rem 6vw 5rem;}
+  .pager a{color:rgba(242,239,231,.65);text-decoration:none;font-family:'Cormorant Garamond','Noto Serif SC',serif;font-size:1.05rem;transition:color .4s;}
+  .pager a:hover{color:#E8C87A;}
+  .pager small{display:block;font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.3em;color:rgba(232,200,122,.65);text-transform:uppercase;margin-bottom:.4rem;}
+  .pager .next{text-align:right;}
+
+  .ax { position: relative; color:#F2EFE7; font-family:'Jost','Noto Serif SC',sans-serif; }
+  .ax * { box-sizing: border-box; }
+  .ax section { position:relative; max-width:1120px; margin:0 auto; padding:16vh 6vw; }
+  .ax h2, .ax h3, .ax .serif { font-family:'Cormorant Garamond','Noto Serif SC',serif; font-weight:500; }
+  .ax h2 { font-size:clamp(1.9rem,4.4vw,3.2rem); line-height:1.3; margin:0 0 1.2rem; letter-spacing:0.04em; }
+  .ax .kicker { font-family:'Jost',sans-serif; font-size:0.68rem; letter-spacing:0.42em; text-transform:uppercase; color:#E8C87A; margin:0 0 1.6rem; }
+  .ax p.lead { max-width:34em; line-height:2.1; color:rgba(242,239,231,0.72); font-size:1.02rem; margin:0; }
+  .ax .rev { opacity:0; transform:translateY(28px); transition:opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1); }
+  .ax .rev.on { opacity:1; transform:none; }
+  .ax .hairline { border-top:1px solid rgba(232,200,122,0.22); }
+  .ax .gold { color:#E8C87A; }
+
+  .ax .qa-grid { display:grid; gap:1px; background:rgba(232,200,122,0.16); border:1px solid rgba(232,200,122,0.16); margin-top:3.4rem; }
+  @media(min-width:820px){ .ax .qa-grid { grid-template-columns:1fr 1fr; } }
+  .ax .qa { background:rgba(5,8,16,0.72); backdrop-filter:blur(4px); padding:2.2rem; }
+  .ax .qa h3 { margin:0 0 0.9rem; font-size:1.3rem; color:#F2EFE7; }
+  .ax .qa p { margin:0; line-height:2; font-size:0.92rem; color:rgba(242,239,231,0.62); }
+
+  .ax .pillars { display:grid; gap:1.4rem; margin-top:3rem; }
+  @media(min-width:820px){ .ax .pillars { grid-template-columns:repeat(4,1fr); } }
+  .ax .pillar { border:1px solid rgba(232,200,122,0.2); padding:1.8rem 1.4rem; text-align:center; transition:border-color .5s, background .5s; }
+  .ax .pillar:hover { border-color:rgba(232,200,122,0.6); background:rgba(232,200,122,0.05); }
+  .ax .pillar .num { font-family:'Cormorant Garamond',serif; font-style:italic; color:#E8C87A; font-size:0.95rem; }
+  .ax .pillar h3 { margin:0.7rem 0 0.6rem; font-size:1.25rem; }
+  .ax .pillar p { margin:0; font-size:0.82rem; line-height:1.9; color:rgba(242,239,231,0.55); }
+
+  .ax .houses { display:grid; gap:0; margin-top:3rem; border-top:1px solid rgba(232,200,122,0.18); }
+  .ax .house { display:grid; grid-template-columns:4.5rem 11rem 1fr; align-items:baseline; gap:1.2rem; padding:1.15rem 0.6rem; border-bottom:1px solid rgba(232,200,122,0.13); transition:background .45s, padding-left .45s; }
+  .ax .house:hover { background:rgba(232,200,122,0.06); padding-left:1.3rem; }
+  .ax .house:hover .h-num { color:#FFE7AE; text-shadow:0 0 18px rgba(232,200,122,0.55); }
+  .ax .h-num { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.35rem; color:rgba(232,200,122,0.75); transition:color .45s, text-shadow .45s; }
+  .ax .h-name { font-family:'Cormorant Garamond','Noto Serif SC',serif; font-size:1.12rem; }
+  .ax .h-name small { display:block; font-family:'Jost',sans-serif; font-size:0.62rem; letter-spacing:0.28em; color:rgba(232,200,122,0.6); margin-top:2px; }
+  .ax .h-desc { font-size:0.86rem; line-height:1.9; color:rgba(242,239,231,0.55); }
+  @media(max-width:700px){ .ax .house { grid-template-columns:3rem 1fr; } .ax .h-desc { grid-column:2; } }
+
+  .ax .signs { display:grid; gap:1.2rem; margin-top:3rem; }
+  @media(min-width:640px){ .ax .signs { grid-template-columns:repeat(2,1fr);} }
+  @media(min-width:1000px){ .ax .signs { grid-template-columns:repeat(4,1fr);} }
+  .ax .sign { border:1px solid rgba(232,200,122,0.18); padding:1.6rem 1.3rem; background:rgba(5,8,16,0.55); transition:transform .5s, border-color .5s; }
+  .ax .sign:hover { transform:translateY(-4px); border-color:rgba(232,200,122,0.55); }
+  .ax .sign .glyph { font-size:1.5rem; color:#E8C87A; font-family:'Noto Serif SC',serif; }
+  .ax .sign h3 { margin:0.7rem 0 0.3rem; font-size:1.15rem; }
+  .ax .sign .kw { font-size:0.66rem; letter-spacing:0.22em; color:rgba(232,200,122,0.7); text-transform:uppercase; }
+  .ax .sign p { margin:0.8rem 0 0; font-size:0.83rem; line-height:1.9; color:rgba(242,239,231,0.55); }
+
+  .ax .planets { margin-top:3rem; border-top:1px solid rgba(232,200,122,0.18); }
+  .ax .planet { display:grid; grid-template-columns:9rem 1fr 1fr 8rem; gap:1.2rem; align-items:baseline; padding:1.1rem 0.6rem; border-bottom:1px solid rgba(232,200,122,0.13); transition:background .45s; }
+  .ax .planet:hover { background:rgba(232,200,122,0.06); }
+  .ax .p-name { font-family:'Cormorant Garamond','Noto Serif SC',serif; font-size:1.15rem; }
+  .ax .p-name em { font-style:italic; color:rgba(232,200,122,0.75); font-size:0.8rem; margin-left:0.5rem; }
+  .ax .p-mean, .ax .p-func { font-size:0.85rem; line-height:1.8; color:rgba(242,239,231,0.58); }
+  .ax .p-arch { font-size:0.7rem; letter-spacing:0.24em; color:#E8C87A; text-transform:uppercase; text-align:right; }
+  @media(max-width:820px){ .ax .planet { grid-template-columns:1fr 1fr; } .ax .p-arch { text-align:left; } }
+
+  .ax .aspects { display:grid; gap:1.4rem; margin-top:3rem; }
+  @media(min-width:820px){ .ax .aspects { grid-template-columns:repeat(5,1fr);} }
+  .ax .aspect { text-align:center; padding:1.6rem 1rem; border:1px solid rgba(232,200,122,0.18); }
+  .ax .aspect svg { width:64px; height:64px; display:block; margin:0 auto 1rem; }
+  .ax .aspect svg circle { fill:none; stroke:rgba(232,200,122,0.35); stroke-width:1; }
+  .ax .aspect svg line, .ax .aspect svg path { stroke:#E8C87A; stroke-width:1.4; fill:none; stroke-dasharray:200; stroke-dashoffset:200; transition:stroke-dashoffset 1.6s ease .2s; filter:drop-shadow(0 0 4px rgba(232,200,122,0.6)); }
+  .ax .aspect.on svg line, .ax .aspect.on svg path { stroke-dashoffset:0; }
+  .ax .aspect h3 { margin:0 0 0.3rem; font-size:1.05rem; }
+  .ax .aspect .deg { font-size:0.68rem; letter-spacing:0.3em; color:rgba(232,200,122,0.7); }
+  .ax .aspect p { margin:0.7rem 0 0; font-size:0.8rem; line-height:1.8; color:rgba(242,239,231,0.55); }
+
+  .ax .philo { display:grid; gap:2.6rem; margin-top:3rem; }
+  @media(min-width:820px){ .ax .philo { grid-template-columns:1fr 1fr; } }
+  .ax .philo h3 { margin:0 0 0.8rem; font-size:1.3rem; }
+  .ax .philo p { margin:0; font-size:0.9rem; line-height:2.05; color:rgba(242,239,231,0.6); }
+
+  .ax .journeys { display:grid; gap:1.4rem; margin-top:3rem; }
+  @media(min-width:900px){ .ax .journeys { grid-template-columns:1fr 1fr; } }
+  .ax .journey { border:1px solid rgba(232,200,122,0.22); padding:2.2rem; background:rgba(5,8,16,0.6); backdrop-filter:blur(4px); display:flex; flex-direction:column; transition:border-color .5s; }
+  .ax .journey:hover { border-color:rgba(232,200,122,0.6); }
+  .ax .journey h3 { margin:0 0 1rem; font-size:1.45rem; }
+  .ax .journey dl { margin:0; }
+  .ax .journey dt { font-size:0.64rem; letter-spacing:0.3em; color:#E8C87A; text-transform:uppercase; margin:1.1rem 0 0.35rem; }
+  .ax .journey dd { margin:0; font-size:0.88rem; line-height:1.95; color:rgba(242,239,231,0.62); }
+
+  .ax .guide { display:grid; gap:3rem; margin-top:3rem; align-items:start; }
+  @media(min-width:880px){ .ax .guide { grid-template-columns:0.9fr 1.1fr; } }
+  .ax .guide-portrait { aspect-ratio:3/4; border:1px solid rgba(232,200,122,0.3); display:grid; place-items:center; background:radial-gradient(80% 60% at 50% 30%, rgba(232,200,122,0.08), transparent 70%); }
+  .ax .guide-portrait span { font-family:'Cormorant Garamond',serif; font-style:italic; color:rgba(232,200,122,0.6); letter-spacing:0.2em; }
+  .ax .guide-body p { font-size:0.95rem; line-height:2.15; color:rgba(242,239,231,0.66); margin:0 0 1.4rem; }
+  .ax .guide-vals { display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:1.8rem; }
+  .ax .guide-vals span { border:1px solid rgba(232,200,122,0.35); padding:0.42rem 1rem; font-size:0.68rem; letter-spacing:0.26em; color:#E8C87A; }
+
+  .ax .quotes { display:grid; gap:3.5rem; margin-top:3rem; max-width:44rem; }
+  .ax blockquote { margin:0; }
+  .ax blockquote p { font-family:'Cormorant Garamond','Noto Serif SC',serif; font-size:clamp(1.1rem,2.2vw,1.45rem); line-height:1.95; color:rgba(242,239,231,0.85); margin:0; }
+  .ax blockquote cite { display:block; font-style:normal; margin-top:1rem; font-size:0.66rem; letter-spacing:0.3em; color:rgba(232,200,122,0.7); }
+
+  .ax .faq { margin-top:3rem; border-top:1px solid rgba(232,200,122,0.18); max-width:52rem; }
+  .ax details { border-bottom:1px solid rgba(232,200,122,0.13); }
+  .ax summary { list-style:none; cursor:pointer; padding:1.3rem 0.4rem; font-family:'Cormorant Garamond','Noto Serif SC',serif; font-size:1.12rem; display:flex; justify-content:space-between; align-items:center; transition:color .4s; }
+  .ax summary::-webkit-details-marker { display:none; }
+  .ax summary::after { content:'+'; color:#E8C87A; font-family:'Cormorant Garamond',serif; font-size:1.4rem; transition:transform .4s; }
+  .ax details[open] summary::after { transform:rotate(45deg); }
+  .ax details p { margin:0; padding:0 0.4rem 1.5rem; font-size:0.88rem; line-height:2; color:rgba(242,239,231,0.6); max-width:44em; }
+
+  .ax .booking { text-align:center; }
+  .ax .booking .cta { display:inline-block; margin-top:2.8rem; padding:1.05rem 3rem; border:1px solid rgba(232,200,122,0.7); color:#E8C87A; text-decoration:none; letter-spacing:0.28em; font-size:0.78rem; text-transform:uppercase; transition:background .5s, color .5s, box-shadow .5s; }
+  .ax .booking .cta:hover { background:#E8C87A; color:#050810; box-shadow:0 0 54px rgba(232,200,122,0.4); }
+  .ax .booking .meta { margin-top:1.6rem; font-size:0.72rem; letter-spacing:0.2em; color:rgba(242,239,231,0.45); }
+
+  .ax footer { border-top:1px solid rgba(232,200,122,0.18); padding:4rem 6vw 3rem; max-width:none; }
+  .ax .foot-close { text-align:center; margin-bottom:3.5rem; }
+  .ax .foot-close p { font-family:'Cormorant Garamond','Noto Serif SC',serif; font-size:clamp(1.15rem,2.4vw,1.6rem); color:rgba(242,239,231,0.82); line-height:2; margin:0; }
+  .ax .foot-grid { display:flex; flex-wrap:wrap; gap:1.4rem 3rem; justify-content:space-between; align-items:center; max-width:1120px; margin:0 auto; }
+  .ax .foot-grid nav { display:flex; flex-wrap:wrap; gap:1.6rem; }
+  .ax .foot-grid a { color:rgba(242,239,231,0.55); text-decoration:none; font-size:0.74rem; letter-spacing:0.22em; text-transform:uppercase; transition:color .4s; }
+  .ax .foot-grid a:hover { color:#E8C87A; }
+  .ax .foot-copy { font-size:0.64rem; letter-spacing:0.18em; color:rgba(242,239,231,0.35); }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+  <nav class="pnav">
+    <a class="logo" href="/zh/">A S T R A E A</a>
+    <div class="links">
+      <a href="/zh/birth-chart">探索</a>
+      <a href="/zh/journeys">旅程</a>
+      <a href="/zh/journal">札记</a>
+      <a href="/zh/guide">关于</a>
+      <a href="/zh/book">预约</a>
+    </div>
+  </nav>
+
+<main class="ax">
+<section id="planets" class="hairline">
+    <p class="kicker rev">06 · The Planets</p>
+    <h2 class="rev">行星：心灵的十个角色</h2>
+    <p class="lead rev">行星是你内在剧场的演员。每一颗都代表一种心理功能——它们都住在你身上。</p>
+    <div class="planets rev">
+      <div class="planet"><span class="p-name">太阳<em>Sol</em></span><span class="p-mean">核心自我与意志</span><span class="p-func">生命方向、活力、尊严</span><span class="p-arch">英雄</span></div>
+      <div class="planet"><span class="p-name">月亮<em>Luna</em></span><span class="p-mean">情感需求与直觉</span><span class="p-func">安全感、滋养、记忆</span><span class="p-arch">内在小孩</span></div>
+      <div class="planet"><span class="p-name">水星<em>Mercurius</em></span><span class="p-mean">心智与语言</span><span class="p-func">思考、学习、表达</span><span class="p-arch">信使</span></div>
+      <div class="planet"><span class="p-name">金星<em>Venus</em></span><span class="p-mean">爱与价值</span><span class="p-func">吸引、审美、关系</span><span class="p-arch">爱人</span></div>
+      <div class="planet"><span class="p-name">火星<em>Mars</em></span><span class="p-mean">行动与欲望</span><span class="p-func">勇气、界线、竞争</span><span class="p-arch">战士</span></div>
+      <div class="planet"><span class="p-name">木星<em>Iuppiter</em></span><span class="p-mean">扩张与信念</span><span class="p-func">机会、成长、意义</span><span class="p-arch">导师</span></div>
+      <div class="planet"><span class="p-name">土星<em>Saturnus</em></span><span class="p-mean">结构与成熟</span><span class="p-func">责任、限制、时间</span><span class="p-arch">长者</span></div>
+      <div class="planet"><span class="p-name">天王星<em>Uranus</em></span><span class="p-mean">觉醒与突破</span><span class="p-func">独立、革新、意外</span><span class="p-arch">革命者</span></div>
+      <div class="planet"><span class="p-name">海王星<em>Neptunus</em></span><span class="p-mean">消融与想像</span><span class="p-func">梦境、直觉、慈悲</span><span class="p-arch">神秘家</span></div>
+      <div class="planet"><span class="p-name">冥王星<em>Pluto</em></span><span class="p-mean">深层蜕变</span><span class="p-func">权力、死亡与重生</span><span class="p-arch">炼金师</span></div>
+    </div>
+  </section>
+</main>
+<nav class="pager"><a class="prev" href="/zh/signs"><small>上一章 05</small>十二星座</a><a class="next" href="/zh/aspects"><small>下一章 07</small>相位</a></nav>
+
+  <footer style="position:relative;z-index:1;">
+    <div class="foot-close rev on">
+      <p>宇宙一直在说话。<br>也许今天，是你第一次真正聆听。</p>
+    </div>
+    <div class="foot-grid">
+      <nav>
+        <a href="/zh/">首页</a>
+        <a href="/zh/birth-chart">命盘</a>
+        <a href="/zh/houses">宫位</a>
+        <a href="/zh/journeys">旅程</a>
+        <a href="/zh/journal">札记</a>
+        <a href="/zh/guide">关于</a>
+        <a href="/zh/book">预约</a>
+      </nav>
+      <span class="foot-copy">© 2026 ASTRAEA · 隐私政策 · 使用条款</span>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  var c=document.getElementById('sky');if(!c)return;var x=c.getContext('2d');var w,h,S=[];
+  function rs(){w=c.width=innerWidth;h=c.height=innerHeight;S=[];for(var i=0;i<Math.min(220,w*h/9000);i++)S.push({x:Math.random()*w,y:Math.random()*h,r:.3+Math.random()*1.1,p:Math.random()*6.28});}
+  rs();addEventListener('resize',rs);
+  var rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function f(t){x.clearRect(0,0,w,h);for(var i=0;i<S.length;i++){var s=S[i];var a=.25+.55*Math.abs(Math.sin(t*.0006+s.p));x.beginPath();x.fillStyle='rgba(242,239,231,'+a+')';x.arc(s.x,s.y,s.r,0,6.28);x.fill();}if(!rm)requestAnimationFrame(f);}
+  requestAnimationFrame(f);
+})();
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els=document.querySelectorAll('.rev,.aspect');
+  if(reduce||!('IntersectionObserver' in window)){for(var i=0;i<els.length;i++)els[i].classList.add('on');return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.15});
+  for(var j=0;j<els.length;j++)io.observe(els[j]);
+})();
+</script>
+</body>
+</html>
