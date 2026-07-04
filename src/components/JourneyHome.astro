@@ -1,0 +1,602 @@
+---
+import "@/styles/global.css";
+import JourneyCanvas from "@/components/journey/JourneyCanvas.tsx";
+import { languages, localizedPath, sectionLabel, type Language } from "@/lib/i18n";
+
+type Props = { language: Language };
+const { language } = Astro.props;
+const htmlLang = languages[language].htmlLang;
+
+const navLinks = [
+  { slug: "astrology", label: sectionLabel(language, "astrology") },
+  { slug: "tarot", label: sectionLabel(language, "tarot") },
+  { slug: "journal", label: sectionLabel(language, "journal") },
+  { slug: "about", label: sectionLabel(language, "about") }
+] as const;
+
+const t = {
+  zh: {
+    title: "Astra Arcana｜發現你的宇宙藍圖",
+    heroHead: "發現你的宇宙藍圖",
+    heroSub: "你的本命盤不只是一張圖。它是你內在宇宙的建築藍圖。",
+    heroCta: "探索你的星盤",
+    descend: "你不是在閱讀星盤——你正在走進它。",
+    inside: "腳下，是刻進宇宙地面的神聖幾何。",
+    awakenHead: "十二宮，依次甦醒。",
+    lifeAreas: ["關係", "事業", "家庭", "健康", "創造", "使命", "成長"],
+    zodiacHead: "每個星座，都是靈魂的一種語言。",
+    planetsHead: "從太陽到冥王星，十顆星體環繞著你。",
+    climaxA: "你不在星空之下。",
+    climaxB: "你本就是星辰的一部分。",
+    servicesLabel: "在旅程中，我們提供",
+    services: [
+      ["本命盤解讀", "理解你生來要成為的自己。"],
+      ["關係合盤", "看見關係之中隱藏的動力。"],
+      ["事業方向", "揭示你的天賦與人生方向。"],
+      ["流年與時機", "理解當下的生命週期與即將到來的機會。"]
+    ],
+    testiLabel: "旅人的回聲",
+    testimonials: [
+      ["「那次解讀沒有給我答案，卻讓我第一次清楚看見自己的問題。」", "— L，巴黎"],
+      ["「像有人陪我在自己的星空裡散了一次步。」", "— 阿寧，台北"]
+    ],
+    finalHead: "開始你的旅程。",
+    finalCta: "預約諮詢",
+    credit: "star data: Yale Bright Star Catalog · imagery: NASA / ESO"
+  },
+  en: {
+    title: "Astra Arcana | Discover Your Cosmic Blueprint",
+    heroHead: "Discover Your Cosmic Blueprint",
+    heroSub: "Your birth chart is more than a diagram. It is the architecture of your inner universe.",
+    heroCta: "Explore Your Chart",
+    descend: "You are not reading the chart — you are entering it.",
+    inside: "Beneath your feet, sacred geometry engraved into the cosmic floor.",
+    awakenHead: "The twelve houses awaken, one by one.",
+    lifeAreas: ["Relationships", "Career", "Family", "Health", "Creativity", "Purpose", "Growth"],
+    zodiacHead: "Every sign expresses a different language of the soul.",
+    planetsHead: "From the Sun to Pluto, ten celestial bodies surround you.",
+    climaxA: "You are not beneath the stars.",
+    climaxB: "You are part of them.",
+    servicesLabel: "Along the journey",
+    services: [
+      ["Natal Chart Reading", "Understand who you were born to become."],
+      ["Relationship Reading", "Discover the hidden dynamics within your relationships."],
+      ["Career Reading", "Reveal your natural talents and life direction."],
+      ["Timing & Transits", "Understand your current life cycle and upcoming opportunities."]
+    ],
+    testiLabel: "Echoes from travellers",
+    testimonials: [
+      ["“The reading didn't hand me answers — it let me finally see my own question clearly.”", "— L, Paris"],
+      ["“Like someone walked with me through my own night sky.”", "— A., Taipei"]
+    ],
+    finalHead: "Begin Your Journey.",
+    finalCta: "Book Your Consultation",
+    credit: "star data: Yale Bright Star Catalog · imagery: NASA / ESO"
+  },
+  fr: {
+    title: "Astra Arcana | Découvrez votre plan cosmique",
+    heroHead: "Découvrez votre plan cosmique",
+    heroSub: "Votre thème natal est plus qu'un diagramme. C'est l'architecture de votre univers intérieur.",
+    heroCta: "Explorer votre thème",
+    descend: "Vous ne lisez pas le thème — vous y entrez.",
+    inside: "Sous vos pieds, une géométrie sacrée gravée dans le sol cosmique.",
+    awakenHead: "Les douze maisons s'éveillent, une à une.",
+    lifeAreas: ["Relations", "Carrière", "Famille", "Santé", "Créativité", "Vocation", "Croissance"],
+    zodiacHead: "Chaque signe exprime une langue différente de l'âme.",
+    planetsHead: "Du Soleil à Pluton, dix corps célestes vous entourent.",
+    climaxA: "Vous n'êtes pas sous les étoiles.",
+    climaxB: "Vous en faites partie.",
+    servicesLabel: "Au fil du voyage",
+    services: [
+      ["Lecture du thème natal", "Comprendre qui vous êtes né·e pour devenir."],
+      ["Lecture relationnelle", "Découvrir les dynamiques cachées de vos relations."],
+      ["Lecture de carrière", "Révéler vos talents naturels et votre direction de vie."],
+      ["Temps & transits", "Comprendre votre cycle actuel et les opportunités à venir."]
+    ],
+    testiLabel: "Échos des voyageurs",
+    testimonials: [
+      ["« La lecture ne m'a pas donné de réponses — elle m'a permis de voir enfin ma propre question. »", "— L, Paris"],
+      ["« Comme une promenade accompagnée dans mon propre ciel nocturne. »", "— A., Taipei"]
+    ],
+    finalHead: "Commencez votre voyage.",
+    finalCta: "Réserver une consultation",
+    credit: "données stellaires : Yale Bright Star Catalog · images : NASA / ESO"
+  }
+}[language];
+
+const chapterTags = {
+  zh: ["The Chart · 命盤", "The Awakening · 覺醒", "The Cosmos · 宇宙", "The Self · 自我", "The Future · 未來"],
+  en: ["The Chart", "The Awakening", "The Cosmos", "The Self", "The Future"],
+  fr: ["La Carte", "L'Éveil", "Le Cosmos", "Le Soi", "L'Avenir"]
+}[language];
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={t.heroSub} />
+    <meta name="theme-color" content="#040814" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Noto+Serif+TC:wght@400;500;600&family=Space+Grotesk:wght@400;500&family=Space+Mono&family=Noto+Sans+TC:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <title>{t.title}</title>
+  </head>
+  <body class="journey-body">
+    <div class="deep-space" aria-hidden="true"></div>
+    <JourneyCanvas client:only="react" />
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="jnav">
+      <a class="jnav-logo" href={localizedPath(language)}>ASTRA <span>✶</span> ARCANA</a>
+      <nav class="jnav-links" aria-label="main">
+        {navLinks.map((l) => <a href={localizedPath(language, l.slug)}>{l.label}</a>)}
+      </nav>
+      <div class="jnav-right">
+        <div class="jnav-langs">
+          {(Object.keys(languages) as Language[]).map((lang) => (
+            <a href={languages[lang].home} class={lang === language ? "on" : ""}>{lang.toUpperCase()}</a>
+          ))}
+        </div>
+        <a class="jnav-cta" href={localizedPath(language, "book")}>{t.finalCta}</a>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <!-- Scene 1 · The Birth Chart -->
+      <section class="scene scene-hero" data-scene>
+        <p class="tag" data-fade>{chapterTags[0]}</p>
+        <h1 data-fade>{t.heroHead}</h1>
+        <p class="sub" data-fade>{t.heroSub}</p>
+        <a class="cta-line" href="#awaken" data-fade>{t.heroCta} <span aria-hidden="true">↓</span></a>
+      </section>
+
+      <!-- Scene 2 · Descending -->
+      <section class="scene scene-quiet" data-scene>
+        <p class="whisper" data-fade>{t.descend}</p>
+      </section>
+
+      <!-- Scene 3 · Entering -->
+      <section class="scene scene-quiet" data-scene>
+        <p class="whisper" data-fade>{t.inside}</p>
+      </section>
+
+      <!-- Scene 4 · Awakening -->
+      <section class="scene scene-awaken" id="awaken" data-scene>
+        <p class="tag" data-fade>{chapterTags[1]}</p>
+        <h2 data-fade>{t.awakenHead}</h2>
+        <ul class="life-areas">
+          {t.lifeAreas.map((area) => <li data-fade>{area}</li>)}
+        </ul>
+      </section>
+
+      <!-- Scene 5 · Zodiac -->
+      <section class="scene" data-scene>
+        <h2 class="centerline" data-fade>{t.zodiacHead}</h2>
+      </section>
+
+      <!-- Scene 6 · Planets -->
+      <section class="scene" data-scene>
+        <p class="tag" data-fade>{chapterTags[2]}</p>
+        <h2 class="centerline" data-fade>{t.planetsHead}</h2>
+      </section>
+
+      <!-- Scene 7 · Looking Up — emotional climax -->
+      <section class="scene scene-climax" data-scene>
+        <p class="tag" data-fade>{chapterTags[3]}</p>
+        <h2 data-fade>{t.climaxA}</h2>
+        <h2 class="lit" data-fade>{t.climaxB}</h2>
+      </section>
+
+      <!-- Scene 8 · Orbit (breathing space) -->
+      <section class="scene scene-quiet" data-scene aria-hidden="true"></section>
+
+      <!-- Scene 9 · Services -->
+      <section class="scene scene-services" data-scene>
+        <p class="tag" data-fade>{t.servicesLabel}</p>
+        <div class="service-flow">
+          {t.services.map(([name, line], i) => (
+            <a class="service-item" href={localizedPath(language, i <= 1 ? "astrology" : "book")} data-fade>
+              <span class="service-index">0{i + 1}</span>
+              <span class="service-name">{name}</span>
+              <span class="service-line">{line}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- Scene 10 · Testimonials -->
+      <section class="scene scene-testi" data-scene>
+        <p class="tag" data-fade>{t.testiLabel}</p>
+        {t.testimonials.map(([quote, who]) => (
+          <blockquote data-fade>
+            <p>{quote}</p>
+            <cite>{who}</cite>
+          </blockquote>
+        ))}
+      </section>
+
+      <!-- Scene 11 · Final -->
+      <section class="scene scene-final" data-scene>
+        <p class="tag" data-fade>{chapterTags[4]}</p>
+        <p class="final-logo" data-fade>ASTRA <span>✶</span> ARCANA</p>
+        <h2 data-fade>{t.finalHead}</h2>
+        <a class="final-cta" href={localizedPath(language, "book")} data-fade>{t.finalCta}</a>
+      </section>
+    </main>
+
+    <footer class="jfooter">
+      <p>© 2026 Astra Arcana</p>
+      <p>{t.credit}</p>
+      <div class="jnav-langs">
+        {(Object.keys(languages) as Language[]).map((lang) => (
+          <a href={languages[lang].home} class={lang === language ? "on" : ""}>{lang.toUpperCase()}</a>
+        ))}
+      </div>
+    </footer>
+
+    <style is:global>
+      .journey-body {
+        margin: 0;
+        background: transparent;
+        color: #eef2ff;
+        font-family: "Space Grotesk", "Noto Sans TC", sans-serif;
+        overflow-x: hidden;
+      }
+
+      .journey-body ::selection { background: #c9a24b; color: #06080f; }
+
+      .deep-space {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background:
+          radial-gradient(120% 90% at 50% 0%, rgb(13 22 48) 0%, rgb(6 10 24) 48%, rgb(2 4 10) 100%);
+      }
+
+      .grain {
+        position: fixed;
+        inset: -50%;
+        z-index: 40;
+        pointer-events: none;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 240px 240px;
+      }
+
+      .journey-body h1,
+      .journey-body h2,
+      .final-logo,
+      .jnav-logo {
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-weight: 500;
+      }
+
+      :lang(zh-Hant) .journey-body h1,
+      :lang(zh-Hant) .journey-body h2,
+      :lang(zh-Hant) .final-logo {
+        font-family: "Noto Serif TC", serif;
+        letter-spacing: 0.05em;
+      }
+
+      .tag {
+        font-family: "Space Mono", monospace;
+        font-size: 0.66rem;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: rgb(201 162 75 / 0.9);
+        margin: 0 0 1.6rem;
+      }
+
+      /* nav */
+      .jnav {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.4rem;
+        padding: 1.15rem 1.6rem;
+        background: linear-gradient(rgb(4 8 20 / 0.72), transparent);
+      }
+
+      .jnav-logo {
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        color: #eef2ff;
+        text-decoration: none;
+      }
+
+      .jnav-logo span { color: #c9a24b; }
+
+      .jnav-links { display: none; gap: 1.7rem; }
+      @media (min-width: 900px) { .jnav-links { display: flex; } }
+
+      .jnav-links a {
+        color: rgb(238 242 255 / 0.72);
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+      .jnav-links a:hover { color: #ffe3a1; }
+
+      .jnav-right { display: flex; align-items: center; gap: 1.1rem; }
+
+      .jnav-langs { display: flex; gap: 0.55rem; font-family: "Space Mono", monospace; font-size: 0.68rem; }
+      .jnav-langs a { color: rgb(238 242 255 / 0.38); text-decoration: none; }
+      .jnav-langs a.on { color: #c9a24b; }
+
+      .jnav-cta {
+        padding: 0.55rem 1.25rem;
+        border: 1px solid rgb(201 162 75 / 0.65);
+        border-radius: 999px;
+        color: #ffe3a1;
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        transition: background 0.35s, color 0.35s, box-shadow 0.35s;
+      }
+      .jnav-cta:hover { background: #c9a24b; color: #06080f; box-shadow: 0 0 34px rgb(201 162 75 / 0.4); }
+
+      /* scenes */
+      .scene {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 0 1.5rem;
+      }
+
+      .scene-hero { min-height: 118svh; }
+
+      .scene-hero h1 {
+        margin: 0;
+        font-size: clamp(2.3rem, 6vw, 5.4rem);
+        line-height: 1.16;
+        max-width: 15em;
+      }
+
+      .scene-hero .sub {
+        margin: 1.8rem auto 0;
+        max-width: 32em;
+        font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+        line-height: 2;
+        color: rgb(238 242 255 / 0.66);
+      }
+
+      .cta-line {
+        margin-top: 3rem;
+        font-family: "Space Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: #ffe3a1;
+        text-decoration: none;
+        border-bottom: 1px solid rgb(201 162 75 / 0.5);
+        padding-bottom: 0.5rem;
+      }
+
+      .whisper {
+        margin: 0;
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-size: clamp(1.3rem, 3vw, 2.1rem);
+        letter-spacing: 0.08em;
+        color: rgb(238 242 255 / 0.82);
+        max-width: 24em;
+        line-height: 1.7;
+      }
+
+      .scene-awaken h2,
+      .scene .centerline {
+        margin: 0;
+        font-size: clamp(1.7rem, 4.2vw, 3.4rem);
+        line-height: 1.3;
+        max-width: 18em;
+      }
+
+      .life-areas {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.8rem 2.4rem;
+        margin: 3rem 0 0;
+        padding: 0;
+      }
+
+      .life-areas li {
+        font-family: "Space Mono", monospace;
+        font-size: 0.74rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgb(255 227 161 / 0.85);
+      }
+
+      .scene-climax h2 {
+        margin: 0.3em 0;
+        font-size: clamp(2rem, 5.4vw, 4.6rem);
+        line-height: 1.2;
+      }
+
+      .scene-climax .lit { color: #ffe3a1; text-shadow: 0 0 44px rgb(201 162 75 / 0.4); }
+
+      /* services */
+      .service-flow {
+        display: grid;
+        gap: 0;
+        width: min(46rem, 100%);
+        border-top: 1px solid rgb(238 242 255 / 0.14);
+      }
+
+      .service-item {
+        display: grid;
+        grid-template-columns: 3rem 1fr;
+        grid-template-areas: "i n" ". l";
+        text-align: left;
+        gap: 0.35rem 1rem;
+        padding: 1.7rem 0.4rem;
+        border-bottom: 1px solid rgb(238 242 255 / 0.14);
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.35s, padding-left 0.35s;
+      }
+
+      .service-item:hover { background: rgb(201 162 75 / 0.06); padding-left: 1rem; }
+
+      .service-index {
+        grid-area: i;
+        font-family: "Space Mono", monospace;
+        font-size: 0.7rem;
+        color: rgb(201 162 75 / 0.85);
+        padding-top: 0.45em;
+      }
+
+      .service-name {
+        grid-area: n;
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+      }
+
+      .service-line { grid-area: l; color: rgb(238 242 255 / 0.58); font-size: 0.92rem; line-height: 1.8; }
+
+      /* testimonials */
+      .scene-testi blockquote {
+        margin: 1.6rem 0;
+        max-width: 34em;
+      }
+
+      .scene-testi blockquote p {
+        margin: 0;
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+        line-height: 1.8;
+        color: rgb(238 242 255 / 0.86);
+      }
+
+      .scene-testi cite {
+        display: block;
+        margin-top: 0.9rem;
+        font-family: "Space Mono", monospace;
+        font-style: normal;
+        font-size: 0.68rem;
+        letter-spacing: 0.2em;
+        color: rgb(238 242 255 / 0.45);
+      }
+
+      /* final */
+      .final-logo {
+        margin: 0 0 1rem;
+        font-size: clamp(1.9rem, 4.6vw, 3.6rem);
+        letter-spacing: 0.24em;
+      }
+
+      .final-logo span { color: #c9a24b; }
+
+      .scene-final h2 {
+        margin: 0;
+        font-size: clamp(1.3rem, 2.8vw, 2rem);
+        font-weight: 400;
+        letter-spacing: 0.14em;
+        color: rgb(238 242 255 / 0.8);
+      }
+
+      .final-cta {
+        margin-top: 2.8rem;
+        padding: 1rem 2.6rem;
+        border: 1px solid rgb(201 162 75 / 0.7);
+        border-radius: 999px;
+        color: #ffe3a1;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        transition: background 0.4s, color 0.4s, box-shadow 0.4s;
+      }
+
+      .final-cta:hover { background: #c9a24b; color: #06080f; box-shadow: 0 0 60px rgb(201 162 75 / 0.45); }
+
+      /* footer */
+      .jfooter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 1.6rem 2rem;
+        border-top: 1px solid rgb(238 242 255 / 0.1);
+      }
+
+      .jfooter p {
+        margin: 0;
+        font-family: "Space Mono", monospace;
+        font-size: 0.62rem;
+        letter-spacing: 0.18em;
+        color: rgb(238 242 255 / 0.4);
+        text-transform: uppercase;
+      }
+
+      [data-fade] { opacity: 1; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .grain { display: none; }
+      }
+    </style>
+
+    <script>
+      import gsap from "gsap";
+      import ScrollTrigger from "gsap/ScrollTrigger";
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (!reduceMotion) {
+        document.querySelectorAll<HTMLElement>("[data-scene]").forEach((scene, idx) => {
+          const items = scene.querySelectorAll("[data-fade]");
+          if (!items.length) return;
+          gsap.set(items, { autoAlpha: 0, y: 30 });
+          ScrollTrigger.create({
+            trigger: scene,
+            start: "top 62%",
+            onEnter: () =>
+              gsap.to(items, { autoAlpha: 1, y: 0, duration: 1.1, stagger: 0.14, ease: "power2.out", overwrite: true }),
+            once: idx === 0 ? false : false
+          });
+          // graceful exit as the scene leaves
+          ScrollTrigger.create({
+            trigger: scene,
+            start: "bottom 42%",
+            onEnter: () => gsap.to(items, { autoAlpha: 0, y: -24, duration: 0.8, ease: "power2.in", overwrite: true }),
+            onLeaveBack: () =>
+              gsap.to(items, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power2.out", overwrite: true })
+          });
+        });
+
+        // hero is visible immediately
+        const hero = document.querySelector("[data-scene]");
+        if (hero) {
+          gsap.to(hero.querySelectorAll("[data-fade]"), {
+            autoAlpha: 1,
+            y: 0,
+            duration: 1.3,
+            stagger: 0.16,
+            ease: "power2.out",
+            delay: 0.3
+          });
+        }
+      } else {
+        document.querySelectorAll("[data-fade]").forEach((el) => ((el as HTMLElement).style.opacity = "1"));
+      }
+    </script>
+  </body>
+</html>
