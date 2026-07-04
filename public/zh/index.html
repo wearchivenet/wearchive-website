@@ -911,12 +911,10 @@ class Component extends DCLogic {
   }
 }
 </script>
-<!-- ============================================================
-     ASTRAEA · Journey continues — IA sections 02–15
-     Appended below the cinematic hero; shares the living sky.
-     ============================================================ -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
+<!-- ASTRAEA journey sections 02-15: injected after the x-dc runtime renders -->
+<script>
+(function () {
+  var CSS = `
   .ax { position: relative; color:#F2EFE7; font-family:'Jost','Noto Serif TC',sans-serif; }
   .ax * { box-sizing: border-box; }
   .ax section { position:relative; max-width:1120px; margin:0 auto; padding:16vh 6vw; }
@@ -1031,9 +1029,8 @@ class Component extends DCLogic {
   .ax .foot-grid a { color:rgba(242,239,231,0.55); text-decoration:none; font-size:0.74rem; letter-spacing:0.22em; text-transform:uppercase; transition:color .4s; }
   .ax .foot-grid a:hover { color:#E8C87A; }
   .ax .foot-copy { font-size:0.64rem; letter-spacing:0.18em; color:rgba(242,239,231,0.35); }
-</style>
-
-<div class="ax">
+`;
+  var HTML = `
 
   <section id="birth-chart">
     <p class="kicker rev">02 · The Map</p>
@@ -1226,22 +1223,53 @@ class Component extends DCLogic {
       <span class="foot-copy">© 2026 ASTRAEA · 隱私政策 · 使用條款</span>
     </div>
   </footer>
-</div>
+`;
 
-<script>
-(function () {
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var els = document.querySelectorAll('.ax .rev, .ax .aspect');
-  if (reduce || !('IntersectionObserver' in window)) {
-    for (var i = 0; i < els.length; i++) els[i].classList.add('on');
-    return;
+  function reveal(root) {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = root.querySelectorAll('.rev, .aspect');
+    if (reduce || !('IntersectionObserver' in window)) {
+      for (var i = 0; i < els.length; i++) els[i].classList.add('on');
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.18 });
+    for (var j = 0; j < els.length; j++) io.observe(els[j]);
   }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.18 });
-  for (var j = 0; j < els.length; j++) io.observe(els[j]);
+
+  function inject() {
+    if (document.querySelector('.ax')) return;
+    if (!document.getElementById('ax-style')) {
+      var l = document.createElement('link');
+      l.id = 'ax-fonts'; l.rel = 'stylesheet';
+      l.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600&display=swap';
+      document.head.appendChild(l);
+      var st = document.createElement('style');
+      st.id = 'ax-style'; st.textContent = CSS;
+      document.head.appendChild(st);
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'ax';
+    wrap.innerHTML = HTML;
+    document.body.appendChild(wrap);
+    reveal(wrap);
+  }
+
+  function arm() {
+    inject();
+    var tries = 0;
+    var t = setInterval(function () {
+      tries++;
+      if (!document.querySelector('.ax')) inject();
+      if (tries > 16) clearInterval(t);
+    }, 500);
+  }
+
+  if (document.readyState === 'complete') setTimeout(arm, 300);
+  else window.addEventListener('load', function () { setTimeout(arm, 300); });
 })();
 </script>
 </body>
