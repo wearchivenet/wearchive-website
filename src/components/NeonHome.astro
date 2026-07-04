@@ -68,7 +68,7 @@ const tarotCards = {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700;900&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Noto+Serif+TC:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <title>{`Astra Arcana | ${content.title}`}</title>
@@ -126,7 +126,7 @@ const tarotCards = {
       <!-- MANIFESTO -->
       <section class="manifesto">
         <p class="mono-tag" data-reveal>{content.manifestoLabel}</p>
-        <h2 class="manifesto-title" data-scramble>{content.manifestoTitle}</h2>
+        <h2 class="manifesto-title" data-reveal>{content.manifestoTitle}</h2>
         <p class="manifesto-text" data-reveal>{content.manifestoText}</p>
       </section>
 
@@ -191,7 +191,7 @@ const tarotCards = {
       <!-- CTA -->
       <section class="cta">
         <div class="cta-box" data-reveal>
-          <h2 data-scramble>{content.ctaTitle}</h2>
+          <h2>{content.ctaTitle}</h2>
           <p>{content.ctaText}</p>
           <a class="btn-orbit" href={localizedPath(language, "book")} data-magnetic>
             <span>{content.ctaButton}</span>
@@ -239,16 +239,17 @@ const tarotCards = {
       .neon-body h1,
       .neon-body h2,
       .neon-body h3 {
-        font-family: "Unbounded", "Noto Sans TC", sans-serif;
-        font-weight: 700;
-        letter-spacing: 0;
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-weight: 500;
+        letter-spacing: 0.01em;
       }
 
       :lang(zh-Hant) .neon-body h1,
       :lang(zh-Hant) .neon-body h2,
       :lang(zh-Hant) .neon-body h3 {
-        font-family: "Noto Sans TC", sans-serif;
-        font-weight: 900;
+        font-family: "Noto Serif TC", serif;
+        font-weight: 500;
+        letter-spacing: 0.04em;
       }
 
       .mono-tag {
@@ -339,10 +340,10 @@ const tarotCards = {
       }
 
       .nav-logo {
-        font-family: "Unbounded", sans-serif;
-        font-weight: 900;
-        font-size: 0.95rem;
-        letter-spacing: 0.08em;
+        font-family: "Cormorant Garamond", "Noto Serif TC", serif;
+        font-weight: 600;
+        font-size: 1.15rem;
+        letter-spacing: 0.14em;
         text-decoration: none;
       }
 
@@ -500,8 +501,8 @@ const tarotCards = {
 
       .hero-title {
         margin: 0;
-        font-size: clamp(2.4rem, 7.2vw, 7rem);
-        line-height: 1.04;
+        font-size: clamp(2.3rem, 6.4vw, 6.2rem);
+        line-height: 1.16;
         max-width: 18em;
       }
 
@@ -809,12 +810,13 @@ const tarotCards = {
 
       .step-number {
         margin: 0;
-        font-family: "Unbounded", sans-serif;
-        font-weight: 900;
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 500;
+        font-style: italic;
         font-size: clamp(2.6rem, 6vw, 4.6rem);
         line-height: 1;
-        -webkit-text-stroke: 1.5px var(--magenta);
         color: transparent;
+        -webkit-text-stroke: 1px var(--magenta);
       }
 
       .process-step h3 { margin: 1.2rem 0 0; font-size: 1.6rem; }
@@ -884,7 +886,6 @@ const tarotCards = {
       @media (prefers-reduced-motion: reduce) {
         .noise,
         .blob,
-        .marquee-track,
         .tarot-border,
         .btn-orbit { animation: none !important; }
       }
@@ -915,56 +916,28 @@ const tarotCards = {
         let scroll = 0;
         let docH = 1;
 
-        type Star = { x: number; y: number; z: number; r: number; tw: number; hue: number; sparkle: boolean };
-        let stars: Star[] = [];
-        const FIELD = 2.2; // star field is 2.2 viewport heights tall, wraps around
+        const FIELD = 2.2; // sky band height in viewport heights, wraps around
 
         type Meteor = { x: number; y: number; vx: number; vy: number; life: number };
         let meteors: Meteor[] = [];
 
-        // constellations: normalized points, line segments, screen anchor, scroll window
-        type Constellation = {
-          name: string;
-          label: string;
-          pts: [number, number][];
-          segs: [number, number][];
-          fx: number; // anchor x (fraction of width)
-          fy: number;
-          size: number; // fraction of min(w,h)
-          from: number; // scroll progress window
-          to: number;
-        };
+        // Real sky: Yale Bright Star Catalog (BSC5), all 327 stars brighter than mag 3.6.
+        // Each entry: [right ascension °, declination °, visual magnitude, spectral class 0=O/B 1=A 2=F/G 3=K/M]
+        const BSC =
+          "2.1,29.1,2.1,0;2.3,59.1,2.3,2;3.3,15.2,2.8,0;4.9,-8.8,3.6,3;6.4,-77.3,2.8,2;6.6,-42.3,2.4,3;9.8,30.9,3.3,3;10.1,56.5,2.2,3;10.9,-18,2,2;12.3,57.8,3.4,2;14.2,60.7,2.5,0;16.5,-46.7,3.3,2;17.1,-10.2,3.5,3;17.4,35.6,2.1,3;21,-8.2,3.6,3;21.5,60.2,2.7,1;38,89.3,2,2;22.1,-43.3,3.4,3;24.5,48.6,3.6,3;24.4,-57.2,0.5,0;26,-15.9,3.5,2;28.6,63.7,3.4,0;28.3,29.6,3.4,2;28.7,20.8,2.6,1;29.7,-61.6,2.9,2;31,42.3,2.3,3;31.8,23.5,2,3;32.4,35,3,1;34.1,-51.5,3.6,0;34.8,-3,3,3;40.8,3.2,3.5,1;44.6,-40.3,3.2,1;45.6,4.1,2.5,3;46.2,53.5,2.9,2;46.3,38.8,3.4,3;47,41,2.1,0;51.1,49.9,1.8,2;51.2,9,3.6,2;55.7,47.8,3,0;55.8,-9.8,3.5,3;56.9,24.1,2.9,0;58.5,31.9,2.9,0;56.8,-74.2,3.2,3;59.5,40,2.9,0;59.5,-13.5,3,3;60.2,12.5,3.5,0;63.6,-62.5,3.4,2;64.5,-33.8,3.6,0;67.2,19.2,3.5,2;67.2,15.9,3.4,1;69,16.5,0.8,3;68.5,-55,3.3,1;72.5,7,3.2,2;74.2,33.2,2.7,3;75.5,43.8,3,2;76.6,41.2,3.2,0;76.4,-22.4,3.2,3;77,-5.1,2.8,1;78.2,-16.2,3.3,0;79.2,46,0.1,2;78.6,-8.2,0.1,0;79.4,-6.8,3.6,0;81.1,-2.4,3.4,0;81.3,6.3,1.6,0;81.6,28.6,1.6,0;82.1,-20.8,2.8,2;83,-0.3,2.2,0;83.2,-17.8,2.6,2;83.8,9.9,3.5,0;83.9,-5.9,2.8,0;84.1,-1.2,1.7,0;84.4,21.1,3,0;85.2,-1.9,2,0;84.9,-34.1,2.6,0;86.1,-22.4,3.6,2;86.7,-14.8,3.5,1;86.9,-9.7,2.1,0;87.7,-35.8,3.1,3;88.8,7.4,0.5,3;89.9,44.9,1.9,1;89.9,37.2,2.6,1;93.7,22.5,3.3,3;95.1,-30.1,3,0;95.7,22.5,2.9,3;95.7,-18,2,0;96,-52.7,-0.7,2;99.4,16.4,1.9,1;99.4,-43.2,3.2,0;101,25.1,3,2;101.3,12.9,3.4,2;101.3,-16.7,-1.5,1;103.2,34,3.6,1;102,-61.9,3.3,1;102.5,-50.6,2.9,3;104.7,-29,1.5,0;105.4,-27.9,3.5,3;105.8,-23.8,3,0;107.1,-26.4,1.8,2;109.5,16.5,3.6,1;109.3,-37.1,2.7,3;110,22,3.5,2;111,-29.3,2.5,0;111.8,8.3,2.9,0;112.3,-43.3,3.3,3;113.6,31.9,2.9,1;113.6,31.9,2,1;114.8,5.2,0.4,2;116.1,24.4,3.6,2;116.3,28,1.1,3;117.3,-24.9,3.3,2;119.2,-53,3.5,0;120.9,-40,2.3,0;121.9,-24.3,2.8,2;122.4,-47.3,1.8,1;124.1,9.2,3.5,3;125.6,-59.5,1.9,3;127.6,60.7,3.4,2;131.7,6.4,3.4,2;131.2,-54.7,2,1;133.8,5.9,3.1,2;134.8,48,3.1,1;135.9,47.2,3.6,1;137,-43.4,2.2,3;137.7,-59,3.4,0;138.3,-69.7,1.7,1;139.3,-59.3,2.3,1;140.3,34.4,3.1,3;140.5,-55,2.5,0;141.9,-8.7,2,3;143.2,51.7,3.2,2;142.7,-40.5,3.6,2;142.8,-57,3.1,3;145.3,9.9,3.5,2;146.5,23.8,3,2;146.8,-65.1,3,1;149.2,-54.6,3.5,0;151.8,16.8,3.5,1;152.1,12,1.4,0;154.2,23.4,3.4,2;154.3,42.9,3.5,1;153.4,-70,3.3,0;154.3,-61.3,3.4,3;155,19.8,2.6,3;155.6,41.5,3,3;158,-61.7,3.3,0;160.7,-64.4,2.8,0;161.7,-49.4,2.7,2;162.4,-16.2,3.1,3;165.5,56.4,2.4,1;165.9,61.8,1.8,3;167.4,44.5,3,3;168.5,20.5,2.6,1;168.6,15.4,3.3,1;169.6,33.1,3.5,3;169.8,-14.8,3.6,2;173.3,-31.9,3.5,2;173.9,-63,3.1,0;177.3,14.6,2.1,1;178.5,53.7,2.4,1;182.1,-50.7,2.6,0;182.5,-22.6,3,3;183.8,-58.7,2.8,0;183.9,57,3.3,1;184,-17.5,2.6,0;185.3,-60.4,3.6,3;186.6,-63.1,1.3,0;186.7,-63.1,1.7,0;187.5,-16.5,3,0;187.8,-57.1,1.6,3;188.6,-23.4,2.6,2;189.3,-69.1,2.7,0;190.4,-49,2.2,1;191.6,-68.1,3,0;191.9,-59.7,1.3,0;193.5,56,1.8,1;193.9,3.4,3.4,3;194,38.3,2.9,1;195.5,11,2.8,2;199.7,-23.2,3,2;200.1,-36.7,2.8,1;201,54.9,2.3,1;201.3,-11.2,1,0;203.7,-0.6,3.4,1;205,-53.5,2.3,0;207.4,-41.7,3.4,0;206.9,49.3,1.9,0;207.4,-42.5,3,0;208.9,-47.3,2.5,0;208.7,18.4,2.7,2;211,-60.4,0.6,0;211.6,-26.7,3.3,3;211.7,-36.4,2.1,3;213.9,19.2,0,3;214.9,-46.1,3.5,0;218,30.4,3.6,3;218,38.3,3,1;218.9,-42.2,2.3,0;219.9,-60.8,0,2;219.9,-60.8,1.3,3;220.6,-65,3.2,1;220.5,-47.4,2.3,0;221.2,27.1,2.7,3;222.7,-16,2.8,1;222.7,74.2,2.1,3;224.6,-43.1,2.7,0;224.8,-42.1,3.1,0;225.5,40.4,3.5,2;226,-25.3,3.3,3;228.1,-52.1,3.4,2;229.7,-68.7,2.9,1;228.9,33.3,3.5,2;229.3,-9.4,2.6,0;230.3,-40.6,3.2,0;230.5,-36.3,3.6,3;230.7,-44.7,3.4,0;230.2,71.8,3,1;231.2,59,3.3,3;233.8,-41.2,2.8,0;233.7,26.7,2.2,1;234.3,-28.1,3.6,3;236.1,6.4,2.6,3;237.4,-3.4,3.5,1;238.8,-63.4,2.9,2;239.7,-26.1,2.9,0;240,-38.4,3.4,0;240.1,-22.6,2.3,0;239.9,25.9,2,1;241.4,-19.8,2.6,0;243.6,-3.7,2.7,3;244.6,-4.7,3.2,2;245.3,-25.6,2.9,0;246,61.5,2.7,2;247.4,-26.4,1,3;247.6,21.5,2.8,2;249,-28.2,2.8,0;249.3,-10.6,2.6,0;250.3,31.6,2.8,2;252.2,-69,1.9,3;250.7,38.9,3.5,2;252.5,-34.3,2.3,3;253,-38,3.1,0;253.1,-38,3.6,0;254.7,-56,3.1,3;254.4,9.4,3.2,3;257.6,-15.7,2.4,1;258,-43.2,3.3,2;257.2,65.7,3.2,0;258.7,14.4,3.5,3;258.8,24.8,3.1,1;258.8,36.8,3.2,3;260.5,-25,3.3,0;261.3,-55.5,2.9,3;261.3,-56.4,3.3,0;262.7,-37.3,2.7,0;263,-49.9,3,0;263.4,-37.1,1.6,0;262.6,52.3,2.8,2;264.3,-43,1.9,2;263.7,12.6,2.1,1;264.4,-15.4,3.5,2;265.6,-39,2.4,0;265.9,4.6,2.8,3;266.9,-40.1,3,2;266.6,27.7,3.4,2;267.5,-37,3.2,3;269.8,-9.8,3.3,3;269.2,51.5,2.2,3;271.5,-30.4,3,3;274.4,-36.8,3.1,3;275.2,-29.8,2.7,3;275.3,-2.9,3.3,3;276,-34.4,1.9,0;276.7,-46,3.5,0;277,-25.4,2.8,3;275.3,72.7,3.6,2;279.2,38.8,0,1;281.4,-27,3.2,0;282.5,33.4,3.5,0;283.8,-26.3,2,0;284.4,-21.1,3.5,3;284.7,32.7,3.2,0;285.7,-29.9,2.6,1;286.7,-27.7,3.3,3;286.4,13.9,3,1;286.6,-4.9,3.4,0;287.4,-21,2.9,2;288.1,67.7,3.1,2;291.4,3.1,3.4,2;292.7,28,3.1,3;296.6,10.6,2.7,3;296.2,45.1,2.9,0;297.7,8.9,0.8,1;299.7,19.5,3.5,3;302.2,-66.2,3.6,2;302.8,-0.8,3.2,0;304.5,-12.5,3.6,2;305.3,-14.8,3.1,2;306.4,-56.7,1.9,0;305.6,40.3,2.2,2;309.4,-47.3,3.1,3;311.2,-66.2,3.4,1;310.4,45.3,1.3,1;311.6,34,2.5,3;311.3,61.8,3.4,3;318.2,30.2,3.2,2;319.6,62.6,2.4,1;322.9,-5.6,2.9,2;322.2,70.6,3.2,0;326,9.9,2.4,3;326.8,-16.1,2.9,1;328.5,-37.4,3,0;331.4,-0.3,3,2;332.1,-47,1.7,0;332.6,6.2,3.5,1;332.7,58.2,3.4,3;334.6,-60.3,2.9,3;340.4,10.8,3.4,0;340.7,-46.9,2.1,3;340.8,30.2,2.9,2;342.1,-51.3,3.5,1;342.5,24.6,3.5,2;342.4,66.2,3.5,3;343.7,-15.8,3.3,1;344.4,-29.6,1.2,1;345.9,28.1,2.4,3;346.2,15.2,2.5,0;354.8,77.6,3.2,3";
 
-        const constellations: Constellation[] = [
-          {
-            name: "ORION",
-            label: "獵戶座",
-            pts: [[0.25, 0.08], [0.75, 0.12], [0.42, 0.48], [0.52, 0.52], [0.62, 0.56], [0.3, 0.95], [0.72, 0.9]],
-            segs: [[0, 2], [1, 4], [2, 3], [3, 4], [2, 5], [4, 6]],
-            fx: 0.72, fy: 0.3, size: 0.34, from: -0.05, to: 0.3
-          },
-          {
-            name: "URSA MAJOR",
-            label: "北斗七星",
-            pts: [[0, 0.18], [0.18, 0.06], [0.35, 0.14], [0.5, 0.3], [0.72, 0.26], [0.78, 0.5], [0.55, 0.52]],
-            segs: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]],
-            fx: 0.22, fy: 0.42, size: 0.36, from: 0.16, to: 0.5
-          },
-          {
-            name: "CASSIOPEIA",
-            label: "仙后座",
-            pts: [[0, 0.6], [0.25, 0.2], [0.5, 0.55], [0.75, 0.15], [1, 0.45]],
-            segs: [[0, 1], [1, 2], [2, 3], [3, 4]],
-            fx: 0.74, fy: 0.62, size: 0.3, from: 0.4, to: 0.72
-          },
-          {
-            name: "SCORPIUS",
-            label: "天蠍座",
-            pts: [[0.06, 0.1], [0.16, 0.22], [0.1, 0.34], [0.28, 0.3], [0.4, 0.44], [0.47, 0.6], [0.52, 0.76], [0.62, 0.9], [0.78, 0.94], [0.9, 0.84], [0.84, 0.7]],
-            segs: [[0, 3], [1, 3], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10]],
-            fx: 0.3, fy: 0.75, size: 0.36, from: 0.62, to: 1.05
-          }
-        ];
+        // spectral class -> star tint [hue, saturation%]
+        const SPEC: [number, number][] = [[214, 85], [0, 0], [46, 45], [30, 75]];
+
+        type CatStar = { ra: number; dec: number; mag: number; spec: number };
+        const catalog: CatStar[] = BSC.split(";").map((row) => {
+          const [ra, dec, mag, spec] = row.split(",").map(parseFloat);
+          return { ra, dec, mag, spec };
+        });
+
+        // faint background dust for density (procedural, uniform)
+        type Dust = { x: number; y: number; z: number; r: number; tw: number };
+        let dust: Dust[] = [];
 
         // planets: soft glowing spheres at different depths
         const planets = [
@@ -980,32 +953,34 @@ const tarotCards = {
           canvas.height = h * DPR;
           ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
           docH = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-          const count = Math.min(420, Math.floor((w * h) / 5200));
-          stars = Array.from({ length: count }, () => ({
+          const count = Math.min(260, Math.floor((w * h) / 8000));
+          dust = Array.from({ length: count }, () => ({
             x: Math.random() * w,
             y: Math.random() * h * FIELD,
-            z: 0.18 + Math.random() * 0.82,
-            r: 0.4 + Math.random() * 1.5,
-            tw: Math.random() * Math.PI * 2,
-            hue: [205, 212, 220, 48][Math.floor(Math.random() * 4)],
-            sparkle: Math.random() < 0.06
+            z: 0.15 + Math.random() * 0.5,
+            r: 0.3 + Math.random() * 0.7,
+            tw: Math.random() * Math.PI * 2
           }));
         };
 
-        const smoothstep = (a: number, b: number, x: number) => {
-          const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
-          return t * t * (3 - 2 * t);
-        };
-
-        const drawStar = (x: number, y: number, r: number, alpha: number, hue: number, sparkle: boolean) => {
+        const drawStar = (x: number, y: number, r: number, alpha: number, hue: number, sat: number, sparkle: boolean) => {
+          if (r > 1.6) {
+            const halo = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
+            halo.addColorStop(0, `hsla(${hue}, ${sat}%, 88%, ${alpha * 0.35})`);
+            halo.addColorStop(1, `hsla(${hue}, ${sat}%, 88%, 0)`);
+            ctx.fillStyle = halo;
+            ctx.beginPath();
+            ctx.arc(x, y, r * 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
           ctx.beginPath();
-          ctx.fillStyle = `hsla(${hue}, 90%, 84%, ${alpha})`;
+          ctx.fillStyle = `hsla(${hue}, ${sat}%, 86%, ${alpha})`;
           ctx.arc(x, y, r, 0, Math.PI * 2);
           ctx.fill();
-          if (sparkle && alpha > 0.55) {
-            ctx.strokeStyle = `hsla(${hue}, 90%, 88%, ${alpha * 0.4})`;
+          if (sparkle && alpha > 0.5) {
+            ctx.strokeStyle = `hsla(${hue}, ${sat}%, 90%, ${alpha * 0.35})`;
             ctx.lineWidth = 0.7;
-            const s = r * 5;
+            const s = r * 4.5;
             ctx.beginPath();
             ctx.moveTo(x - s, y); ctx.lineTo(x + s, y);
             ctx.moveTo(x, y - s); ctx.lineTo(x, y + s);
@@ -1019,19 +994,41 @@ const tarotCards = {
           // ease mouse for smooth head-motion parallax
           mouse.sx += (mouse.x - mouse.sx) * 0.05;
           mouse.sy += (mouse.y - mouse.sy) * 0.05;
-          const progress = scroll / docH;
-
-          // stars — deeper stars move less (naked-eye 3D)
           const fieldH = h * FIELD;
-          for (const s of stars) {
-            s.tw += 0.015 + s.z * 0.012;
-            const px = mouse.sx * 46 * s.z;
-            const py = mouse.sy * 30 * s.z - scroll * 0.32 * s.z;
+
+          // faint procedural dust (deep background layer)
+          for (const s of dust) {
+            s.tw += 0.012 + s.z * 0.01;
+            const px = mouse.sx * 30 * s.z;
+            const py = mouse.sy * 20 * s.z - scroll * 0.18 * s.z;
             let y = (s.y + py) % fieldH;
             if (y < 0) y += fieldH;
             const x = (s.x + px + w) % w;
-            const alpha = (0.3 + Math.abs(Math.sin(s.tw)) * 0.7) * (0.45 + s.z * 0.55);
-            drawStar(x, y, s.r * (0.5 + s.z * 0.8), alpha, s.hue, s.sparkle);
+            const alpha = (0.2 + Math.abs(Math.sin(s.tw)) * 0.5) * (0.4 + s.z * 0.5);
+            ctx.beginPath();
+            ctx.fillStyle = `hsla(215, 60%, 85%, ${alpha})`;
+            ctx.arc(x, y, s.r * (0.6 + s.z * 0.7), 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // real sky — Yale Bright Star Catalog, equirectangular projection.
+          // Scrolling slowly rotates the celestial sphere (RA), like the night passing.
+          const rot = scroll * 0.045 + t * 0.00018; // degrees of RA
+          const bandW = w * 2.6; // 360° of RA spans 2.6 viewport widths
+          for (const c of catalog) {
+            let x = (((c.ra + rot) % 360) / 360) * bandW;
+            if (x > w + 60) continue;
+            const depth = 0.55 + (3.6 - c.mag) * 0.12; // brighter = nearer feel
+            x += mouse.sx * 40 * depth;
+            let y = ((90 - c.dec) / 180) * fieldH - scroll * 0.28 * depth + mouse.sy * 26 * depth;
+            y = y % fieldH;
+            if (y < 0) y += fieldH;
+            if (y > h + 40) continue;
+            const bright = (3.9 - c.mag) / 4.6; // 0..1
+            const r = 0.7 + bright * 2.3;
+            const twinkle = 0.75 + Math.sin(t * 0.002 + c.ra * 7) * 0.25;
+            const [hue, sat] = SPEC[c.spec] ?? SPEC[1];
+            drawStar(x, y, r, Math.min(1, (0.35 + bright * 0.75) * twinkle), hue, sat, c.mag < 1.2);
           }
 
           // planets — deep parallax + slow drift
@@ -1062,43 +1059,6 @@ const tarotCards = {
               ctx.ellipse(x, y, p.r * 1.9, p.r * 0.55, -0.42, 0, Math.PI * 2);
               ctx.stroke();
             }
-          }
-
-          // constellations — fade in/out with scroll, gentle parallax
-          for (const c of constellations) {
-            const fadeIn = smoothstep(c.from, c.from + 0.08, progress);
-            const fadeOut = 1 - smoothstep(c.to - 0.08, c.to, progress);
-            const alpha = Math.min(fadeIn, fadeOut);
-            if (alpha <= 0.01) continue;
-            const size = Math.min(w, h) * c.size;
-            const cx = c.fx * w + mouse.sx * 34 - size / 2;
-            const cy = c.fy * h + mouse.sy * 22 - scroll * 0.1 - size / 2 + (1 - alpha) * 14;
-            const px = c.pts.map(([nx, ny]) => [cx + nx * size, cy + ny * size]);
-
-            ctx.strokeStyle = `rgba(150,190,255,${alpha * 0.32})`;
-            ctx.lineWidth = 0.8;
-            ctx.beginPath();
-            for (const [a, b] of c.segs) {
-              ctx.moveTo(px[a][0], px[a][1]);
-              ctx.lineTo(px[b][0], px[b][1]);
-            }
-            ctx.stroke();
-
-            px.forEach(([x, y], i) => {
-              const r = i % 3 === 0 ? 2.2 : 1.6;
-              const halo = ctx.createRadialGradient(x, y, 0, x, y, r * 4);
-              halo.addColorStop(0, `rgba(190,220,255,${alpha * 0.5})`);
-              halo.addColorStop(1, "rgba(190,220,255,0)");
-              ctx.fillStyle = halo;
-              ctx.beginPath();
-              ctx.arc(x, y, r * 4, 0, Math.PI * 2);
-              ctx.fill();
-              drawStar(x, y, r, alpha * 0.95, 210, false);
-            });
-
-            ctx.font = "10px 'Space Mono', monospace";
-            ctx.fillStyle = `rgba(190,215,255,${alpha * 0.55})`;
-            ctx.fillText(`${c.name} · ${c.label}`, px[0][0] + 10, px[0][1] - 8);
           }
 
           // occasional meteor
@@ -1199,21 +1159,20 @@ const tarotCards = {
 
         if (!reduceMotion) {
           gsap.from(title.querySelectorAll(".char"), {
-            yPercent: 110,
             autoAlpha: 0,
-            rotateX: -50,
-            stagger: 0.022,
-            duration: 0.9,
-            ease: "power4.out",
-            delay: 0.15
+            y: 14,
+            stagger: 0.014,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.1
           });
           gsap.from("[data-hero-item]", {
             autoAlpha: 0,
-            y: 26,
-            stagger: 0.12,
-            duration: 0.8,
-            ease: "power3.out",
-            delay: 0.5
+            y: 18,
+            stagger: 0.1,
+            duration: 0.7,
+            ease: "power2.out",
+            delay: 0.4
           });
         }
       }
@@ -1228,38 +1187,6 @@ const tarotCards = {
             gsap.to(els, { autoAlpha: 1, y: 0, duration: 0.85, stagger: 0.09, ease: "power3.out", overwrite: true })
         });
       }
-
-      /* ---------- scramble text ---------- */
-      const GLYPHS = "✶☾☉♄♆♇星辰月光牌陣XVI#@%&";
-      document.querySelectorAll<HTMLElement>("[data-scramble]").forEach((el) => {
-        const original = el.textContent ?? "";
-        if (reduceMotion) return;
-        let played = false;
-        new IntersectionObserver((entries, obs) => {
-          if (!entries.some((e) => e.isIntersecting) || played) return;
-          played = true;
-          obs.disconnect();
-          const chars = [...original];
-          const state = { progress: 0 };
-          gsap.to(state, {
-            progress: 1,
-            duration: 1.1,
-            ease: "power2.inOut",
-            onUpdate: () => {
-              const settled = Math.floor(state.progress * chars.length);
-              el.textContent = chars
-                .map((ch, i) => {
-                  if (i < settled || ch === " " || ch === "\n") return ch;
-                  return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-                })
-                .join("");
-            },
-            onComplete: () => {
-              el.textContent = original;
-            }
-          });
-        }, { threshold: 0.4 }).observe(el);
-      });
 
       /* ---------- tilt cards ---------- */
       if (finePointer && !reduceMotion) {
