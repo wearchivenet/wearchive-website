@@ -46,7 +46,16 @@
   .scene { position: absolute; inset: 0; animation: floaty 9s ease-in-out infinite; will-change: transform; }
   @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-  .chart-wrap canvas { display: block; width: 100%; height: 100%; }
+  /* only the inner dial (aspect web + numeral ring) rotates; the glyph
+     ring and everything behind the translucent disc stay perfectly still */
+  .chart-wrap canvas { display: block; position: absolute; left: 14%; top: 14%; width: 72%; height: 72%; }
+
+  /* breathing halo for bodies that sit on top of other artwork */
+  .halo { border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+    background: radial-gradient(50% 50% at 50% 50%,
+      rgba(255,232,200,.42) 0%, rgba(255,205,175,.20) 46%, transparent 72%);
+    animation: breathe 4.6s ease-in-out infinite; }
+  .halo.h2 { animation-duration: 5.8s; animation-delay: -1.7s; }
 
   /* breathing bloom behind / around the chart */
   .bloom { border-radius: 50%; pointer-events: none;
@@ -127,8 +136,13 @@
     { id: 'moonT', cx: .4913, cy: .0960, r: .0195, f: .72, dur: 64, dir: -1 }, // 月亮 · 略快
     { id: 'jupS',  cx: .7048, cy: .1552, r: .0208, f: .68, dur: 80, dir: 1  }, // 木星(小) · 慢
     { id: 'jupB',  cx: .8579, cy: .3892, r: .0495, f: .74, dur: 72, dir: -1 }, // 木星(大) · 慢
-    { id: 'merc',  cx: .1764, cy: .6865, r: .0195, f: .72, dur: 48, dir: 1  }, // 水星 · 最快
-    { id: 'moonB', cx: .4915, cy: .8418, r: .0169, f: .74, dur: 56, dir: -1 }  // 月亮 · 略快
+    { id: 'merc',  cx: .1764, cy: .6865, r: .0195, f: .72, dur: 48, dir: 1  }  // 水星 · 最快
+  ];
+  /* bottom moon & saturn are interlocked with the ring artwork —
+     they glow and breathe instead of spinning */
+  var HALOS = [
+    { cx: .4915, cy: .8418, rx: .034, ry: .048, cls: '' },
+    { cx: .7700, cy: .7480, rx: .080, ry: .075, cls: 'h2' }
   ];
 
   var stage = document.getElementById('stage');
@@ -245,23 +259,23 @@
   }
 
   function rebuildChartTex(m) {
-    // the whole disc rotates as one opaque piece; the alpha fade lives
-    // entirely OUTSIDE the ring (over its own glow), so nothing doubles
-    var M = 1.06;                                // crop margin beyond the ring
-    var rxPix = CHART.rx * M * iw * m.s;
-    var ryPix = CHART.ry * M * ih * m.s;
+    // inner dial only: solid through the numeral ring (~.63 of the chart),
+    // fading out inside the quiet gap before the zodiac-glyph ring (~.72)
+    var F = .72;
+    var rxPix = CHART.rx * F * iw * m.s;
+    var ryPix = CHART.ry * F * ih * m.s;
     chart.k = ryPix / rxPix;
-    var D = Math.min(1700, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6)));
+    var D = Math.min(1400, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6)));
     // unprojected texture: stretch the ellipse crop into a circle
     var tex = document.createElement('canvas');
     tex.width = tex.height = D;
     var tctx = tex.getContext('2d');
-    var srx = CHART.rx * M * iw, sry = CHART.ry * M * ih;
+    var srx = CHART.rx * F * iw, sry = CHART.ry * F * ih;
     tctx.drawImage(base, CHART.cx * iw - srx, CHART.cy * ih - sry, srx * 2, sry * 2, 0, 0, D, D);
-    featherCircle(tctx, D, .945);                // opaque to the ring edge, fade over the halo
+    featherCircle(tctx, D, .875);
     chart.tex = tex;
     chart.D = D;
-    // display canvas matches the on-screen ellipse (with margin)
+    // display canvas matches the on-screen inner ellipse
     chart.cv.width = Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
     chart.cv.height = Math.ceil(ryPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
   }
@@ -293,10 +307,12 @@
         place(L.el, L.p.cx, L.p.cy, L.p.r, null, m);
         paintPlanet(L.cv, L.p, m);
       } else if (L.kind === 'chart') {
-        place(L.el, CHART.cx, CHART.cy, CHART.rx * 1.06, CHART.ry * 1.06, m);
+        place(L.el, CHART.cx, CHART.cy, CHART.rx, CHART.ry, m);
         rebuildChartTex(m);
       } else if (L.kind === 'bloom') {
         place(L.el, CHART.cx, CHART.cy, CHART.rx * 1.22, CHART.ry * 1.30, m);
+      } else if (L.kind === 'halo') {
+        place(L.el, L.h.cx, L.h.cy, L.h.rx, L.h.ry, m);
       }
     });
   }
@@ -319,6 +335,12 @@
     var m = coverMetrics();
     buildChart(m);
     PLANETS.forEach(function (p) { buildPlanet(p, m); });
+    HALOS.forEach(function (h) {
+      var el = document.createElement('div');
+      el.className = 'layer halo ' + h.cls;
+      scene.appendChild(el);
+      layers.push({ el: el, kind: 'halo', h: h });
+    });
     layout();
     stage.classList.add('ready');
     if (reduce) { drawChart(); return; }
