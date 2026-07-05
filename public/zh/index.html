@@ -4,165 +4,100 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>THE INNER COSMOS · 内在宇宙</title>
-<meta name="description" content="沉浸式宇宙探索体验——八大宇宙以星体形式沿轨道环绕中央的本命盘缓慢运行。">
-<meta name="theme-color" content="#16264F">
+<meta name="description" content="一张会呼吸的星盘。悬浮、苏醒、缓慢转动——进入你的内在宇宙。">
+<meta name="theme-color" content="#0d1b3e">
+<link rel="preload" as="image" href="/images/celestial-hero-source.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #0B0F1A;
-    --panel: #151B2A;
-    --gold: #C5A86A;
-    --gold-bright: #EAD7B8;
-    --beige: #F2E9DB;
-  }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; color: var(--beige);
-    background: linear-gradient(180deg,#0A1230 0%,#16264F 30%,#33456F 55%,#5A6C96 76%,#8B98BE 100%) fixed;
-    font-family: 'Jost', 'Noto Serif SC', sans-serif; overflow-x: hidden; }
-  ::selection { background: var(--gold); color: var(--navy); }
+  html, body { margin: 0; height: 100%; background: #0d1b3e; color: #F2E9DB;
+    font-family: 'Jost', 'Noto Serif SC', sans-serif; overflow: hidden; }
+  ::selection { background: #C5A86A; color: #0d1b3e; }
 
-  #space { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-
-  /* soft drifting clouds */
-  .clouds { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-  .cl { position: absolute; left: var(--l); top: var(--t); width: var(--w); aspect-ratio: 3/1;
-    background: radial-gradient(50% 55% at 50% 55%, rgba(255,255,255,var(--o)), transparent 70%);
-    filter: blur(14px); animation: drift var(--d) linear infinite alternate; }
-  @keyframes drift { to { transform: translateX(8vw); } }
-
-  /* impressionist flower meadow */
-  #meadow { position: fixed; left: 0; right: 0; bottom: 0; width: 100vw; height: 24vh;
-    z-index: 6; pointer-events: none; }
-
-  /* nav */
+  /* ---------- nav ---------- */
   .nav { position: fixed; inset: 0 0 auto; z-index: 40; display: flex; align-items: center;
     justify-content: space-between; gap: 1.2rem; padding: 1.2rem 4vw;
-    background: linear-gradient(rgba(11,15,26,.82), transparent); }
+    background: linear-gradient(rgba(8,14,34,.62), transparent); }
   .nav .logo { font-family: 'Cormorant Garamond', serif; font-weight: 600; letter-spacing: .3em;
-    color: var(--gold-bright); text-decoration: none; font-size: .98rem; white-space: nowrap; }
+    color: #F6EEDC; text-decoration: none; font-size: .98rem; white-space: nowrap;
+    text-shadow: 0 1px 12px rgba(8,14,34,.8); }
   .nav .links { display: none; gap: 1.6rem; }
   @media (min-width: 1000px) { .nav .links { display: flex; } }
-  .nav .links a { color: rgba(242,233,219,.62); text-decoration: none; font-size: .66rem;
-    letter-spacing: .28em; text-transform: uppercase; transition: color .4s; }
-  .nav .links a:hover { color: var(--gold-bright); }
-  .nav .book { padding: .6rem 1.5rem; border: 1px solid rgba(197,168,106,.75); color: var(--gold-bright);
+  .nav .links a { color: rgba(246,238,220,.78); text-decoration: none; font-size: .66rem;
+    letter-spacing: .28em; text-transform: uppercase; transition: color .4s;
+    text-shadow: 0 1px 10px rgba(8,14,34,.9); }
+  .nav .links a:hover { color: #FFDFAF; }
+  .nav .book { padding: .6rem 1.5rem; border: 1px solid rgba(246,222,170,.8); color: #FFEFD2;
     text-decoration: none; font-size: .64rem; letter-spacing: .3em; text-transform: uppercase;
+    background: rgba(8,14,34,.25); backdrop-filter: blur(4px);
     transition: background .4s, color .4s, box-shadow .4s; white-space: nowrap; }
-  .nav .book:hover { background: var(--gold); color: var(--navy); box-shadow: 0 0 34px rgba(197,168,106,.4); }
+  .nav .book:hover { background: #E8C89A; color: #14224a; box-shadow: 0 0 34px rgba(246,214,150,.5); }
 
-  /* stage */
-  .map { position: relative; z-index: 1; width: 100vw; height: 100vh; height: 100svh; overflow: hidden; }
-  #orbits { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  #orbits { filter: drop-shadow(0 0 4px rgba(255,175,215,.55)); }
-  #orbits ellipse { fill: none; stroke: rgba(255,230,244,.30); stroke-width: 1; }
-  #orbits .faint { stroke: rgba(255,230,244,.13); stroke-dasharray: 2 6; }
+  /* ---------- hero stage ---------- */
+  .stage { position: fixed; inset: 0; overflow: hidden; }
+  .stage > img.base { position: absolute; will-change: transform; user-select: none; -webkit-user-drag: none; }
 
-  /* central natal chart */
-  .core { position: absolute; left: 50%; top: 50%; width: min(66vmin, 660px); aspect-ratio: 1;
-    transform: translate(-50%, -50%); z-index: 2; cursor: pointer;
-    animation: floaty 9s ease-in-out infinite; }
-  .core::before { content: ''; position: absolute; inset: -34%; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,196,226,.34), rgba(255,170,215,.12) 45%, transparent 66%);
-    animation: coreBreathe 5.2s ease-in-out infinite; }
-  .core.armed::before { animation-duration: 3.4s; }
-  .core svg { width: 100%; height: 100%; overflow: visible;
-    filter: drop-shadow(0 0 5px rgba(255,175,215,.75)) drop-shadow(0 0 24px rgba(255,150,205,.4)); }
-  .core.shaking svg { animation: shake .55s cubic-bezier(.36,.07,.19,.97); }
-  .core.armed svg { animation: spin 240s linear infinite; }
+  /* everything registered over the image is absolutely positioned by JS */
+  .layer { position: absolute; will-change: transform; }
+
+  /* chart wrapper: floating + tremor live here (GPU transforms only) */
+  .chart-wrap { animation: floaty 7s ease-in-out infinite; }
+  .chart-wrap.waking { animation: floaty 7s ease-in-out infinite, tremor .42s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  @keyframes tremor {
+    10%, 90% { translate: -1px 0; rotate: -.18deg; }
+    20%, 80% { translate: 1.2px 0; rotate: .22deg; }
+    30%, 50%, 70% { translate: -1.6px 0; rotate: -.3deg; }
+    40%, 60% { translate: 1.6px 0; rotate: .3deg; }
+  }
+  .chart-wrap canvas { display: block; width: 100%; height: 100%; }
+
+  /* breathing bloom behind / around the chart */
+  .bloom { border-radius: 50%; pointer-events: none;
+    background: radial-gradient(50% 50% at 50% 50%,
+      rgba(255,196,150,.34) 0%, rgba(255,170,140,.16) 42%, rgba(255,150,130,.05) 62%, transparent 74%);
+    mix-blend-mode: screen;
+    animation: breathe 5.2s ease-in-out infinite; }
+  .bloom.b2 { animation-duration: 6.4s; animation-delay: -2.1s; opacity: .7; }
+  .armed .bloom { animation-duration: 3.6s; }
+  @keyframes breathe {
+    0%, 100% { opacity: .45; transform: scale(.95); }
+    50% { opacity: 1; transform: scale(1.07); }
+  }
+
+  /* planets: static feathered crops, self-rotation */
+  .planet-layer { pointer-events: none; }
+  .planet-layer canvas { display: block; width: 100%; height: 100%;
+    animation: spin var(--dur, 160s) linear infinite; animation-direction: var(--dir, normal); }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes floaty {
-    0%, 100% { transform: translate(-50%, -50%); }
-    50% { transform: translate(-50%, calc(-50% - 12px)); }
-  }
-  @keyframes coreBreathe {
-    0%, 100% { opacity: .5; transform: scale(.95); }
-    50% { opacity: 1; transform: scale(1.09); }
-  }
-  @keyframes shake {
-    10%, 90% { transform: rotate(-.35deg) translateX(-1px); }
-    20%, 80% { transform: rotate(.45deg) translateX(1px); }
-    30%, 50%, 70% { transform: rotate(-.7deg); }
-    40%, 60% { transform: rotate(.7deg); }
-  }
-
-  /* planets */
-  .planet { position: absolute; left: 0; top: 0; z-index: 5; cursor: pointer; text-decoration: none;
-    color: inherit; outline: none; will-change: transform; }
-  .planet .orbwrap { position: relative; display: block; width: var(--size); height: var(--size); margin: 0 auto; }
-  .planet img.orb { display: block; width: 100%; height: 100%; border-radius: 50%;
-    object-fit: cover; filter: saturate(1.12) brightness(1.06) contrast(1.02);
-    box-shadow: 0 0 calc(var(--size) * .5) var(--glow), inset 0 0 8px rgba(0,0,0,.4);
-    animation: spin var(--selfspin, 120s) linear infinite;
-    animation-direction: var(--selfdir, normal); }
-  .planet.contain img.orb { object-fit: contain; mix-blend-mode: screen; box-shadow: none; border-radius: 50%; }
-  .planet .halo { position: absolute; inset: -70%; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(circle, var(--glow), transparent 60%); opacity: .55;
-    transition: opacity .5s, transform .5s; animation: breathe 6s ease-in-out infinite; }
-  @keyframes breathe { 50% { opacity: .3; transform: scale(.92); } }
-  .planet .orbwrap { transition: transform .5s; }
-  .planet:hover .orbwrap, .planet:focus-visible .orbwrap { transform: scale(1.16); }
-  .planet:hover .halo, .planet:focus-visible .halo { opacity: 1; transform: scale(1.18); animation-play-state: paused; }
-  .planet .tag { position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
-    text-align: center; padding-top: .7rem; white-space: nowrap; }
-  .planet.tag-top .tag { top: auto; bottom: 100%; padding: 0 0 .7rem; }
-  .planet .num { display: block; font-family: 'Cormorant Garamond', serif; font-style: italic;
-    color: #F7BAD3; font-size: .8rem; letter-spacing: .22em; }
-  .planet .name { display: block; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-size: 1.05rem; letter-spacing: .12em; color: var(--beige); margin-top: .12rem; }
-  .planet .zh { display: block; font-size: .64rem; letter-spacing: .3em; color: rgba(242,233,219,.55); margin-top: .22rem; }
-
-  /* hover card */
-  .card { position: absolute; z-index: 30; width: 250px; padding: 1.15rem 1.25rem; pointer-events: none;
-    background: rgba(30,38,72,.9); border: 1px solid rgba(255,190,222,.45); backdrop-filter: blur(6px);
-    opacity: 0; transition: opacity .35s; left: 50%; transform: translateX(-50%); top: calc(100% + 3.6rem); }
-  .planet.tag-top .card { top: auto; bottom: calc(100% + 3.6rem); }
-  .planet:hover .card, .planet:focus-visible .card { opacity: 1; }
-  .card h3 { margin: 0 0 .45rem; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-weight: 500; font-size: 1.12rem; color: #FFE9F4; }
-  .card p { margin: 0; font-size: .76rem; line-height: 1.8; color: rgba(242,233,219,.7); white-space: normal; }
-  .card .enter { display: inline-block; margin-top: .7rem; font-size: .6rem; letter-spacing: .3em;
-    text-transform: uppercase; color: #F7BAD3; }
+  .planet-layer.bob { animation: bob var(--bobdur, 9s) ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
   /* hint */
-  .hint { position: absolute; z-index: 10; left: 50%; bottom: 3vh; transform: translateX(-50%);
-    display: flex; align-items: center; gap: .8rem; font-size: .68rem; letter-spacing: .32em;
-    color: rgba(242,233,219,.55); white-space: nowrap; }
-  .hint .mouse { width: 16px; height: 26px; border: 1px solid rgba(242,233,219,.45); border-radius: 9px; position: relative; }
+  .hint { position: fixed; z-index: 30; left: 50%; bottom: 3vh; transform: translateX(-50%);
+    display: flex; align-items: center; gap: .8rem; font-size: .66rem; letter-spacing: .34em;
+    color: rgba(246,238,220,.75); white-space: nowrap; text-shadow: 0 1px 10px rgba(8,14,34,.9); }
+  .hint .mouse { width: 16px; height: 26px; border: 1px solid rgba(246,238,220,.6); border-radius: 9px; position: relative; }
   .hint .mouse::after { content: ''; position: absolute; left: 50%; top: 5px; width: 2px; height: 5px;
-    margin-left: -1px; background: var(--gold); border-radius: 2px; animation: wheel 2.2s ease-in-out infinite; }
+    margin-left: -1px; background: #F6DEAA; border-radius: 2px; animation: wheel 2.2s ease-in-out infinite; }
   @keyframes wheel { 50% { transform: translateY(6px); opacity: .3; } }
 
-  /* fly-in overlay */
-  .fly { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0;
-    background: radial-gradient(circle at var(--fx, 50%) var(--fy, 50%), var(--ftint, #C5A86A) 0%, rgba(11,15,26,.98) 62%);
-    transition: opacity .65s ease; }
-  .fly.on { opacity: 1; pointer-events: all; }
+  /* fade-in once ready */
+  .stage { opacity: 0; transition: opacity 1.2s ease; }
+  .stage.ready { opacity: 1; }
 
-  .foot { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 1rem 2.5rem;
-    align-items: center; justify-content: space-between; padding: 1.4rem 4vw 2rem;
-    border-top: 1px solid rgba(197,168,106,.16); background: rgba(11,15,26,.9); }
-  .foot p, .foot a { margin: 0; font-size: .62rem; letter-spacing: .24em; text-transform: uppercase;
-    color: rgba(242,233,219,.42); text-decoration: none; }
-  .foot a:hover { color: var(--gold-bright); }
-
-  /* mobile: vertical constellation list */
-  @media (max-width: 760px), (max-height: 560px) {
-    .map { height: auto; min-height: 100svh; padding: 15vh 8vw 8vh; overflow: visible; }
-    #orbits { display: none; }
-    .core { position: relative; left: auto; top: auto; transform: none; margin: 0 auto 7vh; width: min(72vw, 300px); }
-    .planet { position: relative !important; transform: none !important; display: grid;
-      grid-template-columns: auto 1fr; gap: 1.1rem; align-items: center; text-align: left;
-      padding: 1rem 0; border-bottom: 1px solid rgba(197,168,106,.18); }
-    .planet .orbwrap { width: 46px !important; height: 46px !important; margin: 0; }
-    .planet .tag { position: static; transform: none; padding: 0; text-align: left; white-space: normal; }
-    .planet .card, .hint { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .chart-wrap, .bloom, .planet-layer canvas, .planet-layer.bob, .hint .mouse::after { animation: none !important; }
   }
 </style>
 </head>
 <body>
-<canvas id="space"></canvas>
+
+<div class="stage" id="stage">
+  <img class="base" id="base" src="/images/celestial-hero-source.png" alt="悬浮在云海之上的发光星盘，四周环绕着太阳、月亮与行星">
+</div>
 
 <nav class="nav">
   <a class="logo" href="/zh/">THE INNER COSMOS</a>
@@ -178,367 +113,277 @@
   <a class="book" href="/zh/begin">Book a Session</a>
 </nav>
 
-<div class="clouds" aria-hidden="true">
-  <span class="cl" style="--w:46vw; --l:-8vw;  --t:58vh; --d:210s; --o:.16;"></span>
-  <span class="cl" style="--w:38vw; --l:30vw;  --t:70vh; --d:260s; --o:.13;"></span>
-  <span class="cl" style="--w:52vw; --l:62vw;  --t:63vh; --d:230s; --o:.15;"></span>
-  <span class="cl" style="--w:34vw; --l:15vw;  --t:24vh; --d:300s; --o:.08;"></span>
-  <span class="cl" style="--w:40vw; --l:70vw;  --t:16vh; --d:280s; --o:.07;"></span>
-</div>
-<canvas id="meadow" aria-hidden="true"></canvas>
-<main class="map" id="map" aria-label="宇宙地图">
-  <svg id="orbits" aria-hidden="true"></svg>
-  <div class="core" id="core" aria-hidden="true"></div>
-  <div class="hint"><span class="mouse"></span>点击星体探索宇宙，开启你的旅程</div>
-</main>
-
-<footer class="foot">
-  <p>© 2026 THE INNER COSMOS</p>
-  <div>
-    <a href="/zh/astrology">占星</a> ·
-    <a href="/zh/journal">札记</a> ·
-    <a href="/zh/guide">关于</a> ·
-    <a href="/zh/begin">预约</a>
-  </div>
-  <p>宇宙一直在说话。也许今天，是你第一次真正聆听。</p>
-</footer>
-
-<div class="fly" id="fly" aria-hidden="true"></div>
+<div class="hint"><span class="mouse"></span>触碰星盘，唤醒你的宇宙</div>
 
 <script>
 (function () {
   'use strict';
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var mobile = matchMedia('(max-width: 760px), (max-height: 560px)').matches;
+  var DEBUG = /[?&]debug=1/.test(location.search);
 
-  /* ============ deep space background: stars + nebulae ============ */
-  (function () {
-    var c = document.getElementById('space'), x = c.getContext('2d');
-    var w, h, stars = [], nebs = [];
-    function build() {
-      w = c.width = innerWidth; h = c.height = innerHeight;
-      stars = []; nebs = [];
-      var n = Math.min(420, w * h / 5200);
-      for (var i = 0; i < n; i++) {
-        var bright = Math.random() < .08;
-        stars.push({ x: Math.random() * w, y: Math.random() * h,
-          r: bright ? 1.2 + Math.random() * 1.4 : .3 + Math.random() * .9,
-          p: Math.random() * 6.28, bright: bright,
-          hue: Math.random() < .3 ? '234,215,184' : '242,233,219' });
-      }
-      var tints = ['91,86,140', '197,168,106', '70,90,130', '140,100,140', '197,168,106'];
-      for (var j = 0; j < 6; j++) {
-        nebs.push({ x: Math.random() * w, y: Math.random() * h,
-          r: (0.25 + Math.random() * 0.3) * Math.max(w, h),
-          t: tints[j % tints.length], a: .05 + Math.random() * .05 });
-      }
-    }
-    build(); addEventListener('resize', build);
-    function frame(t) {
-      x.clearRect(0, 0, w, h);
-      for (var j = 0; j < nebs.length; j++) {
-        var nb = nebs[j];
-        var g = x.createRadialGradient(nb.x, nb.y, 0, nb.x, nb.y, nb.r);
-        g.addColorStop(0, 'rgba(' + nb.t + ',' + nb.a + ')');
-        g.addColorStop(1, 'rgba(' + nb.t + ',0)');
-        x.fillStyle = g; x.fillRect(nb.x - nb.r, nb.y - nb.r, nb.r * 2, nb.r * 2);
-      }
-      for (var i = 0; i < stars.length; i++) {
-        var s = stars[i];
-        var a = (s.bright ? .55 : .22) + .45 * Math.abs(Math.sin(t * .0004 + s.p));
-        x.beginPath(); x.fillStyle = 'rgba(' + s.hue + ',' + a + ')';
-        x.arc(s.x, s.y, s.r, 0, 6.28); x.fill();
-        if (s.bright) {
-          x.strokeStyle = 'rgba(' + s.hue + ',' + a * .35 + ')'; x.lineWidth = .6;
-          x.beginPath();
-          x.moveTo(s.x - s.r * 4, s.y); x.lineTo(s.x + s.r * 4, s.y);
-          x.moveTo(s.x, s.y - s.r * 4); x.lineTo(s.x, s.y + s.r * 4);
-          x.stroke();
-        }
-      }
-      if (!reduce) requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  })();
-
-  /* ============ the natal chart (astrological default wheel) ============ */
-  (function () {
-    var NS = 'http://www.w3.org/2000/svg';
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('viewBox', '-500 -500 1000 1000');
-    var VS = '︎'; // force text (non-emoji) presentation
-    var ZODIAC = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
-    // planets in their traditional domiciles (default natural chart)
-    var PLANETS = [
-      { g: '♂', sign: 0 },  // Mars — Aries
-      { g: '♀', sign: 1 },  // Venus — Taurus
-      { g: '☿', sign: 2 },  // Mercury — Gemini
-      { g: '☽', sign: 3 },  // Moon — Cancer
-      { g: '☉', sign: 4 },  // Sun — Leo
-      { g: '♇', sign: 7 },  // Pluto — Scorpio
-      { g: '♃', sign: 8 },  // Jupiter — Sagittarius
-      { g: '♄', sign: 9 },  // Saturn — Capricorn
-      { g: '♅', sign: 10 }, // Uranus — Aquarius
-      { g: '♆', sign: 11 }  // Neptune — Pisces
-    ];
-    function pt(r, deg) {
-      var a = deg * Math.PI / 180;
-      return [r * Math.cos(a), -r * Math.sin(a)];
-    }
-    function el(name, attrs, text) {
-      var e = document.createElementNS(NS, name);
-      for (var k in attrs) e.setAttribute(k, attrs[k]);
-      if (text) e.textContent = text;
-      return e;
-    }
-    var stroke = '#FFE9F4';
-    // rings: outer zodiac band, houses band, inner
-    [[480, .9, 1.2], [400, .8, 1], [300, .35, .8], [140, .7, 1], [60, .3, .7]].forEach(function (r) {
-      svg.appendChild(el('circle', { r: r[0], fill: 'none', stroke: stroke,
-        'stroke-opacity': r[1], 'stroke-width': r[2] }));
-    });
-    // degree ticks on outer band: every 5°, longer every 30°
-    for (var d = 0; d < 360; d += 5) {
-      var major = d % 30 === 0;
-      var p1 = pt(480, d), p2 = pt(major ? 452 : 466, d);
-      svg.appendChild(el('line', { x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1],
-        stroke: stroke, 'stroke-opacity': major ? .85 : .4, 'stroke-width': major ? 1.2 : .6 }));
-    }
-    // house cusps (whole-sign default): 12 spokes, Aries starts at the Ascendant (left, 180°), counterclockwise
-    for (var i = 0; i < 12; i++) {
-      var ang = 180 + i * 30;
-      var q1 = pt(140, ang), q2 = pt(400, ang);
-      svg.appendChild(el('line', { x1: q1[0], y1: q1[1], x2: q2[0], y2: q2[1],
-        stroke: stroke, 'stroke-opacity': i % 3 === 0 ? .75 : .38, 'stroke-width': i % 3 === 0 ? 1.3 : .7 }));
-    }
-    // AC / MC axis emphasis
-    [[180, 'AC'], [90, 'MC']].forEach(function (ax) {
-      var lbl = pt(508, ax[0]);
-      svg.appendChild(el('text', { x: lbl[0], y: lbl[1], fill: '#FFFFFF', 'fill-opacity': .8,
-        'font-size': 24, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-        'font-family': "'Cormorant Garamond', serif", 'letter-spacing': 2 }, ax[1]));
-    });
-    // zodiac glyphs — counterclockwise from Aries at the ASC
-    for (var z = 0; z < 12; z++) {
-      var za = 180 + z * 30 + 15;
-      var zp = pt(440, za);
-      svg.appendChild(el('text', { x: zp[0], y: zp[1], fill: '#FFFFFF', 'fill-opacity': .95,
-        'font-size': 42, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-        'font-family': "'Noto Serif SC', serif" }, ZODIAC[z] + VS));
-    }
-    // house numbers (small, inner band)
-    var ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-    for (var hnum = 0; hnum < 12; hnum++) {
-      var ha = 180 + hnum * 30 + 15;
-      var hp = pt(168, ha);
-      svg.appendChild(el('text', { x: hp[0], y: hp[1], fill: '#FFD9EC', 'fill-opacity': .6,
-        'font-size': 24, 'font-style': 'italic', 'text-anchor': 'middle', 'dominant-baseline': 'central',
-        'font-family': "'Cormorant Garamond', serif" }, ROMAN[hnum]));
-    }
-    // planet glyphs in domicile signs + collect positions for aspects
-    var ppos = [];
-    PLANETS.forEach(function (p) {
-      var pa = 180 + p.sign * 30 + 15;
-      var pp = pt(350, pa);
-      ppos.push(pt(140, pa));
-      svg.appendChild(el('circle', { cx: pp[0], cy: pp[1], r: 26, fill: 'rgba(255,190,225,0.10)',
-        stroke: stroke, 'stroke-opacity': .3, 'stroke-width': .7 }));
-      svg.appendChild(el('text', { x: pp[0], y: pp[1], fill: '#FFFFFF',
-        'font-size': 34, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-        'font-family': "'Noto Serif SC', serif" }, p.g + VS));
-      // degree marker on inner circle
-      var mp = pt(140, pa);
-      svg.appendChild(el('circle', { cx: mp[0], cy: mp[1], r: 4, fill: '#FFFFFF', 'fill-opacity': .85 }));
-    });
-    // aspect web between planet degree markers (trines/oppositions of the natural wheel)
-    var ASPECTS = [[0,4],[0,6],[3,9],[4,8],[1,7],[2,9],[5,8],[6,9],[4,7],[3,5]];
-    ASPECTS.forEach(function (a) {
-      var A = ppos[a[0]], B = ppos[a[1]];
-      svg.appendChild(el('line', { x1: A[0], y1: A[1], x2: B[0], y2: B[1],
-        stroke: stroke, 'stroke-opacity': .3, 'stroke-width': .8 }));
-    });
-    // center sun-point
-    var burst = el('g', {});
-    for (var b = 0; b < 8; b++) {
-      var bp1 = pt(14, b * 45), bp2 = pt(38, b * 45);
-      burst.appendChild(el('line', { x1: bp1[0], y1: bp1[1], x2: bp2[0], y2: bp2[1],
-        stroke: '#EAD7B8', 'stroke-opacity': .9, 'stroke-width': 1.4 }));
-    }
-    svg.appendChild(burst);
-    svg.appendChild(el('circle', { r: 9, fill: '#FFFFFF' }));
-    document.getElementById('core').appendChild(svg);
-  })();
-
-  /* ============ textured module planets on slow orbits ============ */
-  /* real NASA imagery (public domain), one celestial body per universe */
-  var MODULES = [
-    { href: '/zh/astrology', num: '01', name: 'Astrology', zh: '认识你的宇宙蓝图', body: '太阳 · Sun',
-      line: '认识你内在宇宙的构造。本命盘、宫位、星座、行星与相位——一场进入自己蓝图的旅程。',
-      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/960px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg',
-      base: [255,170,90], size: 38, orbit: 2, phase: 68, speed: 1, spin: 70 },
-    { href: '/zh/tarot-universe', num: '02', name: 'Tarot', zh: '洞察潜意识的指引', body: '月亮 · Moon',
-      line: '牌阵、节气、指引与洞察——让潜意识浮出水面，被温柔地看见。',
-      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Moon_nearside_LRO.jpg/960px-Moon_nearside_LRO.jpg',
-      base: [200,215,255], size: 30, orbit: 2, phase: 8, speed: -0.8, spin: 160, rev: true },
-    { href: '/zh/energy', num: '03', name: 'Energy', zh: '疗愈身心，重启能量', body: '金星 · Venus',
-      line: '疗愈、净化、平衡、重启——让身体与能量场回到自然的节奏。',
-      img: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
-      base: [240,215,170], size: 28, orbit: 1, phase: -20, speed: 0.9, spin: 130, rev: true },
-    { href: '/zh/cosmic-method', num: '04', name: 'Courses', zh: '系统学习，实践成长', body: '木星 · Jupiter',
-      line: 'COSMIC 六步转化模型——课程、实践与案例，一套可以带走的自我重构方法。',
-      img: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg',
-      base: [230,200,160], size: 34, orbit: 2, phase: -70, speed: 0.75, spin: 45 },
-    { href: '/zh/journal', num: '05', name: 'Journal', zh: '知识与洞见的宇宙图书馆', body: '水星 · Mercury',
-      line: '文章、洞见、心理与星象——持续生长的宇宙图书馆。',
-      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg/960px-Mercury_in_color_-_Prockter07-edit1.jpg',
-      base: [200,200,215], size: 26, orbit: 1, phase: -130, speed: -0.85, spin: 95 },
-    { href: '/zh/community', num: '06', name: 'Community', zh: '在同频中成长与共创', body: '火星 · Mars',
-      line: '陪伴、成长、共创与公益——和同频的人一起，走得更远。',
-      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Mars_Valles_Marineris_EDIT.jpg/960px-Mars_Valles_Marineris_EDIT.jpg',
-      base: [235,150,110], size: 28, orbit: 2, phase: -150, speed: 0.7, spin: 85, rev: true },
-    { href: '/zh/begin', num: '07', name: 'Consultation', zh: '一对一深度咨询', body: '土星 · Saturn',
-      line: '一对一深度咨询——带着你的问题来，我们从这里开始。',
-      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/500px-Saturn_during_Equinox.jpg',
-      base: [225,205,160], size: 36, orbit: 1, phase: 150, speed: -0.65, spin: 55 }
+  /* ============================================================
+     All coordinates are fractions of the source image
+     (x, r → of width; y → of height). Calibrated to
+     celestial-hero-source.png.
+     ============================================================ */
+  var CHART = { cx: .511, cy: .548, rx: .327, ry: .3032 };
+  var SATURN = { cx: .758, cy: .858, rx: .082, ry: .058, dur: 180 };
+  var PLANETS = [
+    { id: 'sun',   cx: .209, cy: .222, r: .058, dur: 220, dir: 1,  bob: 11 }, // 太阳 · 最慢
+    { id: 'moonT', cx: .469, cy: .153, r: .037, dur: 130, dir: -1, bob: 9  }, // 月亮 · 略快
+    { id: 'jupS',  cx: .732, cy: .180, r: .032, dur: 170, dir: 1,  bob: 10 }, // 木星(小) · 慢
+    { id: 'jupB',  cx: .901, cy: .626, r: .048, dur: 160, dir: -1, bob: 12 }, // 木星(大) · 慢
+    { id: 'mars',  cx: .176, cy: .847, r: .042, dur: 90,  dir: 1,  bob: 8  }, // 火星 · 偏快
+    { id: 'moonB', cx: .468, cy: .903, r: .035, dur: 115, dir: -1, bob: 9  }  // 月亮 · 略快
   ];
 
-  var map = document.getElementById('map');
-  var planets = [];
-  MODULES.forEach(function (m) {
-    var a = document.createElement('a');
-    a.className = 'planet' + (m.contain ? ' contain' : '');
-    a.href = m.href;
-    a.style.setProperty('--size', m.size + 'px');
-    a.style.setProperty('--glow', 'rgba(' + m.base.join(',') + ',.45)');
-    a.style.setProperty('--selfspin', (m.spin || 120) + 's');
-    if (m.rev) a.style.setProperty('--selfdir', 'reverse');
-    a.innerHTML =
-      '<span class="orbwrap"><img class="orb" alt="" loading="lazy" decoding="async" src="' + m.img + '"><span class="halo"></span></span>' +
-      '<span class="tag"><span class="num">' + m.num + '</span>' +
-      '<span class="name">' + m.name + '</span>' +
-      '<span class="zh">' + m.zh + '</span></span>' +
-      '<span class="card"><h3>' + m.name + ' · ' + m.zh + '</h3><p>' + m.body + '。' + m.line + '</p>' +
-      '<span class="enter">→ Enter</span></span>';
-    map.appendChild(a);
-    planets.push({ el: a, m: m, angle: m.phase });
-  });
+  var stage = document.getElementById('stage');
+  var base = document.getElementById('base');
+  var iw, ih;                    // intrinsic image size
+  var layers = [];               // {el, cx, cy, rx, ry} in image fractions
+  var chart = {};                // runtime chart state
+  var saturn = {};
 
-  /* orbit rings + motion */
-  var orbitsSvg = document.getElementById('orbits');
-  function orbitRadii() {
-    var vm = Math.min(innerWidth, innerHeight);
-    return [
-      { rx: Math.min(vm * .58, innerWidth * .34), k: .62 },
-      { rx: Math.min(vm * .78, innerWidth * .44), k: .60 }
-    ];
+  /* ---------- cover-fit math ---------- */
+  function coverMetrics() {
+    var vw = innerWidth, vh = innerHeight;
+    var s = Math.max(vw / iw, vh / ih);
+    return { s: s, ox: (vw - iw * s) / 2, oy: (vh - ih * s) / 2 };
   }
-  function drawRings() {
-    if (mobile) return;
-    orbitsSvg.setAttribute('viewBox', '0 0 ' + innerWidth + ' ' + innerHeight);
-    orbitsSvg.innerHTML = '';
-    var cx = innerWidth / 2, cy = innerHeight / 2;
-    var rings = orbitRadii();
-    var NS = 'http://www.w3.org/2000/svg';
-    rings.concat([{ rx: rings[0].rx * .8, k: .63, faint: true }, { rx: rings[1].rx * 1.14, k: .59, faint: true }])
-      .forEach(function (r) {
-        var e = document.createElementNS(NS, 'ellipse');
-        e.setAttribute('cx', cx); e.setAttribute('cy', cy);
-        e.setAttribute('rx', r.rx); e.setAttribute('ry', r.rx * r.k);
-        if (r.faint) e.setAttribute('class', 'faint');
-        orbitsSvg.appendChild(e);
-      });
-  }
-  drawRings(); addEventListener('resize', drawRings);
 
-  function tick() {
-    var cx = innerWidth / 2, cy = innerHeight / 2;
-    var rings = orbitRadii();
-    planets.forEach(function (p) {
-      if (!reduce) p.angle += p.m.speed * 0.0065; // slow orbital drift
-      var ring = rings[p.m.orbit - 1];
-      var rad = p.angle * Math.PI / 180;
-      var x = cx + ring.rx * Math.cos(rad);
-      var y = cy + ring.rx * ring.k * Math.sin(rad);
-      p.el.style.transform = 'translate(' + (x - p.m.size / 2) + 'px,' + (y - p.m.size / 2) + 'px)';
-      p.el.classList.toggle('tag-top', y > cy + ring.rx * ring.k * .45);
+  function place(el, cxf, cyf, rxf, ryf, m) {
+    var cx = cxf * iw * m.s + m.ox;
+    var cy = cyf * ih * m.s + m.oy;
+    var rx = rxf * iw * m.s;
+    var ry = (ryf || rxf) * iw * m.s;
+    if (ryf) ry = ryf * ih * m.s;
+    el.style.left = (cx - rx) + 'px';
+    el.style.top = (cy - ry) + 'px';
+    el.style.width = (rx * 2) + 'px';
+    el.style.height = (ry * 2) + 'px';
+    return { cx: cx, cy: cy, rx: rx, ry: ry };
+  }
+
+  /* ---------- feathered crop helpers ---------- */
+  function featherCircle(ctx, D, inner) {
+    ctx.globalCompositeOperation = 'destination-in';
+    var g = ctx.createRadialGradient(D/2, D/2, 0, D/2, D/2, D/2);
+    g.addColorStop(0, 'rgba(0,0,0,1)');
+    g.addColorStop(inner, 'rgba(0,0,0,1)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, D, D);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  /* circular planet crop, drawn once */
+  function buildPlanet(p, m) {
+    var wrap = document.createElement('div');
+    wrap.className = 'layer planet-layer bob';
+    wrap.style.setProperty('--bobdur', p.bob + 's');
+    var cv = document.createElement('canvas');
+    cv.style.setProperty('--dur', p.dur + 's');
+    if (p.dir < 0) cv.style.setProperty('--dir', 'reverse');
+    wrap.appendChild(cv);
+    stage.appendChild(wrap);
+    if (DEBUG) wrap.style.outline = '1px solid red';
+    layers.push({ el: wrap, p: p, cv: cv, kind: 'planet' });
+    paintPlanet(cv, p, m);
+    place(wrap, p.cx, p.cy, p.r, null, m);
+  }
+
+  function paintPlanet(cv, p, m) {
+    var rPix = p.r * iw * m.s;
+    var D = Math.min(512, Math.ceil(rPix * 2 * Math.min(devicePixelRatio || 1, 2)));
+    cv.width = cv.height = D;
+    var ctx = cv.getContext('2d');
+    var sr = p.r * iw;                       // source radius in image px
+    ctx.drawImage(base, (p.cx * iw) - sr, (p.cy * ih) - sr, sr * 2, sr * 2, 0, 0, D, D);
+    featherCircle(ctx, D, .72);
+  }
+
+  /* ============================================================
+     the chart: an ellipse in perspective, rotated in its own
+     plane via the conjugate transform  E · R(θ) · E⁻¹
+     ============================================================ */
+  function buildChart(m) {
+    var wrap = document.createElement('div');
+    wrap.className = 'layer chart-wrap';
+    wrap.id = 'chartWrap';
+    var cv = document.createElement('canvas');
+    wrap.appendChild(cv);
+    stage.appendChild(wrap);
+
+    // two breathing blooms slightly larger than the chart
+    ['b1', 'b2'].forEach(function (cls) {
+      var b = document.createElement('div');
+      b.className = 'layer bloom ' + cls;
+      stage.insertBefore(b, wrap);
+      layers.push({ el: b, kind: 'bloom' });
     });
-    if (!reduce) requestAnimationFrame(tick);
-  }
-  if (!mobile) { tick(); if (reduce) tick(); }
 
-  /* impressionist flower meadow (procedural) */
-  (function () {
-    var c = document.getElementById('meadow'); if (!c) return;
-    function paint() {
-      var w = c.width = innerWidth, h = c.height = Math.round(innerHeight * .24);
-      var g = c.getContext('2d');
-      g.clearRect(0, 0, w, h);
-      var gl = g.createLinearGradient(0, 0, 0, h);
-      gl.addColorStop(0, 'rgba(255,190,215,0)');
-      gl.addColorStop(.55, 'rgba(255,185,210,.06)');
-      gl.addColorStop(1, 'rgba(120,90,140,.25)');
-      g.fillStyle = gl; g.fillRect(0, 0, w, h);
-      var palette = [
-        [244,170,205], [226,140,190], [200,120,180], [172,120,200],
-        [246,210,228], [255,240,246], [150,100,160], [235,155,175]
-      ];
-      var n = Math.round(w / 4);
-      for (var i = 0; i < n; i++) {
-        var px = Math.random() * w;
-        var depth = Math.pow(Math.random(), 1.6);
-        var py = h * (.28 + .72 * depth);
-        var r = 2 + depth * 11 + Math.random() * 3;
-        var col = palette[Math.floor(Math.random() * palette.length)];
-        var a = .10 + depth * .5;
-        var rg = g.createRadialGradient(px, py, 0, px, py, r);
-        rg.addColorStop(0, 'rgba(' + col.join(',') + ',' + a + ')');
-        rg.addColorStop(1, 'rgba(' + col.join(',') + ',0)');
-        g.fillStyle = rg;
-        g.fillRect(px - r, py - r, r * 2, r * 2);
+    if (DEBUG) wrap.style.outline = '1px solid lime';
+    layers.push({ el: wrap, kind: 'chart', cv: cv });
+
+    chart = {
+      wrap: wrap, cv: cv,
+      angle: 0,
+      vel: 0,
+      idle: reduce ? 0 : (2 * Math.PI) / 260,   // rad per second · standby
+      active: (2 * Math.PI) / 85,               // rad per second · awakened (~85s/圈)
+      target: 0,
+      armedOnce: false
+    };
+    chart.target = chart.idle;
+    rebuildChartTex(m);
+
+    // pointer interaction (elliptical hit area via border-radius)
+    wrap.style.borderRadius = '50%';
+    wrap.style.cursor = 'pointer';
+    wrap.addEventListener('mouseenter', function () {
+      if (reduce) return;
+      wrap.classList.add('waking');
+      stage.classList.add('armed');
+      setTimeout(function () { wrap.classList.remove('waking'); }, 460);
+      chart.target = chart.active;
+    });
+    wrap.addEventListener('mouseleave', function () {
+      chart.target = chart.idle;          // smooth deceleration handled in tick
+      stage.classList.remove('armed');
+    });
+  }
+
+  function rebuildChartTex(m) {
+    var rxPix = CHART.rx * iw * m.s;
+    var ryPix = CHART.ry * ih * m.s;
+    chart.k = ryPix / rxPix;
+    var D = Math.min(1600, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6)));
+    // unprojected texture: stretch the ellipse crop into a circle
+    var tex = document.createElement('canvas');
+    tex.width = tex.height = D;
+    var tctx = tex.getContext('2d');
+    var srx = CHART.rx * iw, sry = CHART.ry * ih;
+    tctx.drawImage(base, CHART.cx * iw - srx, CHART.cy * ih - sry, srx * 2, sry * 2, 0, 0, D, D);
+    featherCircle(tctx, D, .90);
+    chart.tex = tex;
+    chart.D = D;
+    // display canvas matches the on-screen ellipse
+    chart.cv.width = Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
+    chart.cv.height = Math.ceil(ryPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
+  }
+
+  function drawChart() {
+    var cv = chart.cv, ctx = cv.getContext('2d');
+    var w = cv.width, h = cv.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.save();
+    ctx.translate(w / 2, h / 2);
+    ctx.scale(1, chart.k);                       // project back to the tilted plane
+    ctx.rotate(chart.angle);                     // spin the disc
+    var R = w / 2;
+    ctx.drawImage(chart.tex, -R, -R, R * 2, R * 2);
+    ctx.restore();
+  }
+
+  /* ---------- saturn: ring-plane rotation, same technique ---------- */
+  function buildSaturn(m) {
+    var wrap = document.createElement('div');
+    wrap.className = 'layer planet-layer bob';
+    wrap.style.setProperty('--bobdur', '10s');
+    var cv = document.createElement('canvas');
+    wrap.appendChild(cv);
+    stage.appendChild(wrap);
+    if (DEBUG) wrap.style.outline = '1px solid cyan';
+    layers.push({ el: wrap, kind: 'saturn', cv: cv });
+    saturn = { cv: cv, angle: 0 };
+    rebuildSaturnTex(m);
+  }
+
+  function rebuildSaturnTex(m) {
+    var rxPix = SATURN.rx * iw * m.s;
+    var ryPix = SATURN.ry * ih * m.s;
+    saturn.k = ryPix / rxPix;
+    var D = Math.min(512, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 2)));
+    var tex = document.createElement('canvas');
+    tex.width = tex.height = D;
+    var tctx = tex.getContext('2d');
+    var srx = SATURN.rx * iw, sry = SATURN.ry * ih;
+    tctx.drawImage(base, SATURN.cx * iw - srx, SATURN.cy * ih - sry, srx * 2, sry * 2, 0, 0, D, D);
+    featherCircle(tctx, D, .78);
+    saturn.tex = tex;
+    saturn.cv.width = D;
+    saturn.cv.height = Math.ceil(D * saturn.k);
+  }
+
+  function drawSaturn() {
+    var cv = saturn.cv, ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.save();
+    ctx.translate(cv.width / 2, cv.height / 2);
+    ctx.scale(1, saturn.k);
+    ctx.rotate(saturn.angle);
+    var R = cv.width / 2;
+    ctx.drawImage(saturn.tex, -R, -R, R * 2, R * 2);
+    ctx.restore();
+  }
+
+  /* ---------- layout everything ---------- */
+  function layout() {
+    var m = coverMetrics();
+    base.style.width = (iw * m.s) + 'px';
+    base.style.height = (ih * m.s) + 'px';
+    base.style.left = m.ox + 'px';
+    base.style.top = m.oy + 'px';
+    base.style.position = 'absolute';
+
+    layers.forEach(function (L) {
+      if (L.kind === 'planet') {
+        place(L.el, L.p.cx, L.p.cy, L.p.r, null, m);
+        paintPlanet(L.cv, L.p, m);
+      } else if (L.kind === 'chart') {
+        place(L.el, CHART.cx, CHART.cy, CHART.rx, CHART.ry, m);
+        rebuildChartTex(m);
+      } else if (L.kind === 'bloom') {
+        place(L.el, CHART.cx, CHART.cy, CHART.rx * 1.22, CHART.ry * 1.30, m);
+      } else if (L.kind === 'saturn') {
+        place(L.el, SATURN.cx, SATURN.cy, SATURN.rx, SATURN.ry, m);
+        rebuildSaturnTex(m);
       }
-      var base = g.createLinearGradient(0, h * .7, 0, h);
-      base.addColorStop(0, 'rgba(60,40,80,0)');
-      base.addColorStop(1, 'rgba(38,26,56,.55)');
-      g.fillStyle = base; g.fillRect(0, 0, w, h);
+    });
+  }
+
+  /* ---------- animation loop: smooth ease between speeds ---------- */
+  var last = 0;
+  function tick(t) {
+    var dt = Math.min(.05, (t - last) / 1000) || 0;
+    last = t;
+    // ease angular velocity toward target — gives soft start & soft stop
+    chart.vel += (chart.target - chart.vel) * Math.min(1, dt * 1.6);
+    chart.angle += chart.vel * dt;
+    drawChart();
+    if (!reduce) {
+      saturn.angle += ((2 * Math.PI) / SATURN.dur) * dt;
+      drawSaturn();
     }
-    paint(); addEventListener('resize', paint);
-  })();
+    requestAnimationFrame(tick);
+  }
 
-  /* the chart wakes on first touch: a subtle tremor, then it begins to turn */
-  (function () {
-    var core = document.getElementById('core');
-    if (!core || reduce) { if (core) core.classList.add('armed'); return; }
-    var armed = false;
-    core.addEventListener('mouseenter', function () {
-      if (armed) return;
-      armed = true;
-      core.classList.add('shaking');
-      var done = false;
-      function fire() {
-        if (done) return;
-        done = true;
-        core.classList.remove('shaking');
-        core.classList.add('armed');
-      }
-      core.querySelector('svg').addEventListener('animationend', fire);
-      setTimeout(fire, 750);
-    });
-  })();
+  /* ---------- boot ---------- */
+  function boot() {
+    iw = base.naturalWidth; ih = base.naturalHeight;
+    var m = coverMetrics();
+    buildChart(m);
+    PLANETS.forEach(function (p) { buildPlanet(p, m); });
+    buildSaturn(m);
+    layout();
+    stage.classList.add('ready');
+    if (reduce) { drawChart(); drawSaturn(); return; }
+    requestAnimationFrame(function (t) { last = t; requestAnimationFrame(tick); });
+  }
 
-  /* click fly-in */
-  var fly = document.getElementById('fly');
-  planets.forEach(function (p) {
-    p.el.addEventListener('click', function (e) {
-      if (reduce || !fly) return;
-      e.preventDefault();
-      var r = p.el.querySelector('.orbwrap').getBoundingClientRect();
-      fly.style.setProperty('--fx', (r.left + r.width / 2) / innerWidth * 100 + '%');
-      fly.style.setProperty('--fy', (r.top + r.height / 2) / innerHeight * 100 + '%');
-      fly.style.setProperty('--ftint', 'rgb(' + p.m.base.join(',') + ')');
-      fly.classList.add('on');
-      setTimeout(function () { location.href = p.m.href; }, 620);
-    });
-  });
+  if (base.complete && base.naturalWidth) boot();
+  else base.addEventListener('load', boot);
+  addEventListener('resize', layout);
 })();
 </script>
 </body>
