@@ -46,9 +46,7 @@
   .scene { position: absolute; inset: 0; animation: floaty 9s ease-in-out infinite; will-change: transform; }
   @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-  /* chart wrapper — the rotating canvas covers only the inner dial,
-     so the outer ring & background can never tear */
-  .chart-wrap canvas { display: block; position: absolute; left: 25%; top: 25%; width: 50%; height: 50%; }
+  .chart-wrap canvas { display: block; width: 100%; height: 100%; }
 
   /* breathing bloom behind / around the chart */
   .bloom { border-radius: 50%; pointer-events: none;
@@ -248,23 +246,23 @@
   }
 
   function rebuildChartTex(m) {
-    // only the inner dial rotates (central light + aspect web);
-    // the boundary sits on the quiet inner circle, so no tearing is possible
-    var F = .5;
-    var rxPix = CHART.rx * F * iw * m.s;
-    var ryPix = CHART.ry * F * ih * m.s;
+    // the whole disc rotates as one opaque piece; the alpha fade lives
+    // entirely OUTSIDE the ring (over its own glow), so nothing doubles
+    var M = 1.06;                                // crop margin beyond the ring
+    var rxPix = CHART.rx * M * iw * m.s;
+    var ryPix = CHART.ry * M * ih * m.s;
     chart.k = ryPix / rxPix;
-    var D = Math.min(1200, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6)));
+    var D = Math.min(1700, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6)));
     // unprojected texture: stretch the ellipse crop into a circle
     var tex = document.createElement('canvas');
     tex.width = tex.height = D;
     var tctx = tex.getContext('2d');
-    var srx = CHART.rx * F * iw, sry = CHART.ry * F * ih;
+    var srx = CHART.rx * M * iw, sry = CHART.ry * M * ih;
     tctx.drawImage(base, CHART.cx * iw - srx, CHART.cy * ih - sry, srx * 2, sry * 2, 0, 0, D, D);
-    featherCircle(tctx, D, .86);
+    featherCircle(tctx, D, .945);                // opaque to the ring edge, fade over the halo
     chart.tex = tex;
     chart.D = D;
-    // display canvas matches the on-screen inner ellipse
+    // display canvas matches the on-screen ellipse (with margin)
     chart.cv.width = Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
     chart.cv.height = Math.ceil(ryPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
   }
@@ -337,7 +335,7 @@
         place(L.el, L.p.cx, L.p.cy, L.p.r, null, m);
         paintPlanet(L.cv, L.p, m);
       } else if (L.kind === 'chart') {
-        place(L.el, CHART.cx, CHART.cy, CHART.rx, CHART.ry, m);
+        place(L.el, CHART.cx, CHART.cy, CHART.rx * 1.06, CHART.ry * 1.06, m);
         rebuildChartTex(m);
       } else if (L.kind === 'bloom') {
         place(L.el, CHART.cx, CHART.cy, CHART.rx * 1.22, CHART.ry * 1.30, m);
