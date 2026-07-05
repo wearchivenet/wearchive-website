@@ -61,12 +61,31 @@
 
   /* central natal chart */
   .core { position: absolute; left: 50%; top: 50%; width: min(66vmin, 660px); aspect-ratio: 1;
-    transform: translate(-50%, -50%); z-index: 2; }
+    transform: translate(-50%, -50%); z-index: 2; cursor: pointer;
+    animation: floaty 9s ease-in-out infinite; }
   .core::before { content: ''; position: absolute; inset: -34%; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,196,226,.30), rgba(255,170,215,.10) 45%, transparent 66%); }
-  .core svg { width: 100%; height: 100%; overflow: visible; animation: spin 300s linear infinite;
+    background: radial-gradient(circle, rgba(255,196,226,.34), rgba(255,170,215,.12) 45%, transparent 66%);
+    animation: coreBreathe 5.2s ease-in-out infinite; }
+  .core.armed::before { animation-duration: 3.4s; }
+  .core svg { width: 100%; height: 100%; overflow: visible;
     filter: drop-shadow(0 0 5px rgba(255,175,215,.75)) drop-shadow(0 0 24px rgba(255,150,205,.4)); }
+  .core.shaking svg { animation: shake .55s cubic-bezier(.36,.07,.19,.97); }
+  .core.armed svg { animation: spin 240s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes floaty {
+    0%, 100% { transform: translate(-50%, -50%); }
+    50% { transform: translate(-50%, calc(-50% - 12px)); }
+  }
+  @keyframes coreBreathe {
+    0%, 100% { opacity: .5; transform: scale(.95); }
+    50% { opacity: 1; transform: scale(1.09); }
+  }
+  @keyframes shake {
+    10%, 90% { transform: rotate(-.35deg) translateX(-1px); }
+    20%, 80% { transform: rotate(.45deg) translateX(1px); }
+    30%, 50%, 70% { transform: rotate(-.7deg); }
+    40%, 60% { transform: rotate(.7deg); }
+  }
 
   /* planets */
   .planet { position: absolute; left: 0; top: 0; z-index: 5; cursor: pointer; text-decoration: none;
@@ -75,13 +94,15 @@
   .planet img.orb { display: block; width: 100%; height: 100%; border-radius: 50%;
     object-fit: cover; filter: saturate(1.12) brightness(1.06) contrast(1.02);
     box-shadow: 0 0 calc(var(--size) * .5) var(--glow), inset 0 0 8px rgba(0,0,0,.4);
-    transition: transform .5s; }
+    animation: spin var(--selfspin, 120s) linear infinite;
+    animation-direction: var(--selfdir, normal); }
   .planet.contain img.orb { object-fit: contain; mix-blend-mode: screen; box-shadow: none; border-radius: 50%; }
   .planet .halo { position: absolute; inset: -70%; border-radius: 50%; pointer-events: none;
     background: radial-gradient(circle, var(--glow), transparent 60%); opacity: .55;
     transition: opacity .5s, transform .5s; animation: breathe 6s ease-in-out infinite; }
   @keyframes breathe { 50% { opacity: .3; transform: scale(.92); } }
-  .planet:hover img.orb, .planet:focus-visible img.orb { transform: scale(1.16); }
+  .planet .orbwrap { transition: transform .5s; }
+  .planet:hover .orbwrap, .planet:focus-visible .orbwrap { transform: scale(1.16); }
   .planet:hover .halo, .planet:focus-visible .halo { opacity: 1; transform: scale(1.18); animation-play-state: paused; }
   .planet .tag { position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
     text-align: center; padding-top: .7rem; white-space: nowrap; }
@@ -354,31 +375,31 @@
     { href: '/zh/astrology', num: '01', name: 'Astrology', zh: '认识你的宇宙蓝图', body: '太阳 · Sun',
       line: '认识你内在宇宙的构造。本命盘、宫位、星座、行星与相位——一场进入自己蓝图的旅程。',
       img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/960px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg',
-      base: [255,170,90], size: 38, orbit: 2, phase: 68, speed: 1 },
+      base: [255,170,90], size: 38, orbit: 2, phase: 68, speed: 1, spin: 70 },
     { href: '/zh/tarot-universe', num: '02', name: 'Tarot', zh: '洞察潜意识的指引', body: '月亮 · Moon',
       line: '牌阵、节气、指引与洞察——让潜意识浮出水面，被温柔地看见。',
       img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Moon_nearside_LRO.jpg/960px-Moon_nearside_LRO.jpg',
-      base: [200,215,255], size: 30, orbit: 2, phase: 8, speed: -0.8 },
+      base: [200,215,255], size: 30, orbit: 2, phase: 8, speed: -0.8, spin: 160, rev: true },
     { href: '/zh/energy', num: '03', name: 'Energy', zh: '疗愈身心，重启能量', body: '金星 · Venus',
       line: '疗愈、净化、平衡、重启——让身体与能量场回到自然的节奏。',
       img: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
-      base: [240,215,170], size: 28, orbit: 1, phase: -20, speed: 0.9 },
+      base: [240,215,170], size: 28, orbit: 1, phase: -20, speed: 0.9, spin: 130, rev: true },
     { href: '/zh/cosmic-method', num: '04', name: 'Courses', zh: '系统学习，实践成长', body: '木星 · Jupiter',
       line: 'COSMIC 六步转化模型——课程、实践与案例，一套可以带走的自我重构方法。',
       img: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg',
-      base: [230,200,160], size: 34, orbit: 2, phase: -70, speed: 0.75 },
+      base: [230,200,160], size: 34, orbit: 2, phase: -70, speed: 0.75, spin: 45 },
     { href: '/zh/journal', num: '05', name: 'Journal', zh: '知识与洞见的宇宙图书馆', body: '水星 · Mercury',
       line: '文章、洞见、心理与星象——持续生长的宇宙图书馆。',
       img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg/960px-Mercury_in_color_-_Prockter07-edit1.jpg',
-      base: [200,200,215], size: 26, orbit: 1, phase: -130, speed: -0.85 },
+      base: [200,200,215], size: 26, orbit: 1, phase: -130, speed: -0.85, spin: 95 },
     { href: '/zh/community', num: '06', name: 'Community', zh: '在同频中成长与共创', body: '火星 · Mars',
       line: '陪伴、成长、共创与公益——和同频的人一起，走得更远。',
       img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Mars_Valles_Marineris_EDIT.jpg/960px-Mars_Valles_Marineris_EDIT.jpg',
-      base: [235,150,110], size: 28, orbit: 2, phase: -150, speed: 0.7 },
+      base: [235,150,110], size: 28, orbit: 2, phase: -150, speed: 0.7, spin: 85, rev: true },
     { href: '/zh/begin', num: '07', name: 'Consultation', zh: '一对一深度咨询', body: '土星 · Saturn',
       line: '一对一深度咨询——带着你的问题来，我们从这里开始。',
       img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/500px-Saturn_during_Equinox.jpg',
-      base: [225,205,160], size: 36, orbit: 1, phase: 150, speed: -0.65 }
+      base: [225,205,160], size: 36, orbit: 1, phase: 150, speed: -0.65, spin: 55 }
   ];
 
   var map = document.getElementById('map');
@@ -389,6 +410,8 @@
     a.href = m.href;
     a.style.setProperty('--size', m.size + 'px');
     a.style.setProperty('--glow', 'rgba(' + m.base.join(',') + ',.45)');
+    a.style.setProperty('--selfspin', (m.spin || 120) + 's');
+    if (m.rev) a.style.setProperty('--selfdir', 'reverse');
     a.innerHTML =
       '<span class="orbwrap"><img class="orb" alt="" loading="lazy" decoding="async" src="' + m.img + '"><span class="halo"></span></span>' +
       '<span class="tag"><span class="num">' + m.num + '</span>' +
@@ -479,6 +502,24 @@
       g.fillStyle = base; g.fillRect(0, 0, w, h);
     }
     paint(); addEventListener('resize', paint);
+  })();
+
+  /* the chart wakes on first touch: a subtle tremor, then it begins to turn */
+  (function () {
+    var core = document.getElementById('core');
+    if (!core || reduce) { if (core) core.classList.add('armed'); return; }
+    var armed = false;
+    core.addEventListener('mouseenter', function () {
+      if (armed) return;
+      armed = true;
+      core.classList.add('shaking');
+      var svg = core.querySelector('svg');
+      svg.addEventListener('animationend', function onEnd() {
+        svg.removeEventListener('animationend', onEnd);
+        core.classList.remove('shaking');
+        core.classList.add('armed');
+      });
+    });
   })();
 
   /* click fly-in */
