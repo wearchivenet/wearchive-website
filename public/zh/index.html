@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>THE INNER COSMOS · 内在宇宙</title>
 <meta name="description" content="沉浸式宇宙探索体验——八大宇宙以星体形式沿轨道环绕中央的本命盘缓慢运行。">
-<meta name="theme-color" content="#0B0F1A">
+<meta name="theme-color" content="#16264F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
@@ -18,11 +18,23 @@
     --beige: #F2E9DB;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--navy); color: var(--beige);
+  html, body { margin: 0; height: 100%; color: var(--beige);
+    background: linear-gradient(180deg,#0A1230 0%,#16264F 30%,#33456F 55%,#5A6C96 76%,#8B98BE 100%) fixed;
     font-family: 'Jost', 'Noto Serif SC', sans-serif; overflow-x: hidden; }
   ::selection { background: var(--gold); color: var(--navy); }
 
   #space { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* soft drifting clouds */
+  .clouds { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+  .cl { position: absolute; left: var(--l); top: var(--t); width: var(--w); aspect-ratio: 3/1;
+    background: radial-gradient(50% 55% at 50% 55%, rgba(255,255,255,var(--o)), transparent 70%);
+    filter: blur(14px); animation: drift var(--d) linear infinite alternate; }
+  @keyframes drift { to { transform: translateX(8vw); } }
+
+  /* impressionist flower meadow */
+  #meadow { position: fixed; left: 0; right: 0; bottom: 0; width: 100vw; height: 24vh;
+    z-index: 6; pointer-events: none; }
 
   /* nav */
   .nav { position: fixed; inset: 0 0 auto; z-index: 40; display: flex; align-items: center;
@@ -43,15 +55,17 @@
   /* stage */
   .map { position: relative; z-index: 1; width: 100vw; height: 100vh; height: 100svh; overflow: hidden; }
   #orbits { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  #orbits ellipse { fill: none; stroke: rgba(197,168,106,.16); stroke-width: 1; }
-  #orbits .faint { stroke: rgba(197,168,106,.08); stroke-dasharray: 2 6; }
+  #orbits { filter: drop-shadow(0 0 4px rgba(255,175,215,.55)); }
+  #orbits ellipse { fill: none; stroke: rgba(255,230,244,.30); stroke-width: 1; }
+  #orbits .faint { stroke: rgba(255,230,244,.13); stroke-dasharray: 2 6; }
 
   /* central natal chart */
   .core { position: absolute; left: 50%; top: 50%; width: min(66vmin, 660px); aspect-ratio: 1;
     transform: translate(-50%, -50%); z-index: 2; }
-  .core::before { content: ''; position: absolute; inset: -30%; border-radius: 50%;
-    background: radial-gradient(circle, rgba(197,168,106,.16), rgba(197,168,106,.05) 45%, transparent 65%); }
-  .core svg { width: 100%; height: 100%; overflow: visible; animation: spin 300s linear infinite; }
+  .core::before { content: ''; position: absolute; inset: -34%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,196,226,.30), rgba(255,170,215,.10) 45%, transparent 66%); }
+  .core svg { width: 100%; height: 100%; overflow: visible; animation: spin 300s linear infinite;
+    filter: drop-shadow(0 0 5px rgba(255,175,215,.75)) drop-shadow(0 0 24px rgba(255,150,205,.4)); }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* planets */
@@ -73,22 +87,22 @@
     text-align: center; padding-top: .7rem; white-space: nowrap; }
   .planet.tag-top .tag { top: auto; bottom: 100%; padding: 0 0 .7rem; }
   .planet .num { display: block; font-family: 'Cormorant Garamond', serif; font-style: italic;
-    color: var(--gold); font-size: .8rem; letter-spacing: .22em; }
+    color: #F7BAD3; font-size: .8rem; letter-spacing: .22em; }
   .planet .name { display: block; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
     font-size: 1.05rem; letter-spacing: .12em; color: var(--beige); margin-top: .12rem; }
   .planet .zh { display: block; font-size: .64rem; letter-spacing: .3em; color: rgba(242,233,219,.55); margin-top: .22rem; }
 
   /* hover card */
   .card { position: absolute; z-index: 30; width: 250px; padding: 1.15rem 1.25rem; pointer-events: none;
-    background: rgba(21,27,42,.93); border: 1px solid rgba(197,168,106,.4); backdrop-filter: blur(6px);
+    background: rgba(30,38,72,.9); border: 1px solid rgba(255,190,222,.45); backdrop-filter: blur(6px);
     opacity: 0; transition: opacity .35s; left: 50%; transform: translateX(-50%); top: calc(100% + 3.6rem); }
   .planet.tag-top .card { top: auto; bottom: calc(100% + 3.6rem); }
   .planet:hover .card, .planet:focus-visible .card { opacity: 1; }
   .card h3 { margin: 0 0 .45rem; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
-    font-weight: 500; font-size: 1.12rem; color: var(--gold-bright); }
+    font-weight: 500; font-size: 1.12rem; color: #FFE9F4; }
   .card p { margin: 0; font-size: .76rem; line-height: 1.8; color: rgba(242,233,219,.7); white-space: normal; }
   .card .enter { display: inline-block; margin-top: .7rem; font-size: .6rem; letter-spacing: .3em;
-    text-transform: uppercase; color: var(--gold); }
+    text-transform: uppercase; color: #F7BAD3; }
 
   /* hint */
   .hint { position: absolute; z-index: 10; left: 50%; bottom: 3vh; transform: translateX(-50%);
@@ -143,6 +157,14 @@
   <a class="book" href="/zh/begin">Book a Session</a>
 </nav>
 
+<div class="clouds" aria-hidden="true">
+  <span class="cl" style="--w:46vw; --l:-8vw;  --t:58vh; --d:210s; --o:.16;"></span>
+  <span class="cl" style="--w:38vw; --l:30vw;  --t:70vh; --d:260s; --o:.13;"></span>
+  <span class="cl" style="--w:52vw; --l:62vw;  --t:63vh; --d:230s; --o:.15;"></span>
+  <span class="cl" style="--w:34vw; --l:15vw;  --t:24vh; --d:300s; --o:.08;"></span>
+  <span class="cl" style="--w:40vw; --l:70vw;  --t:16vh; --d:280s; --o:.07;"></span>
+</div>
+<canvas id="meadow" aria-hidden="true"></canvas>
 <main class="map" id="map" aria-label="宇宙地图">
   <svg id="orbits" aria-hidden="true"></svg>
   <div class="core" id="core" aria-hidden="true"></div>
@@ -248,7 +270,7 @@
       if (text) e.textContent = text;
       return e;
     }
-    var stroke = '#C5A86A';
+    var stroke = '#FFE9F4';
     // rings: outer zodiac band, houses band, inner
     [[480, .9, 1.2], [400, .8, 1], [300, .35, .8], [140, .7, 1], [60, .3, .7]].forEach(function (r) {
       svg.appendChild(el('circle', { r: r[0], fill: 'none', stroke: stroke,
@@ -271,7 +293,7 @@
     // AC / MC axis emphasis
     [[180, 'AC'], [90, 'MC']].forEach(function (ax) {
       var lbl = pt(508, ax[0]);
-      svg.appendChild(el('text', { x: lbl[0], y: lbl[1], fill: '#EAD7B8', 'fill-opacity': .8,
+      svg.appendChild(el('text', { x: lbl[0], y: lbl[1], fill: '#FFFFFF', 'fill-opacity': .8,
         'font-size': 24, 'text-anchor': 'middle', 'dominant-baseline': 'central',
         'font-family': "'Cormorant Garamond', serif", 'letter-spacing': 2 }, ax[1]));
     });
@@ -279,7 +301,7 @@
     for (var z = 0; z < 12; z++) {
       var za = 180 + z * 30 + 15;
       var zp = pt(440, za);
-      svg.appendChild(el('text', { x: zp[0], y: zp[1], fill: '#EAD7B8', 'fill-opacity': .95,
+      svg.appendChild(el('text', { x: zp[0], y: zp[1], fill: '#FFFFFF', 'fill-opacity': .95,
         'font-size': 42, 'text-anchor': 'middle', 'dominant-baseline': 'central',
         'font-family': "'Noto Serif SC', serif" }, ZODIAC[z] + VS));
     }
@@ -288,7 +310,7 @@
     for (var hnum = 0; hnum < 12; hnum++) {
       var ha = 180 + hnum * 30 + 15;
       var hp = pt(168, ha);
-      svg.appendChild(el('text', { x: hp[0], y: hp[1], fill: '#C5A86A', 'fill-opacity': .55,
+      svg.appendChild(el('text', { x: hp[0], y: hp[1], fill: '#FFD9EC', 'fill-opacity': .6,
         'font-size': 24, 'font-style': 'italic', 'text-anchor': 'middle', 'dominant-baseline': 'central',
         'font-family': "'Cormorant Garamond', serif" }, ROMAN[hnum]));
     }
@@ -298,14 +320,14 @@
       var pa = 180 + p.sign * 30 + 15;
       var pp = pt(350, pa);
       ppos.push(pt(140, pa));
-      svg.appendChild(el('circle', { cx: pp[0], cy: pp[1], r: 26, fill: 'rgba(197,168,106,0.07)',
+      svg.appendChild(el('circle', { cx: pp[0], cy: pp[1], r: 26, fill: 'rgba(255,190,225,0.10)',
         stroke: stroke, 'stroke-opacity': .3, 'stroke-width': .7 }));
-      svg.appendChild(el('text', { x: pp[0], y: pp[1], fill: '#EAD7B8',
+      svg.appendChild(el('text', { x: pp[0], y: pp[1], fill: '#FFFFFF',
         'font-size': 34, 'text-anchor': 'middle', 'dominant-baseline': 'central',
         'font-family': "'Noto Serif SC', serif" }, p.g + VS));
       // degree marker on inner circle
       var mp = pt(140, pa);
-      svg.appendChild(el('circle', { cx: mp[0], cy: mp[1], r: 4, fill: '#EAD7B8', 'fill-opacity': .85 }));
+      svg.appendChild(el('circle', { cx: mp[0], cy: mp[1], r: 4, fill: '#FFFFFF', 'fill-opacity': .85 }));
     });
     // aspect web between planet degree markers (trines/oppositions of the natural wheel)
     var ASPECTS = [[0,4],[0,6],[3,9],[4,8],[1,7],[2,9],[5,8],[6,9],[4,7],[3,5]];
@@ -322,7 +344,7 @@
         stroke: '#EAD7B8', 'stroke-opacity': .9, 'stroke-width': 1.4 }));
     }
     svg.appendChild(burst);
-    svg.appendChild(el('circle', { r: 9, fill: '#EAD7B8' }));
+    svg.appendChild(el('circle', { r: 9, fill: '#FFFFFF' }));
     document.getElementById('core').appendChild(svg);
   })();
 
@@ -420,6 +442,44 @@
     if (!reduce) requestAnimationFrame(tick);
   }
   if (!mobile) { tick(); if (reduce) tick(); }
+
+  /* impressionist flower meadow (procedural) */
+  (function () {
+    var c = document.getElementById('meadow'); if (!c) return;
+    function paint() {
+      var w = c.width = innerWidth, h = c.height = Math.round(innerHeight * .24);
+      var g = c.getContext('2d');
+      g.clearRect(0, 0, w, h);
+      var gl = g.createLinearGradient(0, 0, 0, h);
+      gl.addColorStop(0, 'rgba(255,190,215,0)');
+      gl.addColorStop(.55, 'rgba(255,185,210,.06)');
+      gl.addColorStop(1, 'rgba(120,90,140,.25)');
+      g.fillStyle = gl; g.fillRect(0, 0, w, h);
+      var palette = [
+        [244,170,205], [226,140,190], [200,120,180], [172,120,200],
+        [246,210,228], [255,240,246], [150,100,160], [235,155,175]
+      ];
+      var n = Math.round(w / 4);
+      for (var i = 0; i < n; i++) {
+        var px = Math.random() * w;
+        var depth = Math.pow(Math.random(), 1.6);
+        var py = h * (.28 + .72 * depth);
+        var r = 2 + depth * 11 + Math.random() * 3;
+        var col = palette[Math.floor(Math.random() * palette.length)];
+        var a = .10 + depth * .5;
+        var rg = g.createRadialGradient(px, py, 0, px, py, r);
+        rg.addColorStop(0, 'rgba(' + col.join(',') + ',' + a + ')');
+        rg.addColorStop(1, 'rgba(' + col.join(',') + ',0)');
+        g.fillStyle = rg;
+        g.fillRect(px - r, py - r, r * 2, r * 2);
+      }
+      var base = g.createLinearGradient(0, h * .7, 0, h);
+      base.addColorStop(0, 'rgba(60,40,80,0)');
+      base.addColorStop(1, 'rgba(38,26,56,.55)');
+      g.fillStyle = base; g.fillRect(0, 0, w, h);
+    }
+    paint(); addEventListener('resize', paint);
+  })();
 
   /* click fly-in */
   var fly = document.getElementById('fly');
