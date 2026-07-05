@@ -47,7 +47,7 @@
   #orbits .faint { stroke: rgba(197,168,106,.08); stroke-dasharray: 2 6; }
 
   /* central natal chart */
-  .core { position: absolute; left: 50%; top: 50%; width: min(44vmin, 440px); aspect-ratio: 1;
+  .core { position: absolute; left: 50%; top: 50%; width: min(66vmin, 660px); aspect-ratio: 1;
     transform: translate(-50%, -50%); z-index: 2; }
   .core::before { content: ''; position: absolute; inset: -30%; border-radius: 50%;
     background: radial-gradient(circle, rgba(197,168,106,.16), rgba(197,168,106,.05) 45%, transparent 65%); }
@@ -58,13 +58,17 @@
   .planet { position: absolute; left: 0; top: 0; z-index: 5; cursor: pointer; text-decoration: none;
     color: inherit; outline: none; will-change: transform; }
   .planet .orbwrap { position: relative; width: var(--size); height: var(--size); margin: 0 auto; }
-  .planet canvas.orb { display: block; width: 100%; height: 100%; border-radius: 50%;
-    animation: spin var(--selfspin, 90s) linear infinite;
+  .planet img.orb { display: block; width: 100%; height: 100%; border-radius: 50%;
+    object-fit: cover; filter: saturate(1.12) brightness(1.06) contrast(1.02);
+    box-shadow: 0 0 calc(var(--size) * .5) var(--glow), inset 0 0 8px rgba(0,0,0,.4);
     transition: transform .5s; }
-  .planet .halo { position: absolute; inset: -55%; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(circle, var(--glow), transparent 62%); opacity: .45; transition: opacity .5s, transform .5s; }
-  .planet:hover canvas.orb, .planet:focus-visible canvas.orb { transform: scale(1.14); }
-  .planet:hover .halo, .planet:focus-visible .halo { opacity: 1; transform: scale(1.15); }
+  .planet.contain img.orb { object-fit: contain; background: transparent; border-radius: 50%; }
+  .planet .halo { position: absolute; inset: -70%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, var(--glow), transparent 60%); opacity: .55;
+    transition: opacity .5s, transform .5s; animation: breathe 6s ease-in-out infinite; }
+  @keyframes breathe { 50% { opacity: .3; transform: scale(.92); } }
+  .planet:hover img.orb, .planet:focus-visible img.orb { transform: scale(1.16); }
+  .planet:hover .halo, .planet:focus-visible .halo { opacity: 1; transform: scale(1.18); animation-play-state: paused; }
   .planet .tag { position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
     text-align: center; padding-top: .7rem; white-space: nowrap; }
   .planet.tag-top .tag { top: auto; bottom: 100%; padding: 0 0 .7rem; }
@@ -323,90 +327,54 @@
   })();
 
   /* ============ textured module planets on slow orbits ============ */
+  /* real NASA imagery (public domain), one celestial body per universe */
   var MODULES = [
-    { href: '/zh/astrology', num: '01', name: 'Astrology', zh: '认识你的宇宙蓝图',
+    { href: '/zh/astrology', num: '01', name: 'Astrology', zh: '认识你的宇宙蓝图', body: '太阳 · Sun',
       line: '认识你内在宇宙的构造。本命盘、宫位、星座、行星与相位——一场进入自己蓝图的旅程。',
-      base: [197,168,106], accent: [242,227,194], size: 76, orbit: 2, phase: 68, speed: 1 },
-    { href: '/zh/tarot-universe', num: '02', name: 'Tarot', zh: '洞察潜意识的指引',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/480px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg',
+      base: [255,170,90], size: 38, orbit: 2, phase: 68, speed: 1 },
+    { href: '/zh/tarot-universe', num: '02', name: 'Tarot', zh: '洞察潜意识的指引', body: '月亮 · Moon',
       line: '牌阵、节气、指引与洞察——让潜意识浮出水面，被温柔地看见。',
-      base: [86,104,160], accent: [170,190,235], size: 60, orbit: 2, phase: 22, speed: -0.8 },
-    { href: '/zh/energy', num: '03', name: 'Energy', zh: '疗愈身心，重启能量',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Moon_nearside_LRO.jpg/480px-Moon_nearside_LRO.jpg',
+      base: [200,215,255], size: 30, orbit: 2, phase: 8, speed: -0.8 },
+    { href: '/zh/energy', num: '03', name: 'Energy', zh: '疗愈身心，重启能量', body: '金星 · Venus',
       line: '疗愈、净化、平衡、重启——让身体与能量场回到自然的节奏。',
-      base: [108,140,110], accent: [190,225,190], size: 56, orbit: 1, phase: -8, speed: 0.9 },
-    { href: '/zh/cosmic-method', num: '04', name: 'Courses', zh: '系统学习，实践成长',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
+      base: [240,215,170], size: 28, orbit: 1, phase: -20, speed: 0.9 },
+    { href: '/zh/cosmic-method', num: '04', name: 'Courses', zh: '系统学习，实践成长', body: '木星 · Jupiter',
       line: 'COSMIC 六步转化模型——课程、实践与案例，一套可以带走的自我重构方法。',
-      base: [181,143,79], accent: [239,217,168], size: 62, orbit: 2, phase: -55, speed: 0.75 },
-    { href: '/zh/journal', num: '05', name: 'Journal', zh: '知识与洞见的宇宙图书馆',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg',
+      base: [230,200,160], size: 34, orbit: 2, phase: -70, speed: 0.75 },
+    { href: '/zh/journal', num: '05', name: 'Journal', zh: '知识与洞见的宇宙图书馆', body: '水星 · Mercury',
       line: '文章、洞见、心理与星象——持续生长的宇宙图书馆。',
-      base: [140,105,180], accent: [216,190,240], size: 58, orbit: 1, phase: -100, speed: -0.85 },
-    { href: '/zh/community', num: '06', name: 'Community', zh: '在同频中成长与共创',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg/480px-Mercury_in_color_-_Prockter07-edit1.jpg',
+      base: [200,200,215], size: 26, orbit: 1, phase: -130, speed: -0.85 },
+    { href: '/zh/community', num: '06', name: 'Community', zh: '在同频中成长与共创', body: '火星 · Mars',
       line: '陪伴、成长、共创与公益——和同频的人一起，走得更远。',
-      base: [190,150,90], accent: [240,215,170], size: 56, orbit: 2, phase: -128, speed: 0.7 },
-    { href: '/zh/events', num: '07', name: 'Events', zh: '与宇宙节奏同行',
-      line: '节气、新月、满月与直播——跟随天空的节奏，一起在场。',
-      base: [120,120,135], accent: [215,215,230], size: 58, orbit: 1, phase: 178, speed: 0.8 },
-    { href: '/zh/begin', num: '08', name: 'Consultation', zh: '一对一深度咨询',
+      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Mars_Valles_Marineris_EDIT.jpg/480px-Mars_Valles_Marineris_EDIT.jpg',
+      base: [235,150,110], size: 28, orbit: 2, phase: -150, speed: 0.7 },
+    { href: '/zh/begin', num: '07', name: 'Consultation', zh: '一对一深度咨询', body: '土星 · Saturn',
       line: '一对一深度咨询——带着你的问题来，我们从这里开始。',
-      base: [165,105,120], accent: [235,190,205], size: 62, orbit: 2, phase: 128, speed: -0.7 }
+      img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/500px-Saturn_during_Equinox.jpg',
+      base: [225,205,160], size: 36, orbit: 1, phase: 150, speed: -0.65, contain: true }
   ];
-
-  /* procedural nebula-textured planet */
-  function paintPlanet(canvas, base, accent, seed) {
-    var S = canvas.width = canvas.height = 128;
-    var g = canvas.getContext('2d');
-    var rnd = (function (s) { return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })(seed);
-    g.fillStyle = 'rgb(' + base.map(function (v) { return Math.round(v * .3); }).join(',') + ')';
-    g.beginPath(); g.arc(S/2, S/2, S/2, 0, 6.28); g.fill();
-    g.save(); g.beginPath(); g.arc(S/2, S/2, S/2, 0, 6.28); g.clip();
-    for (var i = 0; i < 46; i++) {
-      var cx = rnd() * S, cy = rnd() * S, cr = 6 + rnd() * 34;
-      var mix = rnd(), a = .05 + rnd() * .16;
-      var col = base.map(function (v, k) { return Math.round(v + (accent[k] - v) * mix); });
-      var rg = g.createRadialGradient(cx, cy, 0, cx, cy, cr);
-      rg.addColorStop(0, 'rgba(' + col.join(',') + ',' + a + ')');
-      rg.addColorStop(1, 'rgba(' + col.join(',') + ',0)');
-      g.fillStyle = rg; g.fillRect(cx - cr, cy - cr, cr * 2, cr * 2);
-    }
-    // bright core streaks
-    for (var j = 0; j < 5; j++) {
-      var sx = S * (.3 + rnd() * .4), sy = S * (.3 + rnd() * .4), sr = 4 + rnd() * 10;
-      var rg2 = g.createRadialGradient(sx, sy, 0, sx, sy, sr);
-      rg2.addColorStop(0, 'rgba(' + accent.join(',') + ',.75)');
-      rg2.addColorStop(1, 'rgba(' + accent.join(',') + ',0)');
-      g.fillStyle = rg2; g.fillRect(sx - sr, sy - sr, sr * 2, sr * 2);
-    }
-    // limb darkening + terminator
-    var sh = g.createRadialGradient(S*.36, S*.34, S*.1, S/2, S/2, S*.62);
-    sh.addColorStop(0, 'rgba(0,0,0,0)');
-    sh.addColorStop(.72, 'rgba(4,6,12,.25)');
-    sh.addColorStop(1, 'rgba(4,6,12,.88)');
-    g.fillStyle = sh; g.fillRect(0, 0, S, S);
-    // rim light
-    var rim = g.createRadialGradient(S*.34, S*.3, S*.28, S*.34, S*.3, S*.5);
-    rim.addColorStop(0, 'rgba(' + accent.join(',') + ',.22)');
-    rim.addColorStop(1, 'rgba(' + accent.join(',') + ',0)');
-    g.fillStyle = rim; g.fillRect(0, 0, S, S);
-    g.restore();
-  }
 
   var map = document.getElementById('map');
   var planets = [];
-  MODULES.forEach(function (m, idx) {
+  MODULES.forEach(function (m) {
     var a = document.createElement('a');
-    a.className = 'planet';
+    a.className = 'planet' + (m.contain ? ' contain' : '');
     a.href = m.href;
     a.style.setProperty('--size', m.size + 'px');
-    a.style.setProperty('--glow', 'rgba(' + m.base.join(',') + ',.4)');
-    a.style.setProperty('--selfspin', (70 + idx * 25) + 's');
+    a.style.setProperty('--glow', 'rgba(' + m.base.join(',') + ',.45)');
     a.innerHTML =
-      '<span class="orbwrap"><canvas class="orb"></canvas><span class="halo"></span></span>' +
+      '<span class="orbwrap"><img class="orb" alt="" loading="lazy" decoding="async" src="' + m.img + '"><span class="halo"></span></span>' +
       '<span class="tag"><span class="num">' + m.num + '</span>' +
       '<span class="name">' + m.name + '</span>' +
       '<span class="zh">' + m.zh + '</span></span>' +
-      '<span class="card"><h3>' + m.name + ' · ' + m.zh + '</h3><p>' + m.line + '</p>' +
+      '<span class="card"><h3>' + m.name + ' · ' + m.zh + '</h3><p>' + m.body + '。' + m.line + '</p>' +
       '<span class="enter">→ Enter</span></span>';
     map.appendChild(a);
-    paintPlanet(a.querySelector('canvas'), m.base, m.accent, 1234 + idx * 977);
     planets.push({ el: a, m: m, angle: m.phase });
   });
 
