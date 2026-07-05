@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>THE INNER COSMOS · 内在宇宙</title>
 <meta name="description" content="一张会呼吸的星盘。悬浮、苏醒、缓慢转动——进入你的内在宇宙。">
-<meta name="theme-color" content="#0d1b3e">
-<link rel="preload" as="image" href="/images/celestial-hero-source.png">
+<meta name="theme-color" content="#8FB4E8">
+<link rel="preload" as="image" href="/images/hero-spring.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: #0d1b3e; color: #F2E9DB;
+  html, body { margin: 0; height: 100%; background: #9DBBE4; color: #FFFFFF;
     font-family: 'Jost', 'Noto Serif SC', sans-serif; overflow: hidden; }
   ::selection { background: #C5A86A; color: #0d1b3e; }
 
   /* ---------- nav ---------- */
   .nav { position: fixed; inset: 0 0 auto; z-index: 40; display: flex; align-items: center;
     justify-content: space-between; gap: 1.2rem; padding: 1.2rem 4vw;
-    background: linear-gradient(rgba(8,14,34,.62), transparent); }
+    background: linear-gradient(rgba(60,80,140,.42), transparent); }
   .nav .logo { font-family: 'Cormorant Garamond', serif; font-weight: 600; letter-spacing: .3em;
     color: #F6EEDC; text-decoration: none; font-size: .98rem; white-space: nowrap;
     text-shadow: 0 1px 12px rgba(8,14,34,.8); }
@@ -97,7 +97,7 @@
 
 <div class="stage" id="stage">
   <div class="scene" id="scene">
-    <img class="base" id="base" src="/images/celestial-hero-source.png" alt="悬浮在云海之上的发光星盘，四周环绕着太阳、月亮与行星">
+    <img class="base" id="base" src="/images/hero-spring.png" alt="悬浮在云海之上的发光星盘，四周环绕着太阳、月亮与行星">
   </div>
 </div>
 
@@ -128,15 +128,15 @@
      (x, r → of width; y → of height). Calibrated to
      celestial-hero-source.png.
      ============================================================ */
-  var CHART = { cx: .511, cy: .548, rx: .327, ry: .3032 };
-  var SATURN = { cx: .758, cy: .858, rx: .082, ry: .058, dur: 180 };
+  var CHART = { cx: .508, cy: .498, rx: .272, ry: .357 };
+  var SATURN = { cx: .759, cy: .762, rx: .0625, ry: .0474, dur: 200 };
   var PLANETS = [
-    { id: 'sun',   cx: .209, cy: .222, r: .058, dur: 220, dir: 1,  bob: 11 }, // 太阳 · 最慢
-    { id: 'moonT', cx: .469, cy: .153, r: .037, dur: 130, dir: -1, bob: 9  }, // 月亮 · 略快
-    { id: 'jupS',  cx: .732, cy: .180, r: .032, dur: 170, dir: 1,  bob: 10 }, // 木星(小) · 慢
-    { id: 'jupB',  cx: .901, cy: .626, r: .048, dur: 160, dir: -1, bob: 12 }, // 木星(大) · 慢
-    { id: 'mars',  cx: .176, cy: .847, r: .042, dur: 90,  dir: 1,  bob: 8  }, // 火星 · 偏快
-    { id: 'moonB', cx: .468, cy: .903, r: .035, dur: 115, dir: -1, bob: 9  }  // 月亮 · 略快
+    { id: 'sun',   cx: .263, cy: .188, r: .058, dur: 220, dir: 1  }, // 太阳 · 最慢
+    { id: 'moonT', cx: .502, cy: .097, r: .031, dur: 130, dir: -1 }, // 月亮 · 略快
+    { id: 'jupS',  cx: .714, cy: .161, r: .030, dur: 170, dir: 1  }, // 木星(小) · 慢
+    { id: 'jupB',  cx: .855, cy: .388, r: .041, dur: 160, dir: -1 }, // 木星(大) · 慢
+    { id: 'merc',  cx: .176, cy: .703, r: .028, dur: 100, dir: 1  }, // 水星 · 较快
+    { id: 'moonB', cx: .495, cy: .857, r: .028, dur: 115, dir: -1 }  // 月亮 · 略快
   ];
 
   var stage = document.getElementById('stage');
