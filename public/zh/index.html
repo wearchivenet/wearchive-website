@@ -1103,7 +1103,19 @@ class Component extends DCLogic {
     }
     bindBegin();
   }
-  function arm(){ inject(); var n=0; var t=setInterval(function(){ n++; inject(); if(n>16) clearInterval(t); },500); }
+  function keepLast() {
+    var ax = document.querySelector('.ax');
+    if (ax && ax !== document.body.lastElementChild) document.body.appendChild(ax);
+  }
+  function arm(){
+    inject(); keepLast();
+    var n = 0;
+    var t = setInterval(function(){ n++; inject(); keepLast(); if(n>30) clearInterval(t); }, 500);
+    try {
+      new MutationObserver(function(){ keepLast(); bindBegin(); })
+        .observe(document.body, { childList: true });
+    } catch(e) {}
+  }
   if (document.readyState==='complete') setTimeout(arm,300); else addEventListener('load',function(){ setTimeout(arm,300); });
 })();
 </script>
