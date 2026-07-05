@@ -120,15 +120,15 @@
      (x, r → of width; y → of height). Calibrated to
      hero-spring.png.
      ============================================================ */
-  var CHART = { cx: .509, cy: .474, rx: .270, ry: .325 };
-  var SATURN = { cx: .759, cy: .762, rx: .0625, ry: .0474, dur: 140 };
+  /* pixel-measured on the 1536x1024 source */
+  var CHART = { cx: .4990, cy: .4946, rx: .2679, ry: .3442 };
   var PLANETS = [
-    { id: 'sun',   cx: .263, cy: .188, r: .058, dur: 96, dir: 1  }, // 太阳 · 最慢
-    { id: 'moonT', cx: .502, cy: .097, r: .031, dur: 64, dir: -1 }, // 月亮 · 略快
-    { id: 'jupS',  cx: .714, cy: .161, r: .030, dur: 80, dir: 1  }, // 木星(小) · 慢
-    { id: 'jupB',  cx: .855, cy: .388, r: .041, dur: 72, dir: -1 }, // 木星(大) · 慢
-    { id: 'merc',  cx: .176, cy: .703, r: .028, dur: 48, dir: 1  }, // 水星 · 最快
-    { id: 'moonB', cx: .495, cy: .857, r: .028, dur: 56, dir: -1 }  // 月亮 · 略快
+    { id: 'sun',   cx: .2592, cy: .1878, r: .0440, f: .62, dur: 96, dir: 1  }, // 太阳 · 最慢
+    { id: 'moonT', cx: .4913, cy: .0960, r: .0195, f: .72, dur: 64, dir: -1 }, // 月亮 · 略快
+    { id: 'jupS',  cx: .7048, cy: .1552, r: .0208, f: .68, dur: 80, dir: 1  }, // 木星(小) · 慢
+    { id: 'jupB',  cx: .8579, cy: .3892, r: .0495, f: .74, dur: 72, dir: -1 }, // 木星(大) · 慢
+    { id: 'merc',  cx: .1764, cy: .6865, r: .0195, f: .72, dur: 48, dir: 1  }, // 水星 · 最快
+    { id: 'moonB', cx: .4915, cy: .8418, r: .0169, f: .74, dur: 56, dir: -1 }  // 月亮 · 略快
   ];
 
   var stage = document.getElementById('stage');
@@ -137,7 +137,6 @@
   var iw, ih;                    // intrinsic image size
   var layers = [];               // {el, cx, cy, rx, ry} in image fractions
   var chart = {};                // runtime chart state
-  var saturn = {};
 
   /* ---------- cover-fit math ---------- */
   function coverMetrics() {
@@ -193,7 +192,7 @@
     var ctx = cv.getContext('2d');
     var sr = p.r * iw;                       // source radius in image px
     ctx.drawImage(base, (p.cx * iw) - sr, (p.cy * ih) - sr, sr * 2, sr * 2, 0, 0, D, D);
-    featherCircle(ctx, D, .72);
+    featherCircle(ctx, D, p.f || .72);
   }
 
   /* ============================================================
@@ -280,47 +279,6 @@
     ctx.restore();
   }
 
-  /* ---------- saturn: ring-plane rotation, same technique ---------- */
-  function buildSaturn(m) {
-    var wrap = document.createElement('div');
-    wrap.className = 'layer planet-layer';
-    var cv = document.createElement('canvas');
-    wrap.appendChild(cv);
-    scene.appendChild(wrap);
-    if (DEBUG) wrap.style.outline = '1px solid cyan';
-    layers.push({ el: wrap, kind: 'saturn', cv: cv });
-    saturn = { cv: cv, angle: 0 };
-    rebuildSaturnTex(m);
-  }
-
-  function rebuildSaturnTex(m) {
-    var rxPix = SATURN.rx * iw * m.s;
-    var ryPix = SATURN.ry * ih * m.s;
-    saturn.k = ryPix / rxPix;
-    var D = Math.min(512, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 2)));
-    var tex = document.createElement('canvas');
-    tex.width = tex.height = D;
-    var tctx = tex.getContext('2d');
-    var srx = SATURN.rx * iw, sry = SATURN.ry * ih;
-    tctx.drawImage(base, SATURN.cx * iw - srx, SATURN.cy * ih - sry, srx * 2, sry * 2, 0, 0, D, D);
-    featherCircle(tctx, D, .78);
-    saturn.tex = tex;
-    saturn.cv.width = D;
-    saturn.cv.height = Math.ceil(D * saturn.k);
-  }
-
-  function drawSaturn() {
-    var cv = saturn.cv, ctx = cv.getContext('2d');
-    ctx.clearRect(0, 0, cv.width, cv.height);
-    ctx.save();
-    ctx.translate(cv.width / 2, cv.height / 2);
-    ctx.scale(1, saturn.k);
-    ctx.rotate(saturn.angle);
-    var R = cv.width / 2;
-    ctx.drawImage(saturn.tex, -R, -R, R * 2, R * 2);
-    ctx.restore();
-  }
-
   /* ---------- layout everything ---------- */
   function layout() {
     var m = coverMetrics();
@@ -339,9 +297,6 @@
         rebuildChartTex(m);
       } else if (L.kind === 'bloom') {
         place(L.el, CHART.cx, CHART.cy, CHART.rx * 1.22, CHART.ry * 1.30, m);
-      } else if (L.kind === 'saturn') {
-        place(L.el, SATURN.cx, SATURN.cy, SATURN.rx, SATURN.ry, m);
-        rebuildSaturnTex(m);
       }
     });
   }
@@ -355,10 +310,6 @@
     chart.vel += (chart.target - chart.vel) * Math.min(1, dt * 1.6);
     chart.angle += chart.vel * dt;
     drawChart();
-    if (!reduce) {
-      saturn.angle += ((2 * Math.PI) / SATURN.dur) * dt;
-      drawSaturn();
-    }
     requestAnimationFrame(tick);
   }
 
@@ -368,10 +319,9 @@
     var m = coverMetrics();
     buildChart(m);
     PLANETS.forEach(function (p) { buildPlanet(p, m); });
-    buildSaturn(m);
     layout();
     stage.classList.add('ready');
-    if (reduce) { drawChart(); drawSaturn(); return; }
+    if (reduce) { drawChart(); return; }
     requestAnimationFrame(function (t) { last = t; requestAnimationFrame(tick); });
   }
 
