@@ -42,10 +42,12 @@
   /* everything registered over the image is absolutely positioned by JS */
   .layer { position: absolute; will-change: transform; }
 
-  /* chart wrapper: floating + tremor live here (GPU transforms only) */
-  .chart-wrap { animation: floaty 7s ease-in-out infinite; }
-  .chart-wrap.waking { animation: floaty 7s ease-in-out infinite, tremor .42s cubic-bezier(.36,.07,.19,.97); }
-  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  /* the whole scene breathes together — no layer ever drifts off the base image */
+  .scene { position: absolute; inset: 0; animation: floaty 9s ease-in-out infinite; will-change: transform; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+  /* chart wrapper: tremor only (brief, on wake) */
+  .chart-wrap.waking { animation: tremor .42s cubic-bezier(.36,.07,.19,.97); }
   @keyframes tremor {
     10%, 90% { translate: -1px 0; rotate: -.18deg; }
     20%, 80% { translate: 1.2px 0; rotate: .22deg; }
@@ -72,8 +74,6 @@
   .planet-layer canvas { display: block; width: 100%; height: 100%;
     animation: spin var(--dur, 160s) linear infinite; animation-direction: var(--dir, normal); }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .planet-layer.bob { animation: bob var(--bobdur, 9s) ease-in-out infinite; }
-  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
   /* hint */
   .hint { position: fixed; z-index: 30; left: 50%; bottom: 3vh; transform: translateX(-50%);
@@ -96,7 +96,9 @@
 <body>
 
 <div class="stage" id="stage">
-  <img class="base" id="base" src="/images/celestial-hero-source.png" alt="悬浮在云海之上的发光星盘，四周环绕着太阳、月亮与行星">
+  <div class="scene" id="scene">
+    <img class="base" id="base" src="/images/celestial-hero-source.png" alt="悬浮在云海之上的发光星盘，四周环绕着太阳、月亮与行星">
+  </div>
 </div>
 
 <nav class="nav">
@@ -138,6 +140,7 @@
   ];
 
   var stage = document.getElementById('stage');
+  var scene = document.getElementById('scene');
   var base = document.getElementById('base');
   var iw, ih;                    // intrinsic image size
   var layers = [];               // {el, cx, cy, rx, ry} in image fractions
@@ -179,13 +182,12 @@
   /* circular planet crop, drawn once */
   function buildPlanet(p, m) {
     var wrap = document.createElement('div');
-    wrap.className = 'layer planet-layer bob';
-    wrap.style.setProperty('--bobdur', p.bob + 's');
+    wrap.className = 'layer planet-layer';
     var cv = document.createElement('canvas');
     cv.style.setProperty('--dur', p.dur + 's');
     if (p.dir < 0) cv.style.setProperty('--dir', 'reverse');
     wrap.appendChild(cv);
-    stage.appendChild(wrap);
+    scene.appendChild(wrap);
     if (DEBUG) wrap.style.outline = '1px solid red';
     layers.push({ el: wrap, p: p, cv: cv, kind: 'planet' });
     paintPlanet(cv, p, m);
@@ -212,13 +214,13 @@
     wrap.id = 'chartWrap';
     var cv = document.createElement('canvas');
     wrap.appendChild(cv);
-    stage.appendChild(wrap);
+    scene.appendChild(wrap);
 
     // two breathing blooms slightly larger than the chart
     ['b1', 'b2'].forEach(function (cls) {
       var b = document.createElement('div');
       b.className = 'layer bloom ' + cls;
-      stage.insertBefore(b, wrap);
+      scene.insertBefore(b, wrap);
       layers.push({ el: b, kind: 'bloom' });
     });
 
@@ -229,8 +231,8 @@
       wrap: wrap, cv: cv,
       angle: 0,
       vel: 0,
-      idle: reduce ? 0 : (2 * Math.PI) / 260,   // rad per second · standby
-      active: (2 * Math.PI) / 85,               // rad per second · awakened (~85s/圈)
+      idle: 0,                                  // rest = perfectly still, perfectly seamless
+      active: (2 * Math.PI) / 90,               // awakened · ~90s per revolution
       target: 0,
       armedOnce: false
     };
@@ -288,11 +290,10 @@
   /* ---------- saturn: ring-plane rotation, same technique ---------- */
   function buildSaturn(m) {
     var wrap = document.createElement('div');
-    wrap.className = 'layer planet-layer bob';
-    wrap.style.setProperty('--bobdur', '10s');
+    wrap.className = 'layer planet-layer';
     var cv = document.createElement('canvas');
     wrap.appendChild(cv);
-    stage.appendChild(wrap);
+    scene.appendChild(wrap);
     if (DEBUG) wrap.style.outline = '1px solid cyan';
     layers.push({ el: wrap, kind: 'saturn', cv: cv });
     saturn = { cv: cv, angle: 0 };
