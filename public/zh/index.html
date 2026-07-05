@@ -513,12 +513,15 @@
       if (armed) return;
       armed = true;
       core.classList.add('shaking');
-      var svg = core.querySelector('svg');
-      svg.addEventListener('animationend', function onEnd() {
-        svg.removeEventListener('animationend', onEnd);
+      var done = false;
+      function fire() {
+        if (done) return;
+        done = true;
         core.classList.remove('shaking');
         core.classList.add('armed');
-      });
+      }
+      core.querySelector('svg').addEventListener('animationend', fire);
+      setTimeout(fire, 750);
     });
   })();
 
