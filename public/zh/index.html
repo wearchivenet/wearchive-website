@@ -46,15 +46,9 @@
   .scene { position: absolute; inset: 0; animation: floaty 9s ease-in-out infinite; will-change: transform; }
   @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-  /* chart wrapper: tremor only (brief, on wake) */
-  .chart-wrap.waking { animation: tremor .42s cubic-bezier(.36,.07,.19,.97); }
-  @keyframes tremor {
-    10%, 90% { translate: -1px 0; rotate: -.18deg; }
-    20%, 80% { translate: 1.2px 0; rotate: .22deg; }
-    30%, 50%, 70% { translate: -1.6px 0; rotate: -.3deg; }
-    40%, 60% { translate: 1.6px 0; rotate: .3deg; }
-  }
-  .chart-wrap canvas { display: block; width: 100%; height: 100%; }
+  /* chart wrapper — the rotating canvas covers only the inner dial,
+     so the outer ring & background can never tear */
+  .chart-wrap canvas { display: block; position: absolute; left: 25%; top: 25%; width: 50%; height: 50%; }
 
   /* breathing bloom behind / around the chart */
   .bloom { border-radius: 50%; pointer-events: none;
@@ -129,14 +123,14 @@
      hero-spring.png.
      ============================================================ */
   var CHART = { cx: .509, cy: .474, rx: .270, ry: .325 };
-  var SATURN = { cx: .759, cy: .762, rx: .0625, ry: .0474, dur: 200 };
+  var SATURN = { cx: .759, cy: .762, rx: .0625, ry: .0474, dur: 140 };
   var PLANETS = [
-    { id: 'sun',   cx: .263, cy: .188, r: .058, dur: 220, dir: 1  }, // 太阳 · 最慢
-    { id: 'moonT', cx: .502, cy: .097, r: .031, dur: 130, dir: -1 }, // 月亮 · 略快
-    { id: 'jupS',  cx: .714, cy: .161, r: .030, dur: 170, dir: 1  }, // 木星(小) · 慢
-    { id: 'jupB',  cx: .855, cy: .388, r: .041, dur: 160, dir: -1 }, // 木星(大) · 慢
-    { id: 'merc',  cx: .176, cy: .703, r: .028, dur: 100, dir: 1  }, // 水星 · 较快
-    { id: 'moonB', cx: .495, cy: .857, r: .028, dur: 115, dir: -1 }  // 月亮 · 略快
+    { id: 'sun',   cx: .263, cy: .188, r: .058, dur: 96, dir: 1  }, // 太阳 · 最慢
+    { id: 'moonT', cx: .502, cy: .097, r: .031, dur: 64, dir: -1 }, // 月亮 · 略快
+    { id: 'jupS',  cx: .714, cy: .161, r: .030, dur: 80, dir: 1  }, // 木星(小) · 慢
+    { id: 'jupB',  cx: .855, cy: .388, r: .041, dur: 72, dir: -1 }, // 木星(大) · 慢
+    { id: 'merc',  cx: .176, cy: .703, r: .028, dur: 48, dir: 1  }, // 水星 · 最快
+    { id: 'moonB', cx: .495, cy: .857, r: .028, dur: 56, dir: -1 }  // 月亮 · 略快
   ];
 
   var stage = document.getElementById('stage');
@@ -244,9 +238,7 @@
     wrap.style.cursor = 'pointer';
     wrap.addEventListener('mouseenter', function () {
       if (reduce) return;
-      wrap.classList.add('waking');
       stage.classList.add('armed');
-      setTimeout(function () { wrap.classList.remove('waking'); }, 460);
       chart.target = chart.active;
     });
     wrap.addEventListener('mouseleave', function () {
@@ -256,20 +248,23 @@
   }
 
   function rebuildChartTex(m) {
-    var rxPix = CHART.rx * iw * m.s;
-    var ryPix = CHART.ry * ih * m.s;
+    // only the inner dial rotates (central light + aspect web);
+    // the boundary sits on the quiet inner circle, so no tearing is possible
+    var F = .5;
+    var rxPix = CHART.rx * F * iw * m.s;
+    var ryPix = CHART.ry * F * ih * m.s;
     chart.k = ryPix / rxPix;
-    var D = Math.min(1600, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6)));
+    var D = Math.min(1200, Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6)));
     // unprojected texture: stretch the ellipse crop into a circle
     var tex = document.createElement('canvas');
     tex.width = tex.height = D;
     var tctx = tex.getContext('2d');
-    var srx = CHART.rx * iw, sry = CHART.ry * ih;
+    var srx = CHART.rx * F * iw, sry = CHART.ry * F * ih;
     tctx.drawImage(base, CHART.cx * iw - srx, CHART.cy * ih - sry, srx * 2, sry * 2, 0, 0, D, D);
-    featherCircle(tctx, D, .90);
+    featherCircle(tctx, D, .86);
     chart.tex = tex;
     chart.D = D;
-    // display canvas matches the on-screen ellipse
+    // display canvas matches the on-screen inner ellipse
     chart.cv.width = Math.ceil(rxPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
     chart.cv.height = Math.ceil(ryPix * 2 * Math.min(devicePixelRatio || 1, 1.6));
   }
